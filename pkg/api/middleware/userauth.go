@@ -31,7 +31,7 @@ func UserAuthMiddleware(c *gin.Context) {
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok || !token.Valid {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid authorization token"})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid user authorization token"})
 		c.Abort()
 		return
 	}

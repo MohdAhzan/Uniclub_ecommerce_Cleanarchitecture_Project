@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"fmt"
 	interfaces "project/pkg/repository/interface"
 	"project/pkg/utils/models"
@@ -33,4 +34,25 @@ func (u *userDatabase) UserSignup(user models.UserDetails) (models.UserDetailsRe
 	}
 	fmt.Println("USER DETAILS eNTEREDD")
 	return userDetails, nil
+}
+
+func (u *userDatabase) FindUserByEmail(user models.UserLogin) (models.UserSignInResponse, error) {
+	var user_details models.UserSignInResponse
+
+	err := u.DB.Raw("select * from users where email = ? and blocked = false", user.Email).Scan(&user_details).Error
+
+	if err != nil {
+		return models.UserSignInResponse{}, errors.New("error getting user details")
+
+	}
+	return user_details, nil
+}
+
+func (u *userDatabase) UserBlockStatus(email string) (bool, error) {
+	var isBlocked bool
+	err := u.DB.Raw("select blocked from users where email = ?", email).Scan(&isBlocked).Error
+	if err != nil {
+		return false, err
+	}
+	return isBlocked, nil
 }

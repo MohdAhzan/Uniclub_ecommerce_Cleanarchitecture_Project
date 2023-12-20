@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"errors"
 	domain "project/pkg/domain"
 	helper "project/pkg/helper/interface"
 	interfaces "project/pkg/repository/interface"
@@ -41,15 +42,60 @@ func (ad *adminUseCase) LoginHandler(adminDetails models.AdminLogin) (domain.Tok
 		return domain.TokenAdmin{}, err
 	}
 
-	access, refresh, err := ad.helper.GenerateTokenAdmin(adminDetailsResponse)
+	access, err := ad.helper.GenerateTokenAdmin(adminDetailsResponse)
 
 	if err != nil {
 		return domain.TokenAdmin{}, err
 	}
 
 	return domain.TokenAdmin{
-		Admin:        adminDetailsResponse,
-		AccessToken:  access,
-		RefreshToken: refresh,
+		Admin:       adminDetailsResponse,
+		AccessToken: access,
 	}, nil
+}
+
+func (ad *adminUseCase) GetUsers() ([]models.UserDetailsAtAdmin, error) {
+	users, err := ad.adminRepository.GetUsers()
+	if err != nil {
+		return []models.UserDetailsAtAdmin{}, err
+	}
+	return users, nil
+}
+
+func (ad *adminUseCase) BlockUser(id string) error {
+	user, err := ad.adminRepository.GetUserByID(id)
+	if err != nil {
+		return err
+	}
+
+	if user.Blocked {
+		return errors.New("user already blocked")
+	} else {
+		user.Blocked = true
+	}
+
+	err = ad.adminRepository.UpdateBlockUserByID(user)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (ad *adminUseCase) UnBlockUser(id string) error {
+	user, err := ad.adminRepository.GetUserByID(id)
+	if err != nil {
+		return err
+	}
+	if user.Blocked {
+		user.Blocked = false
+	} else {
+		return errors.New("user already unblocked")
+	}
+
+	err = ad.adminRepository.UpdateBlockUserByID(user)
+	if err != nil {
+		return err
+	}
+	return nil
 }

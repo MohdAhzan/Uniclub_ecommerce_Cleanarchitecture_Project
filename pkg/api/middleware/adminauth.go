@@ -21,7 +21,7 @@ func AdminAuthMiddleware(c *gin.Context) {
 
 	if err != nil {
 
-		fmt.Println("AccessToken INvalid")
+		fmt.Println("INvalid Admin AccessToken ")
 		c.AbortWithStatus(http.StatusUnauthorized)
 		return
 	}

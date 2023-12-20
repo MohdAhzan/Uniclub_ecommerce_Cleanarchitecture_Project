@@ -24,7 +24,6 @@ func NewUserUseCase(repo interfaces.UserRepository, cfg config.Config, h helper_
 	}
 }
 
-var InternalError = "Internal Server Error"
 var ErrorHashingPassword = "Error In Hashing Password"
 
 func (u *userUseCase) UserSignup(user models.UserDetails) (models.TokenUsers, error) {
@@ -58,13 +57,60 @@ func (u *userUseCase) UserSignup(user models.UserDetails) (models.TokenUsers, er
 
 	// creating a jwt token for clients
 
-	tokenString, _, err := u.helper.GenerateTokenClients(userdata)
+	tokenString, err := u.helper.GenerateTokenClients(userdata)
 	if err != nil {
 		return models.TokenUsers{}, errors.New("could not create token due to some internal error")
 	}
 
 	return models.TokenUsers{
 		Users: userdata,
+		Token: tokenString,
+	}, nil
+}
+
+func (u *userUseCase) UserLoginHandler(user models.UserLogin) (models.TokenUsers, error) {
+
+	//check if user exist in this email
+	ok := u.userRepo.CheckUserAvailability(user.Email)
+	if !ok {
+		return models.TokenUsers{}, errors.New("the user does not exist")
+	}
+
+	//check if user is blocked or banned
+	isBlocked, err := u.userRepo.UserBlockStatus(user.Email)
+
+	if err != nil {
+		return models.TokenUsers{}, errors.New("error checking the userblockstatus")
+	}
+	if isBlocked {
+		return models.TokenUsers{}, errors.New("the user is blocked by admin")
+	}
+
+	//fetching userdetails to check password
+	user_details, err := u.userRepo.FindUserByEmail(user)
+	if err != nil {
+		return models.TokenUsers{}, errors.New("error fetching userdetails")
+	}
+
+	err = u.helper.CompareHashAndPassword(user_details.Password, user.Password)
+	if err != nil {
+		return models.TokenUsers{}, errors.New("incorrect password")
+	}
+
+	var userDetails models.UserDetailsResponse
+
+	userDetails.Id = int(user_details.Id)
+	userDetails.Name = user_details.Name
+	userDetails.Email = user_details.Email
+	userDetails.Phone = user_details.Phone
+
+	tokenString, err := u.helper.GenerateTokenClients(userDetails)
+	if err != nil {
+		return models.TokenUsers{}, errors.New("couldn't generate token for client ")
+	}
+
+	return models.TokenUsers{
+		Users: userDetails,
 		Token: tokenString,
 	}, nil
 }
