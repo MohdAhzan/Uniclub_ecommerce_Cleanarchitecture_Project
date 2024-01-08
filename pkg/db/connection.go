@@ -16,8 +16,17 @@ func ConnectDatabase(cfg config.Config) (*gorm.DB, error) {
 
 	db, dbErr := gorm.Open(postgres.Open(dsn), &gorm.Config{SkipDefaultTransaction: true})
 
-	db.AutoMigrate(&domain.Users{})
-	db.AutoMigrate(&domain.Admin{})
+	if err := db.AutoMigrate(&domain.Category{}); err != nil {
+		return db, err
+	}
+
+	if err := db.AutoMigrate(&domain.Users{}); err != nil {
+		return db, err
+	}
+	if err := db.AutoMigrate(&domain.Admin{}); err != nil {
+		return db, err
+	}
+
 	CheckAndCreateAdmin(db)
 
 	return db, dbErr
