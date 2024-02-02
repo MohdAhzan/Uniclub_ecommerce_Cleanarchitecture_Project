@@ -15,6 +15,12 @@ func ConnectDatabase(cfg config.Config) (*gorm.DB, error) {
 	dsn := fmt.Sprintf("host=%s user=%s dbname=%s port=%s password=%s", cfg.DBHost, cfg.DBUser, cfg.DBName, cfg.DBPort, cfg.DBPassword)
 
 	db, dbErr := gorm.Open(postgres.Open(dsn), &gorm.Config{SkipDefaultTransaction: true})
+	fmt.Println("INVENTORY MIGRATION ")
+	if err := db.AutoMigrate(&domain.Inventories{}); err != nil {
+
+		return db, err
+	}
+	fmt.Println("error creating")
 
 	if err := db.AutoMigrate(&domain.Category{}); err != nil {
 		return db, err
