@@ -3,9 +3,9 @@ package usecase
 import (
 	"errors"
 	"fmt"
-	"project/pkg/domain"
 	interfaces "project/pkg/repository/interface"
 	services "project/pkg/usecase/interface"
+	"project/pkg/utils/domain"
 )
 
 type categoryUseCase struct {

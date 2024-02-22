@@ -2,7 +2,7 @@ package usecase
 
 import (
 	"errors"
-	domain "project/pkg/domain"
+	domain "project/pkg/utils/domain"
 	helper "project/pkg/helper/interface"
 	interfaces "project/pkg/repository/interface"
 	services "project/pkg/usecase/interface"

@@ -37,6 +37,7 @@ func AdminRoutes(engine *gin.RouterGroup,
 			productmanagement.POST("", inventoryHandler.AddInventory)
 			productmanagement.GET("",inventoryHandler.GetProductsForAdmin)
 			productmanagement.DELETE("",inventoryHandler.DeleteInventory)
+			productmanagement.PUT("/:id/edit_details",inventoryHandler.EditInventoryDetails)
 		}
 
 	}

@@ -1,6 +1,6 @@
 package interfaces
 
-import "project/pkg/domain"
+import "project/pkg/utils/domain"
 
 type CategoryRepository interface {
 	GetCategories() ([]domain.Category, error)

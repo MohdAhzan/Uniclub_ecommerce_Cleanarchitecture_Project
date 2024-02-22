@@ -17,3 +17,11 @@ type AddInventory struct {
 	Stock       int     `json:"stock"`
 	Price       float64 `json:"price"`
 }
+
+type EditInventory struct {
+	CategoryID  int     `json:"category_id"`
+	ProductName string  `json:"product_name"`
+	Size        string  `json:"size"`
+	Stock       int     `json:"stock"`
+	Price       float64 `json:"price"`
+}

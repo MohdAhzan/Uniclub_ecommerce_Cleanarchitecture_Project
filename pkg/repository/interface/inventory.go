@@ -7,4 +7,5 @@ type InventoryRepository interface {
 	CheckCategoryID(CategoryID int) (bool, error)
 	ListProducts() ([]models.Inventories, error)
 	DeleteInventory(pid int)error
+	EditInventory(pid int ,model models.EditInventory)error
 }

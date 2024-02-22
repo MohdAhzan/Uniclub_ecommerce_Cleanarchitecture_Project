@@ -62,3 +62,15 @@ func (Inv *InventoryUseCase) DeleteInventory(pid int) error {
 
 	return nil
 }
+
+func (Inv *InventoryUseCase) EditInventory(pid int, model models.EditInventory) error {
+
+	err := Inv.repository.EditInventory(pid, model)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}

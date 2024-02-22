@@ -113,3 +113,33 @@ func (Inv *InventaryHandler) DeleteInventory(c *gin.Context) {
 	successRes := response.ClientResponse(200, "successfully deleted the inventory", nil, nil)
 	c.JSON(200, successRes)
 }
+
+func (inv *InventaryHandler) EditInventoryDetails(c *gin.Context) {
+
+	productID := c.Query("id")
+
+	pid, err := strconv.Atoi(productID)
+	if err != nil {
+		errRes := response.ClientResponse(400, "error converting the id", nil, err.Error())
+		c.JSON(400, errRes)
+		return
+	}
+
+	var model models.EditInventory
+
+	Err := c.BindJSON(&model)
+	if Err != nil {
+		errRes := response.ClientResponse(400, "error binding model", nil, Err.Error())
+		c.JSON(400, errRes)
+		return
+	}
+
+	eRR := inv.InventoryUseCase.EditInventory(pid, model)
+	if eRR != nil {
+		errRes := response.ClientResponse(400, "error editing product check category id", nil, eRR.Error())
+		c.JSON(400, errRes)
+		return
+	}
+	successRes := response.ClientResponse(http.StatusOK, "Successfully edited product", nil, nil)
+	c.JSON(200, successRes)
+}

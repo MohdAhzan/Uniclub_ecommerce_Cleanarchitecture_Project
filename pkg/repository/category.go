@@ -3,7 +3,7 @@ package repository
 import (
 	"errors"
 	"fmt"
-	"project/pkg/domain"
+	"project/pkg/utils/domain"
 	interfaces "project/pkg/repository/interface"
 	"strconv"
 

@@ -59,12 +59,22 @@ func (inv *InventoryRepository) ListProducts() ([]models.Inventories, error) {
 	return productDetails, nil
 }
 
-func (Inv *InventoryRepository)DeleteInventory(pid int) error {
+func (Inv *InventoryRepository) DeleteInventory(pid int) error {
 
 	result := Inv.DB.Exec("DELETE from inventories WHERE product_id=?", pid)
 	errDelete := fmt.Sprintf("No product is in inventory of id %d ", pid)
 	if result.RowsAffected < 1 {
 		return errors.New(errDelete)
+	}
+	return nil
+}
+
+func (inv *InventoryRepository) EditInventory(pid int, model models.EditInventory) error {
+	fmt.Println("{{{{PRODUCT ID}}}}", pid)
+	result := inv.DB.Exec("UPDATE inventories SET category_id = $1, product_name = $2, size = $3, stock = $4 ,price = $5 WHERE product_id = $6", model.CategoryID, model.ProductName, model.Size, model.Stock, model.Price, pid)
+
+	if result.RowsAffected < 1 {
+		return errors.New("error")
 	}
 	return nil
 }

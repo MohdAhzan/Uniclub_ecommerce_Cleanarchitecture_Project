@@ -2,7 +2,7 @@ package handler
 
 import (
 	"net/http"
-	"project/pkg/domain"
+	"project/pkg/utils/domain"
 	services "project/pkg/usecase/interface"
 	response "project/pkg/utils/Response"
 	"project/pkg/utils/models"

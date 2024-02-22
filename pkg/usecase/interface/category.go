@@ -1,7 +1,7 @@
 package interfaces
 
 import (
-	"project/pkg/domain"
+	"project/pkg/utils/domain"
 )
 
 type CategoryUseCase interface {

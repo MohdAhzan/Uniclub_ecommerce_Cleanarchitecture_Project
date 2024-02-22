@@ -3,7 +3,7 @@ package db
 import (
 	"fmt"
 	"project/pkg/config"
-	"project/pkg/domain"
+	"project/pkg/utils/domain"
 
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/postgres"
