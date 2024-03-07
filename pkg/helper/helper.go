@@ -1,11 +1,18 @@
 package helper
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	"mime/multipart"
 	cfg "project/pkg/config"
 	"project/pkg/utils/models"
 	"time"
+
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/twilio/twilio-go"
@@ -173,4 +180,34 @@ func (h *helper) TwilioVerifyOTP(serviceSID string, code string, phoneNo string)
 
 	return errors.New("failed to validate otp")
 
+}
+
+func (h *helper) AddImageToAwsS3(file *multipart.FileHeader) (string, error) {
+
+	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion("ap-southeast-2"))
+	if err != nil {
+		return "", err
+	}
+
+	client := s3.NewFromConfig(cfg)
+
+	uploader := manager.NewUploader(client)
+	f, openErr := file.Open()
+	if openErr != nil {
+		return "", openErr
+	}
+	defer f.Close()
+
+	result, uploadErr := uploader.Upload(context.TODO(), &s3.PutObjectInput{
+		Bucket: aws.String("jpeg123"),
+		Key:    aws.String(file.Filename),
+		Body:   f,
+		ACL:    "public-read",
+	})
+
+	if uploadErr != nil {
+		return "", uploadErr
+	}
+
+	return result.Location, nil
 }

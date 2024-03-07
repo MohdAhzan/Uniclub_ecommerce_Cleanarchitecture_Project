@@ -43,9 +43,16 @@ func (Inv *InventaryHandler) AddInventory(c *gin.Context) {
 		return
 	}
 	Price, err := strconv.Atoi(c.Request.FormValue("price"))
+
 	fmt.Println("price", Price)
+
 	if err != nil {
 		errRes := response.ClientResponse(http.StatusBadRequest, "form value error", nil, err.Error())
+		c.JSON(400, errRes)
+		return
+	}
+	if Price < 0 {
+		errRes := response.ClientResponse(400, "form value error", nil, "Invalid Price")
 		c.JSON(400, errRes)
 		return
 	}

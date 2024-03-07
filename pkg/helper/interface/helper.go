@@ -1,6 +1,7 @@
 package interfaces
 
 import (
+	"mime/multipart"
 	"project/pkg/utils/models"
 )
 
@@ -13,4 +14,6 @@ type Helper interface {
 	TwilioSetup(accountSID string, authToken string)
 	TwilioSendOTP(phoneNo string, serviceSID string) (string, error)
 	TwilioVerifyOTP(serviceSID string, code string, phoneNo string) error
+
+	AddImageToAwsS3(file *multipart.FileHeader) (string, error)
 }

@@ -32,21 +32,6 @@ func (inv *InventoryRepository) AddInventory(Inventory models.AddInventory) erro
 	return nil
 }
 
-func (inv *InventoryRepository) CheckCategoryID(CategoryID int) (bool, error) {
-	var i int
-
-	err := inv.DB.Raw("select count(*) from categories where id= ?", CategoryID).Scan(&i).Error
-	if err != nil {
-		return false, err
-	}
-	if i == 0 {
-		return false, err
-	} else {
-		return true, err
-	}
-
-}
-
 func (inv *InventoryRepository) ListProducts() ([]models.Inventories, error) {
 
 	var productDetails []models.Inventories
@@ -77,4 +62,35 @@ func (inv *InventoryRepository) EditInventory(pid int, model models.EditInventor
 		return errors.New("error")
 	}
 	return nil
+}
+
+func (inv *InventoryRepository) CheckCategoryID(CategoryID int) (bool, error) {
+	var i int
+
+	err := inv.DB.Raw("select count(*) from categories where id= ?", CategoryID).Scan(&i).Error
+	if err != nil {
+		return false, err
+	}
+	if i == 0 {
+		return false, nil
+	} else {
+		return true, nil
+	}
+
+}
+
+func (inv *InventoryRepository) CheckProduct(ProductName string, size string) (bool, error) {
+
+	var count int
+
+	err := inv.DB.Raw("select count(*) from inventories where product_name = ? and size = ?", ProductName, size).Scan(&count).Error
+
+	if err != nil {
+		return false, err
+	}
+	if count == 0 {
+		return false, nil
+	} else {
+		return true, nil
+	}
 }

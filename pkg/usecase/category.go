@@ -19,6 +19,16 @@ func NewCategoryUseCase(repo interfaces.CategoryRepository) services.CategoryUse
 }
 
 func (cat *categoryUseCase) AddCategory(category domain.Category) (domain.Category, error) {
+	check := fmt.Sprint(category.Category)
+
+	exist, err := cat.repository.CheckCategory(check)
+	if err != nil {
+		return domain.Category{}, err
+	}
+	fmt.Println(exist, "checkingggggggggggggg", category)
+	if exist {
+		return domain.Category{}, errors.New("category already exists")
+	}
 
 	productResponse, err := cat.repository.AddCategory(category)
 	if err != nil {

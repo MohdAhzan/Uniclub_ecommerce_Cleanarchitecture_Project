@@ -17,12 +17,15 @@ func AdminAuthMiddleware(c *gin.Context) {
 
 	_, err := jwt.Parse(accessToken, func(token *jwt.Token) (interface{}, error) {
 		return []byte("adminaccesstokena983274uhweirbt"), nil
+		//pass env secret
 	})
 
 	if err != nil {
 
 		fmt.Println("INvalid Admin AccessToken ")
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid authorization token"})
 		c.AbortWithStatus(http.StatusUnauthorized)
+
 		return
 	}
 	c.Next()

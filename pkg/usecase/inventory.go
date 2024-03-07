@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"errors"
+	"fmt"
 	interfaces "project/pkg/repository/interface"
 	"project/pkg/utils/models"
 )
@@ -25,6 +26,16 @@ func (Inv *InventoryUseCase) AddInventory(inventory models.AddInventory) error {
 	}
 	if !exists {
 		return errors.New("category of this ID doesn't exist ")
+	}
+
+	exists, err = Inv.repository.CheckProduct(inventory.ProductName, inventory.Size)
+
+	if err != nil {
+		return err
+	}
+	if exists {
+		errMsg := fmt.Sprintf("Product %s of Size: %s already exists", inventory.ProductName, inventory.Size)
+		return errors.New(errMsg)
 	}
 
 	Err := Inv.repository.AddInventory(inventory)
