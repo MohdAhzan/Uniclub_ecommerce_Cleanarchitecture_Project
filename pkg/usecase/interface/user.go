@@ -14,4 +14,6 @@ type UserUseCase interface {
 	GetAddressess(id int) ([]domain.Address, error)
 	EditAddress(id int, userid uint, address models.EditAddress) error
 	ChangePassword(id int, changePass models.ChangePassword)error
+	DeleteAddress(addressID int,userID int)error
+	
 }

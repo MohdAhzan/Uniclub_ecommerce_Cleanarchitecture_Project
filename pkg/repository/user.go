@@ -144,6 +144,28 @@ func (u *userDatabase) EditAddress(id int, userid uint, address models.EditAddre
 	return nil
 }
 
+func (u *userDatabase) DeleteAddress(addressID, userID int) error {
+
+	var Default bool
+
+	err := u.DB.Raw(`select "default" from addresses where id = ?`, addressID).Scan(&Default).Error
+	if err != nil {
+		fmt.Println("error here on 153 user REpository")
+		return err
+	}
+	if Default {
+		return errors.New("warning!... cannot delete your Default address")
+	}
+
+	result := u.DB.Exec("DELETE from addresses where id=$1 and user_id =$2", addressID, userID)
+
+	errDelete := fmt.Sprintf("No address is in table addresses of id %d and userID %d", addressID, userID)
+	if result.RowsAffected < 1 {
+		return errors.New(errDelete)
+	}
+	return nil
+}
+
 func (u *userDatabase) GetHashedPassword(id int) (string, error) {
 
 	var hashedPassword string
@@ -162,7 +184,6 @@ func (u *userDatabase) ChangePassword(id int, newHashedPass string) error {
 	if err != nil {
 		return err
 	}
-
 
 	return nil
 }

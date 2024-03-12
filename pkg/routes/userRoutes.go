@@ -29,6 +29,7 @@ func UserRoutes(engine *gin.RouterGroup,
 			profile.GET("/details", userHandler.GetUserDetails)
 			profile.GET("/address", userHandler.GetAddressess)
 			profile.POST("/address", userHandler.AddAddressess)
+			profile.DELETE("/address",userHandler.DeleteAddress)
 
 			edit := engine.Group("/edit")
 			{

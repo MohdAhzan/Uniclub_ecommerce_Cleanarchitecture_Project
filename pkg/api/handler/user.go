@@ -241,6 +241,36 @@ func (u *UserHandler) EditAddress(c *gin.Context) {
 
 }
 
+func (u *UserHandler) DeleteAddress(c *gin.Context) {
+	aID := c.Query("addressid")
+
+	addressID, err := strconv.Atoi(aID)
+	if err != nil {
+		errRes := response.ClientResponse(http.StatusBadRequest, "error converting param", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errRes)
+		return
+	}
+
+	uID, exist := c.Get("id")
+	if !exist {
+		errRes := response.ClientResponse(http.StatusBadRequest, "empty userID", nil, nil)
+		c.JSON(400, errRes)
+		return
+	}
+	userID := uID.(int)
+
+	err = u.userUseCase.DeleteAddress(addressID, userID)
+	if err != nil {
+		errRes := response.ClientResponse(http.StatusBadRequest, "Failed to delete address", nil, err.Error())
+		c.JSON(400, errRes)
+		return
+	}
+	succesMessage := fmt.Sprintf("successfully deleted address of id %d of UserID %d ", addressID, userID)
+	successRes := response.ClientResponse(http.StatusOK, succesMessage, nil, nil)
+	c.JSON(http.StatusOK, successRes)
+
+}
+
 func (u *UserHandler) ChangePassword(c *gin.Context) {
 
 	id, _ := c.Get("id")
@@ -264,6 +294,5 @@ func (u *UserHandler) ChangePassword(c *gin.Context) {
 
 	successRes := response.ClientResponse(http.StatusBadRequest, "Successfully changed Password", nil, nil)
 	c.JSON(http.StatusBadRequest, successRes)
-	
 
 }

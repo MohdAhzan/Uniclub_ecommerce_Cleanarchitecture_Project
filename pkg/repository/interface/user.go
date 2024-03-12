@@ -18,4 +18,5 @@ type UserRepository interface {
 	GetHashedPassword(id int) (string, error)
 	EditUserDetails(id int, details models.EditUserDetails) error
 	ChangePassword(id int, newHashedPass string) error
+	DeleteAddress(addressID , userID int)error
 }

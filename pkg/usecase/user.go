@@ -196,6 +196,14 @@ func (u userUseCase) EditAddress(id int, userId uint, address models.EditAddress
 	return nil
 }
 
+func (u userUseCase) DeleteAddress(addressID int, userID int) error {
+	err := u.userRepo.DeleteAddress(addressID, userID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (u userUseCase) ChangePassword(id int, changePass models.ChangePassword) error {
 
 	hashedPassword, err := u.userRepo.GetHashedPassword(id)
