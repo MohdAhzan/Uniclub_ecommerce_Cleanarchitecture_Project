@@ -3,7 +3,7 @@ package interfaces
 import "project/pkg/utils/models"
 
 type InventoryRepository interface {
-	AddInventory(Inventory models.AddInventory) error
+	AddInventory(Inventory models.AddInventory, URL string) (models.InventoryResponse, error)
 	CheckCategoryID(CategoryID int) (bool, error)
 	ListProducts() ([]models.Inventories, error)
 	DeleteInventory(pid int) error

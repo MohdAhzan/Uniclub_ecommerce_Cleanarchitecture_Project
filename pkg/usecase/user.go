@@ -6,6 +6,7 @@ import (
 	config "project/pkg/config"
 	helper_interface "project/pkg/helper/interface"
 	interfaces "project/pkg/repository/interface"
+	"project/pkg/utils/domain"
 	"project/pkg/utils/models"
 )
 
@@ -113,4 +114,113 @@ func (u *userUseCase) UserLoginHandler(user models.UserLogin) (models.TokenUsers
 		Users: userDetails,
 		Token: tokenString,
 	}, nil
+}
+
+func (u userUseCase) GetUserDetails(id int) (models.UserDetailsResponse, error) {
+
+	userDetails, err := u.userRepo.GetUserDetails(id)
+	if err != nil {
+		return models.UserDetailsResponse{}, err
+	}
+
+	return userDetails, nil
+}
+
+func (u *userUseCase) EditUserDetails(id int, details models.EditUserDetails) error {
+
+	// exist := u.userRepo.CheckUserAvailability(details.Email)
+	// if !exist {
+	// 	return errors.New("INvalid userid check user")
+	// }
+
+	hashedPassword, err := u.userRepo.GetHashedPassword(id)
+	if err != nil {
+		return errors.New("error fetching EncryptedPassword")
+	}
+	Err := u.helper.CompareHashAndPassword(hashedPassword, details.Password)
+
+	if Err != nil {
+		return errors.New("incorrect PassWord !! Try Again")
+
+	}
+
+	err = u.userRepo.EditUserDetails(id, details)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (u userUseCase) AddAddress(id int, address models.AddAddress) error {
+
+	isDefault, err := u.userRepo.CheckifDefaultAddress(id)
+	if err != nil {
+		return err
+	}
+
+	err = u.userRepo.AddAddress(id, address, isDefault)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
+func (u userUseCase) GetAddressess(id int) ([]domain.Address, error) {
+
+	notexist, err := u.userRepo.CheckifDefaultAddress(id)
+	if err != nil {
+		return []domain.Address{}, err
+	}
+	if notexist {
+		return []domain.Address{}, errors.New("no address for this User")
+	}
+
+	addressess, err := u.userRepo.GetAddressess(id)
+	if err != nil {
+		return []domain.Address{}, err
+	}
+
+	return addressess, nil
+}
+
+func (u userUseCase) EditAddress(id int, userId uint, address models.EditAddress) error {
+
+	err := u.userRepo.EditAddress(id, userId, address)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (u userUseCase) ChangePassword(id int, changePass models.ChangePassword) error {
+
+	hashedPassword, err := u.userRepo.GetHashedPassword(id)
+	if err != nil {
+		return errors.New("error fetching EncryptedPassword")
+	}
+	Err := u.helper.CompareHashAndPassword(hashedPassword, changePass.CurrentPassword)
+
+	if Err != nil {
+		return errors.New("incorrect PassWord !! Try Again")
+
+	}
+
+	if changePass.NewPassword != changePass.ConfirmPassword {
+		return errors.New("passwords doesn't match")
+	}
+
+	newHashedPass, err := u.helper.PasswordHashing(changePass.NewPassword)
+	if err != nil {
+		return errors.New("failed to hash newPassword")
+	}
+
+	err = u.userRepo.ChangePassword(id, newHashedPass)
+	if err != nil {
+		return err
+	}
+	return nil
 }

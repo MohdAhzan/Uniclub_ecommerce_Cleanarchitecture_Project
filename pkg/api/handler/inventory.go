@@ -63,14 +63,21 @@ func (Inv *InventaryHandler) AddInventory(c *gin.Context) {
 	inventory.Stock = Stock
 	inventory.Price = float64(Price)
 
-	Err := Inv.InventoryUseCase.AddInventory(inventory)
+	file, err := c.FormFile("image")
+	if err != nil {
+		errRes := response.ClientResponse(400, "error retrieving image", nil, err.Error())
+		c.JSON(400, errRes)
+		return
+	}
+
+	inventoryResponse, Err := Inv.InventoryUseCase.AddInventory(inventory, file)
 	if Err != nil {
 		errRes := response.ClientResponse(400, "error adding products to inventory", nil, Err.Error())
 		c.JSON(http.StatusBadRequest, errRes)
 		return
 	}
 
-	successRes := response.ClientResponse(200, "successfully added Inventory", nil, nil)
+	successRes := response.ClientResponse(200, "successfully added Inventory", inventoryResponse, nil)
 	c.JSON(200, successRes)
 
 }

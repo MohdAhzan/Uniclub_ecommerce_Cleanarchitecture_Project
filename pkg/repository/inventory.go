@@ -19,17 +19,19 @@ func NewInventoryRepository(DB *gorm.DB) interfaces.InventoryRepository {
 	}
 }
 
-func (inv *InventoryRepository) AddInventory(Inventory models.AddInventory) error {
+func (inv *InventoryRepository) AddInventory(Inventory models.AddInventory, URL string) (models.InventoryResponse, error) {
 
-	query := `INSERT INTO Inventories (category_id,product_name,size,stock,price) VALUES (?,?,?,?,?);`
+	query := `INSERT INTO Inventories (category_id,product_name,size,stock,price,image) VALUES (?,?,?,?,?,?);`
 
-	err := inv.DB.Exec(query, Inventory.CategoryID, Inventory.ProductName, Inventory.Size, Inventory.Stock, Inventory.Price).Error
+	err := inv.DB.Exec(query, Inventory.CategoryID, Inventory.ProductName, Inventory.Size, Inventory.Stock, Inventory.Price, URL).Error
 
 	if err != nil {
-		return err
+		return models.InventoryResponse{}, err
 	}
 
-	return nil
+	var InventoryResponse models.InventoryResponse
+
+	return InventoryResponse, nil
 }
 
 func (inv *InventoryRepository) ListProducts() ([]models.Inventories, error) {

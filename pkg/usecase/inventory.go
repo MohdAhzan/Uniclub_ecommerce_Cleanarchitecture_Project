@@ -3,47 +3,59 @@ package usecase
 import (
 	"errors"
 	"fmt"
+	"mime/multipart"
+	helper_interfaces "project/pkg/helper/interface"
 	interfaces "project/pkg/repository/interface"
+
 	"project/pkg/utils/models"
 )
 
 type InventoryUseCase struct {
 	repository interfaces.InventoryRepository
+	helper     helper_interfaces.Helper
 }
 
-func NewInventoryUseCase(repo interfaces.InventoryRepository) *InventoryUseCase {
+func NewInventoryUseCase(repo interfaces.InventoryRepository, h helper_interfaces.Helper) *InventoryUseCase {
 	return &InventoryUseCase{
 		repository: repo,
+		helper:     h,
 	}
 
 }
 
-func (Inv *InventoryUseCase) AddInventory(inventory models.AddInventory) error {
+func (Inv *InventoryUseCase) AddInventory(inventory models.AddInventory, file *multipart.FileHeader) (models.InventoryResponse, error) {
 
 	exists, err := Inv.repository.CheckCategoryID(inventory.CategoryID)
 	if err != nil {
-		return err
+		return models.InventoryResponse{}, err
 	}
 	if !exists {
-		return errors.New("category of this ID doesn't exist ")
+		return models.InventoryResponse{}, errors.New("category of this ID doesn't exist ")
 	}
 
 	exists, err = Inv.repository.CheckProduct(inventory.ProductName, inventory.Size)
 
 	if err != nil {
-		return err
+		return models.InventoryResponse{}, err
 	}
 	if exists {
 		errMsg := fmt.Sprintf("Product %s of Size: %s already exists", inventory.ProductName, inventory.Size)
-		return errors.New(errMsg)
+		return models.InventoryResponse{}, errors.New(errMsg)
 	}
 
-	Err := Inv.repository.AddInventory(inventory)
+	var URL string
+
+	URL, err = Inv.helper.AddImageToAwsS3(file)
+	if err != nil {
+		return models.InventoryResponse{}, err
+	}
+
+	inventoryResponse, Err := Inv.repository.AddInventory(inventory, URL)
 
 	if Err != nil {
-		return Err
+		return models.InventoryResponse{}, Err
 	}
-	return nil
+	return inventoryResponse, nil
 }
 
 func (Inv *InventoryUseCase) GetProductsForAdmin() ([]models.Inventories, error) {

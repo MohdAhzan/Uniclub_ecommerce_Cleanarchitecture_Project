@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 )
@@ -35,7 +34,11 @@ func UserAuthMiddleware(c *gin.Context) {
 		c.Abort()
 		return
 	}
-
+	// var userID models.TokenUsersID
+	// uID := claims["id"].(float64)
+	
+	// userID.UserID=uint(uID)
+	 
 	fmt.Println("claims", claims)
 
 	role, ok := claims["role"].(string)

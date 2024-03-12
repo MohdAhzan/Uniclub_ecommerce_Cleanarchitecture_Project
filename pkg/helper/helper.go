@@ -13,6 +13,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/twilio/twilio-go"
@@ -199,13 +200,15 @@ func (h *helper) AddImageToAwsS3(file *multipart.FileHeader) (string, error) {
 	defer f.Close()
 
 	result, uploadErr := uploader.Upload(context.TODO(), &s3.PutObjectInput{
-		Bucket: aws.String("jpeg123"),
-		Key:    aws.String(file.Filename),
-		Body:   f,
-		ACL:    "public-read",
+		Bucket:      aws.String("jpeg123"),
+		Key:         aws.String(file.Filename),
+		Body:        f,
+		ACL:         types.ObjectCannedACLPublicRead,
+		ContentType: aws.String("image/png"),
 	})
 
 	if uploadErr != nil {
+		fmt.Println("uploadERR", uploadErr)
 		return "", uploadErr
 	}
 

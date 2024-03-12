@@ -26,3 +26,8 @@ type EditInventory struct {
 	Stock       int     `json:"stock"`
 	Price       float64 `json:"price"`
 }
+
+type InventoryResponse struct {
+	Product_ID uint   `json:"product_id"`
+	Stock      string `json:"stock"`
+}

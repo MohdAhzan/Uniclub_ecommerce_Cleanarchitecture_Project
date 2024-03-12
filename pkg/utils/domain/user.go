@@ -8,3 +8,17 @@ type Users struct {
 	Phone    string `json:"phone"`
 	Blocked  bool   `json:"blocked" gorm:"default:false"`
 }
+
+type Address struct {
+	ID       uint   `json:"id" gorm:"unique;not null"`
+	UserID   uint   `json:"user_id"`
+	Users    Users  `json:"-"  gorm:"foreignkey:UserID"`
+	Name     string `json:"name" validate:"required"`
+	Address  string `json:"address" validate:"required"`
+	LandMark string `json:"landmark"`
+	City     string `json:"city" validate:"required"`
+	Pincode  string `json:"pincode" validate:"required,len=6"`
+	State    string `json:"state" validate:"required"`
+	Phone    string `json:"phone" gorm:"phone"`
+	Default  bool   `json:"default" gorm:"default:false"`
+}
