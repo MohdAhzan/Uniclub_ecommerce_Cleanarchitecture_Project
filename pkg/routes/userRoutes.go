@@ -9,7 +9,8 @@ import (
 
 func UserRoutes(engine *gin.RouterGroup,
 	userHandler *handler.UserHandler,
-	otpHandler *handler.OtpHandler, inventoryHandler *handler.InventaryHandler) {
+	otpHandler *handler.OtpHandler, inventoryHandler *handler.InventaryHandler,
+	cartHandler *handler.CartHandler) {
 
 	engine.POST("/signup", userHandler.UserSignUp)
 	engine.POST("/login", userHandler.UserLoginHandler)
@@ -21,6 +22,15 @@ func UserRoutes(engine *gin.RouterGroup,
 		home := engine.Group("/home")
 		{
 			home.GET("", inventoryHandler.GetProductsForUsers)
+			home.POST("/add_to_cart", cartHandler.AddtoCart)
+		}
+
+		cart := engine.Group("/cart")
+		{
+			cart.GET("", cartHandler.GetCart)
+			// cart.DELETE("/remove", cartHandler.RemoveCart)
+			// cart.PUT("/cartQuantity/plus", cartHandler.PlusCartQuantity)
+			// cart.PUT("/cartQuantity/minus", cartHandler.MinusCartQuantity)
 		}
 
 		profile := engine.Group("/profile")
@@ -29,13 +39,12 @@ func UserRoutes(engine *gin.RouterGroup,
 			profile.GET("/details", userHandler.GetUserDetails)
 			profile.GET("/address", userHandler.GetAddressess)
 			profile.POST("/address", userHandler.AddAddressess)
-			profile.DELETE("/address",userHandler.DeleteAddress)
+			profile.DELETE("/address", userHandler.DeleteAddress)
 
 			edit := engine.Group("/edit")
 			{
 				edit.PUT("/account", userHandler.EditUserDetails)
 				edit.PUT("/address", userHandler.EditAddress)
-
 
 				edit.PUT("/password", userHandler.ChangePassword)
 			}

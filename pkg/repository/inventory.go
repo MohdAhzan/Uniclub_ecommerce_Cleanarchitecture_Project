@@ -96,3 +96,55 @@ func (inv *InventoryRepository) CheckProduct(ProductName string, size string) (b
 		return true, nil
 	}
 }
+
+func (inv *InventoryRepository) CheckStock(pid int) (int, error) {
+
+	var stock int
+
+	err := inv.DB.Raw("select stock from inventories where product_id = ?", pid).Scan(&stock).Error
+	if err != nil {
+		return 0, err
+	}
+
+	return stock, nil
+}
+
+func (inv *InventoryRepository) GetProductImages(pid int) (string, error) {
+
+	var image string
+	err := inv.DB.Raw("select image from inventories where product_id =? ", pid).Scan(&image).Error
+	if err != nil {
+		return "", err
+	}
+	return image, nil
+}
+
+func (inv *InventoryRepository) GetCategoryID(pid int) (int, error) {
+	var categoryID int
+	err := inv.DB.Raw("select category_id from inventories where product_id =? ", pid).Scan(&categoryID).Error
+	if err != nil {
+		return 0, err
+	}
+	return categoryID, nil
+
+}
+
+func (c *InventoryRepository) FindStock(pid int) (int, error) {
+
+	var stock int
+
+	err := c.DB.Raw("select stock from inventories where product_id = ?", pid).Scan(&stock).Error
+	if err != nil {
+		return 0, err
+	}
+	return stock, nil
+}
+
+func (c *InventoryRepository) FindPrice(pid int) (float64, error) {
+	var price float64
+	err := c.DB.Raw("select price from inventories where product_id = ?", pid).Scan(&price).Error
+	if err != nil {
+		return 0, err
+	}
+	return price, nil
+}

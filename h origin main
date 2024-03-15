@@ -1,0 +1,63 @@
+[33mcommit f72546cca58b774e0a36a94baa7bbbb4f60e0868[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Author: MohdAhzan <gsirkahzanpkm@gmail.com>
+Date:   Wed Mar 13 00:12:33 2024 +0530
+
+    Added one more API for userProfile
+    Delete address
+    moving towards Cart Management... :)
+
+[33mcommit 10fe2536f81c0c74ae84d11a3e2b1cb79b718a7c[m[33m ([m[1;31morigin/main[m[33m)[m
+Author: MohdAhzan <gsirkahzanpkm@gmail.com>
+Date:   Tue Mar 12 20:42:05 2024 +0530
+
+    Added all userProfile API's
+    listuserDetails
+    edituserDetails
+    changePassword
+    Add ,edit address(pending delete address)
+
+[33mcommit 8ef9bc84976753085770867748dc9dc6497fad29[m
+Author: MohdAhzan <gsirkahzanpkm@gmail.com>
+Date:   Thu Mar 7 23:12:37 2024 +0530
+
+    added validations in API,s , working on image S3 image upload
+
+[33mcommit cc0133fdad63ad72b55552c6182d82f7b77d4323[m
+Author: MohdAhzan <gsirkahzanpkm@gmail.com>
+Date:   Thu Feb 22 16:30:28 2024 +0530
+
+    Rearranged Models
+
+[33mcommit 61041bd1a327a94d893121735273ec3f820b93f9[m
+Author: MohdAhzan <gsirkahzanpkm@gmail.com>
+Date:   Fri Feb 2 12:50:46 2024 +0530
+
+    Implemented
+    -Admin Product management (add,delete & view inventory )
+    -View products in user page
+
+[33mcommit e35b686806b3ac19f145a0416edb3499fd83a904[m
+Author: MohdAhzan <gsirkahzanpkm@gmail.com>
+Date:   Mon Jan 8 14:02:07 2024 +0530
+
+    Completed admin category management
+
+[33mcommit 3e038457203f6174bc3e0a238e833eccc2e114d7[m
+Author: MohdAhzan <gsirkahzanpkm@gmail.com>
+Date:   Wed Dec 20 17:59:51 2023 +0530
+
+    *Completed the userLogin
+    *Implemented Twilio Otp verification for userLogin
+    *Added UserManagments by Admin to Getusers,Block and UnBlock Users By ID
+
+[33mcommit 71addbd7e665c524d587c0a8e6ee7c07cc2763c7[m
+Author: MohdAhzan <gsirkahzanpkm@gmail.com>
+Date:   Wed Dec 13 19:29:42 2023 +0530
+
+    Completed admin login,User Signup, working on Otp verification ,working on user login
+
+[33mcommit 9f938241aa5cb9734f6175f89457aea133e3282a[m
+Author: MohdAhzan <gsirkahzanpkm@gmail.com>
+Date:   Wed Dec 13 19:09:45 2023 +0530
+
+    first commit

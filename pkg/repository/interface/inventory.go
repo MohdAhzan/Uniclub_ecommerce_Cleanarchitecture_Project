@@ -9,4 +9,9 @@ type InventoryRepository interface {
 	DeleteInventory(pid int) error
 	EditInventory(pid int, model models.EditInventory) error
 	CheckProduct(productName string, size string) (bool, error)
+	CheckStock(pid int) (int, error)
+	GetCategoryID(pid int) (int, error)
+	GetProductImages(pid int) (string, error)
+	FindStock(pid int) (int, error)
+	FindPrice(pid int) (float64, error)
 }

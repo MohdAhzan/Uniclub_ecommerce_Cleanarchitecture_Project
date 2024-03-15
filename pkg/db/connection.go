@@ -15,13 +15,13 @@ func ConnectDatabase(cfg config.Config) (*gorm.DB, error) {
 	dsn := fmt.Sprintf("host=%s user=%s dbname=%s port=%s password=%s", cfg.DBHost, cfg.DBUser, cfg.DBName, cfg.DBPort, cfg.DBPassword)
 
 	db, dbErr := gorm.Open(postgres.Open(dsn), &gorm.Config{SkipDefaultTransaction: true})
-	fmt.Println("INVENTORY MIGRATION ")
+
+	fmt.Println("error creating tables")
+
 	if err := db.AutoMigrate(&domain.Inventories{}); err != nil {
 
 		return db, err
 	}
-	fmt.Println("error creating")
-
 	if err := db.AutoMigrate(&domain.Category{}); err != nil {
 		return db, err
 	}
@@ -35,7 +35,15 @@ func ConnectDatabase(cfg config.Config) (*gorm.DB, error) {
 	if err := db.AutoMigrate(&domain.Address{}); err != nil {
 		return db, err
 	}
+	if err := db.AutoMigrate(&domain.Cart{}); err != nil {
+		return db, err
+	}
+	fmt.Println("cart is created ")
+	if err := db.AutoMigrate(&domain.CartItems{}); err != nil {
+		return db, err
+	}
 
+	fmt.Println("cartITEms is created ")
 	CheckAndCreateAdmin(db)
 
 	return db, dbErr
