@@ -92,17 +92,9 @@ func (u *UserHandler) UserLoginHandler(c *gin.Context) {
 
 func (u *UserHandler) GetUserDetails(c *gin.Context) {
 
-	idString := c.Query("id")
+	id, _ := c.Get("id")
 
-	id, err := strconv.Atoi(idString)
-
-	if err != nil {
-		errMsg := response.ClientResponse(http.StatusBadRequest, "Invalid Id", nil, err.Error())
-		c.JSON(400, errMsg)
-		return
-	}
-
-	userDetails, err := u.userUseCase.GetUserDetails(id)
+	userDetails, err := u.userUseCase.GetUserDetails(id.(int))
 	if err != nil {
 		errMsg := response.ClientResponse(http.StatusBadRequest, "Error Fetching Userdetails", nil, err.Error())
 		c.JSON(http.StatusBadRequest, errMsg)

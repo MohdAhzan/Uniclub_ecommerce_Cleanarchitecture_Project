@@ -46,7 +46,9 @@ func (c *CartRepository) CreateNewCart(UserID int) (int, error) {
 }
 
 func (c *CartRepository) CheckIfItemIsAlreadyAdded(cart_id, pid int) (bool, error) {
+	//check items if already added to cart if its added update the quantity
 	var count int
+
 	err := c.db.Raw("select count(*) from cart_items where cart_id = $1 and product_id = $2 ", cart_id, pid).Scan(&count).Error
 	if err != nil {
 		return false, err
@@ -54,7 +56,18 @@ func (c *CartRepository) CheckIfItemIsAlreadyAdded(cart_id, pid int) (bool, erro
 	if count <= 0 {
 		return false, nil
 	}
+
 	return count > 0, nil
+
+}
+
+func (c *CartRepository) UpdateCartQuantity(cartID, pid, quantity int) error {
+	err := c.db.Exec("UPDATE cart_items SET quantity = $1 where cart_id =$2 and product_id =$3", quantity, cartID, pid).Error
+	if err != nil {
+		return err
+	}
+	return nil
+
 }
 
 func (c *CartRepository) AddtoCartItems(cartID, pid int) error {
@@ -97,4 +110,14 @@ func (c *CartRepository) FindCartQuantity(pid, cartID int) (int, error) {
 		return 0, err
 	}
 	return quantity, nil
+}
+
+func (c *CartRepository) RemoveCartItems(pid, cartID int) error {
+
+	err := c.db.Raw("delete from cart_items where product_id = $1 and cart_id = $2", pid, cartID).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

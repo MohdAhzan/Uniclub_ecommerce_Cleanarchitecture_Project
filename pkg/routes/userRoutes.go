@@ -28,7 +28,7 @@ func UserRoutes(engine *gin.RouterGroup,
 		cart := engine.Group("/cart")
 		{
 			cart.GET("", cartHandler.GetCart)
-			// cart.DELETE("/remove", cartHandler.RemoveCart)
+			cart.DELETE("/remove", cartHandler.RemoveCart)
 			// cart.PUT("/cartQuantity/plus", cartHandler.PlusCartQuantity)
 			// cart.PUT("/cartQuantity/minus", cartHandler.MinusCartQuantity)
 		}

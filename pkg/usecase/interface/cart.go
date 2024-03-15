@@ -5,6 +5,7 @@ import (
 )
 
 type CartUseCase interface {
-	AddtoCart(pid, UserID int) (models.CartResponse, error)
-	GetCart(userID int)(models.CartResponse,error)
+	AddtoCart(pid, UserID, quantity int) (models.CartResponse, error)
+	GetCart(userID int) (models.CartResponse, error)
+	RemoveCart(userID, pid int) error
 }
