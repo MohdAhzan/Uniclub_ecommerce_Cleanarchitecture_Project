@@ -10,7 +10,7 @@ import (
 func UserRoutes(engine *gin.RouterGroup,
 	userHandler *handler.UserHandler,
 	otpHandler *handler.OtpHandler, inventoryHandler *handler.InventaryHandler,
-	cartHandler *handler.CartHandler) {
+	cartHandler *handler.CartHandler, orderHandler *handler.OrderHandler) {
 
 	engine.POST("/signup", userHandler.UserSignUp)
 	engine.POST("/login", userHandler.UserLoginHandler)
@@ -47,6 +47,16 @@ func UserRoutes(engine *gin.RouterGroup,
 				edit.PUT("/address", userHandler.EditAddress)
 
 				edit.PUT("/password", userHandler.ChangePassword)
+			}
+
+			orders := profile.Group("/orders")
+			{
+				// 	orders.GET("", orderHandler.GetOrders)
+				// 	orders.GET("/:id", orderHandler.GetIndividualOrderDetails)
+				// 	orders.DELETE("", orderHandler.CancelOrder)
+				// 	orders.PUT("/return", orderHandler.ReturnOrder)
+				// orders.GET("/checkout", orderHandler.Checkout)
+				orders.POST("", orderHandler.OrderFromCart)
 			}
 
 		}
