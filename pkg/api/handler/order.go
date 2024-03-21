@@ -31,6 +31,12 @@ func (u *OrderHandler) OrderFromCart(c *gin.Context) {
 		return
 	}
 
-	err=u.orderUseCase.OrderFromCart(order)
+	if err = u.orderUseCase.OrderFromCart(order); err != nil {
+		errMsg := response.ClientResponse(400, "error placing order", nil, err.Error())
+		c.JSON(400, errMsg)
+		return
+	}
 
+	successRes := response.ClientResponse(http.StatusOK, "successfully placed order", nil, nil)
+	c.JSON(http.StatusOK, successRes)
 }
