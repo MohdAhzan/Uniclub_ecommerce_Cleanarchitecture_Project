@@ -1,8 +1,5 @@
 package interfaces
 
-import "project/pkg/utils/models"
-
 type OrderRepository interface {
-	OrderItems(userID, address int, TotalCartPrice float64) (int, error)
-	AddOrderProducts(orderID int, cart []models.GetCart) error
+	OrderItems(userID, address int, price float64) (int, error)
 }

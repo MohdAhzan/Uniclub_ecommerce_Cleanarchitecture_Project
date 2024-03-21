@@ -81,7 +81,7 @@ func (u CartUseCase) AddtoCart(pid, userID, quantity int) (models.CartResponse, 
 		}
 	}
 	var cartProduct models.GetCart
-	cartProduct.ProductID = pid
+	cartProduct.ID = pid
 	cartProduct.ProductName, _ = u.CartRepo.GetProductNames(pid)
 	cartProduct.Image, _ = u.invRepo.GetProductImages(pid)
 	cartProduct.Category_id, _ = u.invRepo.GetCategoryID(pid)
@@ -183,7 +183,7 @@ func (u CartUseCase) GetCart(userID int) (models.CartResponse, error) {
 	var cart []models.GetCart
 	for i := range pIDs {
 		var c models.GetCart
-		c.ProductID = pIDs[i]
+		c.ID = pIDs[i]
 		c.ProductName = productNames[i]
 		c.Image = images[i]
 		c.Category_id = categoryID[i]

@@ -114,12 +114,9 @@ func (c *CartRepository) FindCartQuantity(pid, cartID int) (int, error) {
 
 func (c *CartRepository) RemoveCartItems(pid, cartID int) error {
 
-	result := c.db.Exec("delete from cart_items where product_id = $1 and cart_id = $2", pid, cartID)
-	if result.Error != nil {
-		return result.Error
-	}
-	if result.RowsAffected < 1 {
-		return errors.New("nothing deleted")
+	err := c.db.Raw("delete from cart_items where product_id = $1 and cart_id = $2", pid, cartID).Error
+	if err != nil {
+		return err
 	}
 
 	return nil
