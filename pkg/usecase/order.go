@@ -20,18 +20,13 @@ func NewOrderUseCase(orderRepo services.OrderRepository, cartRepo services.CartR
 		cartUseCase: cartUseCase,
 	}
 }
-
 func (o OrderUseCase) OrderFromCart(order models.Order) error {
-
-	// cartID, err := o.cartRepo.GetCartID(order.UserID)
-	// if err != nil {
-	// 	return err
-	// }
 
 	cart, err := o.cartUseCase.GetCart(order.UserID)
 	if err != nil {
 		return err
 	}
+	fmt.Println("model GET CART", cart)
 	var TotalCartPrice float64
 	for _, data := range cart.CartData {
 		TotalCartPrice += data.TotalPrice
@@ -41,7 +36,17 @@ func (o OrderUseCase) OrderFromCart(order models.Order) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println(orderID)
+
+	err = o.orderRepo.AddOrderProducts(orderID, cart.CartData)
+	if err != nil {
+		return err
+	}
+	for _, data := range cart.CartData {
+		if err := o.cartUseCase.RemoveCart(order.UserID, data.ProductID); err != nil {
+			return err
+		}
+
+	}
 	return nil
 
 }

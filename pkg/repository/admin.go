@@ -3,11 +3,10 @@ package repository
 import (
 	"errors"
 	"fmt"
-	"project/pkg/utils/domain"
 	interfaces "project/pkg/repository/interface"
+	"project/pkg/utils/domain"
 	"project/pkg/utils/models"
 	"strconv"
-
 	"gorm.io/gorm"
 )
 
@@ -90,4 +89,3 @@ func (ad *adminRepository) UpdateBlockUserByID(user domain.Users) error {
 	}
 	return nil
 }
-
