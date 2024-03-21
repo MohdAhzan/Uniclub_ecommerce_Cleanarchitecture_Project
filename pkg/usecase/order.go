@@ -42,6 +42,7 @@ func (o OrderUseCase) OrderFromCart(order models.Order) error {
 		return err
 	}
 	fmt.Println(orderID)
+
 	return nil
 
 }
