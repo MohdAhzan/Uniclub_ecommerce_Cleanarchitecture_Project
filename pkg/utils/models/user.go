@@ -79,3 +79,20 @@ type ChangePassword struct {
 	NewPassword     string `json:"newPass"`
 	ConfirmPassword string `json:"confirmPass"`
 }
+
+type Address struct {
+	UserID   int
+	Name     string
+	LandMark string
+	City     string
+	Pincode  string
+	State    string
+	Phone    string
+}
+
+type CheckOut struct {
+	CartID     int
+	Addresses  Address
+	Products   []GetCart
+	TotalPrice float64
+}

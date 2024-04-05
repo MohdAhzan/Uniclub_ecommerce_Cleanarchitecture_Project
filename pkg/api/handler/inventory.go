@@ -157,3 +157,19 @@ func (inv *InventaryHandler) EditInventoryDetails(c *gin.Context) {
 	successRes := response.ClientResponse(http.StatusOK, "Successfully edited product", nil, nil)
 	c.JSON(200, successRes)
 }
+
+func (inv *InventaryHandler) SearchProducts(c *gin.Context) {
+
+	pdtName := c.Query("search")
+
+	searchedPdts, err := inv.InventoryUseCase.SearchProducts(pdtName)
+
+	if err != nil {
+		errRes := response.ClientResponse(400, "failed to Search Products", nil, err.Error())
+		c.JSON(400, errRes)
+		return
+	}
+
+	successRes := response.ClientResponse(400, "successfully searched the product", searchedPdts, nil)
+	c.JSON(400, successRes)
+}

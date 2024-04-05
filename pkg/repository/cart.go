@@ -3,6 +3,7 @@ package repository
 import (
 	"errors"
 	"fmt"
+	"project/pkg/utils/models"
 
 	"gorm.io/gorm"
 )
@@ -123,4 +124,19 @@ func (c *CartRepository) RemoveCartItems(pid, cartID int) error {
 	}
 
 	return nil
+}
+
+func (c *CartRepository) GetCartAddress(userID int) (models.Address, error) {
+	var addressID int
+	if err := c.db.Raw("select address_id from orders where user_id = ?", userID).Scan(&addressID).Error; err != nil {
+		return models.Address{}, err
+	}
+
+	var address models.Address
+
+	err := c.db.Raw("select user_id,name,address,land_mark,city,pincode,state,phone from addresses where user_id = ?", userID).Scan(&address).Error
+	if err != nil {
+		return models.Address{}, err
+	}
+	return address, nil
 }

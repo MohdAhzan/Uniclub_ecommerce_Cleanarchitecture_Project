@@ -202,7 +202,7 @@ func (u CartUseCase) GetCart(userID int) (models.CartResponse, error) {
 	return response, nil
 }
 
-func (u *CartUseCase) RemoveCart(userID, pid int) error {
+func (u CartUseCase) RemoveCart(userID, pid int) error {
 
 	cartID, err := u.CartRepo.GetCartID(userID)
 	if err != nil {
@@ -216,3 +216,4 @@ func (u *CartUseCase) RemoveCart(userID, pid int) error {
 
 	return nil
 }
+

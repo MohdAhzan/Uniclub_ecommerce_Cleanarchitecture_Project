@@ -5,6 +5,7 @@ import (
 	"fmt"
 	interfaces "project/pkg/repository/interface"
 	"project/pkg/utils/models"
+	"strings"
 
 	"gorm.io/gorm"
 )
@@ -147,4 +148,18 @@ func (c *InventoryRepository) FindPrice(pid int) (float64, error) {
 		return 0, err
 	}
 	return price, nil
+}
+
+func (i *InventoryRepository) SearchProducts(pdtName string) ([]models.Inventories, error) {
+
+	var products []models.Inventories
+
+	pdtName = strings.TrimSpace(pdtName)
+	
+	err := i.DB.Raw("select product_id,category_id,product_name,image,stock,price from inventories where product_name ilike ?", "%"+pdtName+"%").Scan(&products).Error
+	if err != nil {
+		return []models.Inventories{}, err
+	}
+
+	return products, nil
 }

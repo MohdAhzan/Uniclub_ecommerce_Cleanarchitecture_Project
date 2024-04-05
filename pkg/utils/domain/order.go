@@ -1,24 +1,24 @@
 package domain
 
-import "gorm.io/gorm"
+import (
+	"time"
 
-type PaymentMethod struct {
-	ID           uint   `gorm:"primarykey"`
-	Payment_Name string `json:"payment_name"`
-	IsDeleted    bool   `json:"is_deleted" gorm:"default:false"`
-}
+	"gorm.io/gorm"
+)
 
 type Order struct {
-	gorm.Model
-	UserID    uint    `json:"user_id" gorm:"not null"`
-	Users     Users   `json:"-" gorm:"foreignkey:UserID"`
-	AddressID uint    `json:"address_id" gorm:"not null"`
-	Address   Address `json:"-" gorm:"foreignkey:AddressID"`
-	// PaymentMethodID uint          `json:"paymentmethod_id"`
-	// PaymentMethod   PaymentMethod `json:"-" gorm:"foreignkey:PaymentMethodID"`
-	Price         float64 `json:"price"`
-	OrderStatus   string  `json:"order_status" gorm:"order_status:4;default:'PENDING';check:order_status IN ('PENDING', 'SHIPPED','DELIVERED','CANCELED','RETURNED')"`
-	PaymentStatus string  `json:"payment_status" gorm:"payment_status:2;default:'NOT PAID';check:payment_status IN ('PAID', 'NOT PAID')"`
+	ID            uint           `gorm:"primarykey"`
+	CreatedAt     time.Time      `json:"created_at" gorm:"autoCreateTime"`
+	UpdatedAt     time.Time      `json:"updated_at" gorm:"autoUpdateTime"`
+	DeletedAt     gorm.DeletedAt `json:"deleted_at" gorm:"index"`
+	UserID        uint           `json:"user_id" gorm:"not null"`
+	Users         Users          `json:"-" gorm:"foreignkey:UserID"`
+	AddressID     uint           `json:"address_id" gorm:"not null"`
+	Address       Address        `json:"-" gorm:"foreignkey:AddressID"`
+	PaymentMethod string         `json:"payment_method" gorm:"default:'Cash on Delivery'"`
+	Price         float64        `json:"price"`
+	OrderStatus   string         `json:"order_status" gorm:"order_status:4;default:'PENDING';check:order_status IN ('PENDING', 'SHIPPED','DELIVERED','CANCELED','RETURNED')"`
+	PaymentStatus string         `json:"payment_status" gorm:"payment_status:2;default:'NOT PAID';check:payment_status IN ('PAID', 'NOT PAID')"`
 }
 
 type OrderItems struct {
@@ -29,4 +29,20 @@ type OrderItems struct {
 	Inventories Inventories `json:"-" gorm:"foreignkey:InventoryID"`
 	Quantity    int         `json:"quantity"`
 	TotalPrice  float64     `json:"total_price"`
+}
+
+type OrderDetails struct {
+	ID            int     `json:"id" gorm:"id"`
+	Username      string  `json:"name"`
+	Address       Address `json:"address"`
+	OrderStatus   string  `json:"order_status"`
+	PaymentMethod string  `json:"payment_method" gorm:"payment_method"`
+	PaymentStatus string  `json:"payment_status"`
+	Total         float64 `json:"total"`
+}
+
+type OrderDetailsWithImages struct {
+	OrderDetails  Order
+	Images        []string
+	PaymentMethod string
 }

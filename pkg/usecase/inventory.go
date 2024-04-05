@@ -97,3 +97,14 @@ func (Inv *InventoryUseCase) EditInventory(pid int, model models.EditInventory) 
 	return nil
 
 }
+
+func (Inv *InventoryUseCase) SearchProducts(pdtName string) ([]models.Inventories, error) {
+
+	products, err := Inv.repository.SearchProducts(pdtName)
+	if err != nil {
+		return []models.Inventories{}, err
+	}
+
+	return products, nil
+
+}

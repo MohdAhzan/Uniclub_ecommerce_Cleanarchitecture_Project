@@ -14,4 +14,5 @@ type InventoryRepository interface {
 	GetProductImages(pid int) (string, error)
 	FindStock(pid int) (int, error)
 	FindPrice(pid int) (float64, error)
+	SearchProducts(pdtName string) ([]models.Inventories, error)
 }

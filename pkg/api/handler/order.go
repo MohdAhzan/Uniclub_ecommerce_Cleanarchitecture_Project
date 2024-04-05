@@ -5,6 +5,7 @@ import (
 	interfaces "project/pkg/usecase/interface"
 	response "project/pkg/utils/Response"
 	"project/pkg/utils/models"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -39,4 +40,84 @@ func (u *OrderHandler) OrderFromCart(c *gin.Context) {
 	successRes := response.ClientResponse(http.StatusOK, "successfully placed order", nil, nil)
 	c.JSON(http.StatusOK, successRes)
 
+}
+
+func (o *OrderHandler) Checkout(c *gin.Context) {
+
+	userID, _ := c.Get("id")
+
+	orderDetails, err := o.orderUseCase.Checkout(userID.(int))
+	if err != nil {
+		errRes := response.ClientResponse(http.StatusBadRequest, "error checkout", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errRes)
+		return
+	}
+
+	successRes := response.ClientResponse(http.StatusOK, "successfully fetched Checkout Details", orderDetails, nil)
+
+	c.JSON(http.StatusOK, successRes)
+
+}
+
+func (o *OrderHandler) GetOrders(c *gin.Context) {
+	id, _ := c.Get("id")
+
+	OrderDetails, err := o.orderUseCase.GetOrders(id.(int))
+	if err != nil {
+		errRes := response.ClientResponse(400, "Couldnt fetch order details", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errRes)
+		return
+	}
+
+	successRes := response.ClientResponse(200, "successfully fetched orderDetails", OrderDetails, nil)
+	c.JSON(200, successRes)
+
+}
+
+func (o *OrderHandler) GetOrderDetailsByOrderID(c *gin.Context) {
+
+	userID, _ := c.Get("id")
+
+	idString := c.Param("id")
+
+	orderID, err := strconv.Atoi(idString)
+	if err != nil {
+		errRes := response.ClientResponse(http.StatusBadRequest, "error string conversion", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errRes)
+		return
+	}
+
+	// var order domain.OrderDetails
+
+	orderDetails, err := o.orderUseCase.GetOrderDetailsByOrderID(orderID, userID.(int))
+	if err != nil {
+		errRes := response.ClientResponse(http.StatusBadRequest, "error fetching orderDetails", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errRes)
+		return
+	}
+
+	successRes := response.ClientResponse(http.StatusOK, "successfully fetched orderdetails", orderDetails, nil)
+	c.JSON(http.StatusOK, successRes)
+
+}
+
+func (o *OrderHandler) CancelOrder(c *gin.Context) {
+
+	idString := c.Query("order_id")
+
+	orderID, err := strconv.Atoi(idString)
+	if err != nil {
+		errRes := response.ClientResponse(http.StatusBadRequest, "error in string conversion", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errRes)
+		return
+	}
+	err = o.orderUseCase.CancelOrder(orderID)
+	if err != nil {
+		errRes := response.ClientResponse(http.StatusBadRequest, "failed to cancel the order ", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errRes)
+		return
+	}
+
+	succesRes := response.ClientResponse(http.StatusOK, "This order has been cancelled", nil, nil)
+	c.JSON(200, succesRes)
 }
