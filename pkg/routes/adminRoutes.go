@@ -39,6 +39,10 @@ func AdminRoutes(engine *gin.RouterGroup,
 			productmanagement.DELETE("",inventoryHandler.DeleteInventory)
 			productmanagement.PUT("/:id/edit_details",inventoryHandler.EditInventoryDetails)
 		}
+		ordermanagement:=engine.Group("/orders")
+		{
+			ordermanagement.PUT("/order")
+		}
 
 	}
 }

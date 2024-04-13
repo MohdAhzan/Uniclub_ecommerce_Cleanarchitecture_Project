@@ -13,4 +13,5 @@ type OrderRepository interface {
 	GetOrderAddress(orderID int) (domain.Address, models.OrderData, error)
 	CheckOrderStatusByID(orderID int) (string, error)
 	CancelOrder(orderID int) error
+	ReturnOrder(orderID int)error
 }

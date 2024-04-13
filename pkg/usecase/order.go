@@ -159,17 +159,41 @@ func (o OrderUseCase) CancelOrder(orderID int) error {
 		return err
 	}
 	msg := fmt.Sprintf("Order can't be cancelled as it is %s Kindly return the product", status)
-	
+
 	if status == "CANCELED" {
 		return errors.New("the order is already cancelled")
 	} else if status != "PENDING" {
 		return errors.New(msg)
 	}
-	fmt.Println("dfsjklklklklklklklklklklklklklklklklkl", status)
+
 	err = o.orderRepo.CancelOrder(orderID)
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func (o OrderUseCase) ReturnOrder(orderID int) error {
+
+	status, err := o.orderRepo.CheckOrderStatusByID(orderID)
+
+	if err != nil {
+		return err
+	}
+	msg := fmt.Sprintf("cannot return the order ,already %", status)
+
+	if status=="RETURNED"{
+		return errors.New("cannot return the order, already returned ")
+	}else if status!="DELIVERED"{
+		return errors.New(msg)
+	}
+
+	err = o.orderRepo.ReturnOrder(orderID)
+	if err != nil {
+		return err
+		
+	}
+	return nil
+
 }

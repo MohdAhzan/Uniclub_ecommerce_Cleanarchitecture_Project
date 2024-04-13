@@ -22,10 +22,9 @@ func NewOrderRepository(db *gorm.DB) *orderRepository {
 func (o *orderRepository) OrderItems(userID, addressID int, TotalCartPrice float64) (int, error) {
 
 	var orderID int
-	err := o.DB.Raw(` INSERT INTO orders (created_at,user_id,address_id,price)
-    VALUES (?,?, ?, ?)
-    RETURNING id
-    `, time.Now(), userID, addressID, TotalCartPrice).Scan(&orderID).Error
+	err := o.DB.Raw(`INSERT INTO orders (user_id,address_id,price)
+    VALUES (?, ?, ?)
+    RETURNING id`, userID, addressID, TotalCartPrice).Scan(&orderID).Error
 
 	if err != nil {
 		return 0, err
@@ -105,7 +104,19 @@ func (o *orderRepository) CheckOrderStatusByID(orderID int) (string, error) {
 
 func (o *orderRepository) CancelOrder(orderID int) error {
 
-	result := o.DB.Exec(`UPDATE orders SET order_status = 'CANCELED' WHERE id = ? `, orderID)
+	result := o.DB.Exec(`UPDATE orders SET order_status = 'CANCELED' ,updated_at = ? WHERE id = ? `, time.Now(), orderID)
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected < 1 {
+		return errors.New("no rows updated")
+	}
+	return nil
+}
+
+func (o *orderRepository) ReturnOrder(orderID int) error {
+
+	result := o.DB.Exec(`UPDATE orders SET order_status='RETURNED',updated_at = ? WHERE id = ?"`, time.Now(), orderID)
 	if result.Error != nil {
 		return result.Error
 	}
