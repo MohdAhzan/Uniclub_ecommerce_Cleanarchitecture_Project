@@ -6,7 +6,8 @@ import (
 	interfaces "project/pkg/repository/interface"
 	"project/pkg/utils/domain"
 	"project/pkg/utils/models"
-	"strconv"
+	"time"
+
 	"gorm.io/gorm"
 )
 
@@ -53,14 +54,11 @@ func (ad *adminRepository) GetUsers() ([]models.UserDetailsAtAdmin, error) {
 
 }
 
-func (ad *adminRepository) GetUserByID(id string) (domain.Users, error) {
-	user_id, err := strconv.Atoi(id)
-	if err != nil {
-		return domain.Users{}, err
-	}
+func (ad *adminRepository) GetUserByID(userID int) (domain.Users, error) {
+
 	var count int
 
-	if err := ad.db.Raw("select count(*) from users where id = ?", user_id).Scan(&count).Error; err != nil {
+	if err := ad.db.Raw("select count(*) from users where id = ?", userID).Scan(&count).Error; err != nil {
 		return domain.Users{}, err
 	}
 
@@ -68,7 +66,7 @@ func (ad *adminRepository) GetUserByID(id string) (domain.Users, error) {
 		return domain.Users{}, errors.New("user for the given id doesn't exists")
 	}
 
-	query := fmt.Sprintf("select * from users where id = '%d'", user_id)
+	query := fmt.Sprintf("select * from users where id = '%d'", userID)
 
 	var userDetails domain.Users
 
@@ -84,8 +82,26 @@ func (ad *adminRepository) UpdateBlockUserByID(user domain.Users) error {
 
 	fmt.Println("now id =", user.ID)
 	if err := ad.db.Exec("update users set blocked = ? where id = ?", user.Blocked, user.ID).Error; err != nil {
-
 		return err
 	}
 	return nil
+}
+
+func (ad *adminRepository) OrderReturnApprove(orderID int) error {
+
+	if err := ad.db.Exec(`UPDATE orders SET order_status = 'RETURNED',updated_at = ? WHERE id = ?`, time.Now(), orderID).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (ad *adminRepository) GetUserIDbyorderID(orderID int) (int, error) {
+
+	var userID int
+
+	err := ad.db.Raw("select user_id from orders where id=?", orderID).Scan(&userID).Error
+	if err != nil {
+		return 0, err
+	}
+	return userID, nil
 }

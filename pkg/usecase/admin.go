@@ -2,10 +2,11 @@ package usecase
 
 import (
 	"errors"
-	domain "project/pkg/utils/domain"
+	"fmt"
 	helper "project/pkg/helper/interface"
 	interfaces "project/pkg/repository/interface"
 	services "project/pkg/usecase/interface"
+	domain "project/pkg/utils/domain"
 	"project/pkg/utils/models"
 
 	"github.com/jinzhu/copier"
@@ -14,13 +15,15 @@ import (
 
 type adminUseCase struct {
 	adminRepository interfaces.AdminRepository
+	orderRepository interfaces.OrderRepository
 	helper          helper.Helper
 }
 
-func NewAdminUsecase(repo interfaces.AdminRepository, h helper.Helper) services.AdminUseCase {
+func NewAdminUsecase(repo interfaces.AdminRepository, h helper.Helper, o interfaces.OrderRepository) services.AdminUseCase {
 	return &adminUseCase{
 		adminRepository: repo,
 		helper:          h,
+		orderRepository: o,
 	}
 }
 
@@ -62,7 +65,7 @@ func (ad *adminUseCase) GetUsers() ([]models.UserDetailsAtAdmin, error) {
 	return users, nil
 }
 
-func (ad *adminUseCase) BlockUser(id string) error {
+func (ad *adminUseCase) BlockUser(id int) error {
 	user, err := ad.adminRepository.GetUserByID(id)
 	if err != nil {
 		return err
@@ -82,7 +85,7 @@ func (ad *adminUseCase) BlockUser(id string) error {
 	return nil
 }
 
-func (ad *adminUseCase) UnBlockUser(id string) error {
+func (ad *adminUseCase) UnBlockUser(id int) error {
 	user, err := ad.adminRepository.GetUserByID(id)
 	if err != nil {
 		return err
@@ -98,4 +101,42 @@ func (ad *adminUseCase) UnBlockUser(id string) error {
 		return err
 	}
 	return nil
+}
+
+func (ad *adminUseCase) OrderReturnApprove(orderID int) error {
+
+	status, err := ad.orderRepository.CheckOrderStatusByID(orderID)
+	if err != nil {
+		return err
+	}
+
+	userID, err := ad.adminRepository.GetUserIDbyorderID(orderID)
+	if err != nil {
+		return err
+	}
+	user, err := ad.adminRepository.GetUserByID(userID)
+
+	if err != nil {
+		return err
+	}
+	msg := fmt.Sprintf("User : %s has not requested to return the product", user.Name)
+	if status != "RETURN_REQUESTED" {
+		return errors.New(msg)
+	} else if status == "RETURNED" {
+		return fmt.Errorf("user :%s has already returned the product", user.Name)
+	}
+
+	err = ad.adminRepository.OrderReturnApprove(orderID)
+	if err != nil {
+		return err
+	}
+
+	mailSub := "Order Return Approval"
+	mailMsg := "Hey " + user.Name + "...your request for Order Return has been approved!!!"
+	err = ad.helper.SendMailToPhone(user.Email, mailSub, mailMsg)
+	if err != nil {
+		return err
+	}
+	return nil
+
 }

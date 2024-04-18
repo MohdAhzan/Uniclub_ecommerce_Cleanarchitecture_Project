@@ -19,6 +19,8 @@ import (
 	"github.com/twilio/twilio-go"
 	openApi "github.com/twilio/twilio-go/rest/verify/v2"
 	"golang.org/x/crypto/bcrypt"
+
+	"net/smtp"
 )
 
 type helper struct {
@@ -204,7 +206,7 @@ func (h *helper) AddImageToAwsS3(file *multipart.FileHeader) (string, error) {
 		Key:         aws.String(file.Filename),
 		Body:        f,
 		ACL:         types.ObjectCannedACLPublicRead,
-		ContentType: aws.String("image/png"),
+		ContentType: aws.String("image/png"),					
 	})
 
 	if uploadErr != nil {
@@ -213,4 +215,25 @@ func (h *helper) AddImageToAwsS3(file *multipart.FileHeader) (string, error) {
 	}
 
 	return result.Location, nil
+}
+
+func (h *helper) SendMailToPhone(To, Subject, Msg string) error {
+
+	TO := []string{To}
+
+	//setup authentication
+	auth := smtp.PlainAuth("", h.cfg.SMTP_USERNAME, h.cfg.SMTP_PASSWORD, h.cfg.SMTP_HOST)
+
+	//message body
+	msg := []byte("To: " + TO[0] + "\r\n" +
+		"Subject: " + Subject + "\r\n" +
+		"\r\n" +
+		Msg + "\r\n")
+	//send mail to recipient
+	err := smtp.SendMail(h.cfg.SMTP_HOST+":"+h.cfg.SMTP_PORT, auth, h.cfg.SMTP_USERNAME, TO, msg)
+	if err != nil {
+		return err
+	}
+	return nil
+
 }

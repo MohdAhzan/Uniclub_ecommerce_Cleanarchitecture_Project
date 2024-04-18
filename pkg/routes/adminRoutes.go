@@ -10,7 +10,8 @@ import (
 func AdminRoutes(engine *gin.RouterGroup,
 	adminHandler *handler.AdminHandler,
 	categoryHandler *handler.CategoryHandler,
-	inventoryHandler *handler.InventaryHandler) {
+	inventoryHandler *handler.InventaryHandler,
+	) {
 
 	engine.POST("/adminlogin", adminHandler.LoginHandler)
 
@@ -41,7 +42,7 @@ func AdminRoutes(engine *gin.RouterGroup,
 		}
 		ordermanagement:=engine.Group("/orders")
 		{
-			ordermanagement.PUT("/order")
+			ordermanagement.PUT("",adminHandler.OrderReturnApprove)
 		}
 
 	}

@@ -17,7 +17,7 @@ type Order struct {
 	Address       Address `json:"-" gorm:"foreignkey:AddressID"`
 	PaymentMethod string  `json:"payment_method" gorm:"default:'Cash on Delivery'"`
 	Price         float64 `json:"price"`
-	OrderStatus   string  `json:"order_status" gorm:"order_status:4;default:'PENDING';check:order_status IN ('PENDING', 'SHIPPED','DELIVERED','CANCELED','RETURNED')"`
+	OrderStatus   string  `json:"order_status" gorm:"order_status:5;default:'PENDING';check:order_status IN ('PENDING', 'SHIPPED','DELIVERED','CANCELED','RETURN_REQUESTED','RETURNED')"`
 	PaymentStatus string  `json:"payment_status" gorm:"payment_status:2;default:'NOT PAID';check:payment_status IN ('PAID', 'NOT PAID')"`
 }
 

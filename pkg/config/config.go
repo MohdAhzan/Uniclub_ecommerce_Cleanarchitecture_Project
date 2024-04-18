@@ -19,11 +19,16 @@ type Config struct {
 	AWS_REGION            string `mapstructure:"AWS_REGION"`
 	AWS_ACCESS_KEY_ID     string `mapstructure:"AWS_ACCESS_KEY_ID"`
 	AWS_SECRET_ACCESS_KEY string `mapstructure:"AWS_SECRET_ACCESS_KEY"`
+
+	SMTP_USERNAME string `mapstructure:"SMTP_USERNAME"`
+	SMTP_PASSWORD string `mapstructure:"SMTP_PASSWORD"`
+	SMTP_HOST     string `mapstructure:"SMTP_HOST"`
+	SMTP_PORT     string `mapstructure:"SMTP_PORT"`
 }
 
 var envs = []string{
 	"DB_HOST", "DB_NAME", "DB_USER", "DB_PORT", "DB_PASSWORD", "DB_AUTHTOKEN", "DB_ACCOUNTSID", "DB_SERVICESID", "DB_ACCOUNTSID", "DB_AUTHTOKEN",
-	"DB_SERVICESID", "AWS_REGION", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY",
+	"DB_SERVICESID", "AWS_REGION", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "SMTP_USERNAME", "SMTP_PASSWORD", "SMTP_HOST", "SMTP_PORT",
 }
 
 func LoadConfig() (Config, error) {

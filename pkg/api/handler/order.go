@@ -18,11 +18,8 @@ func NewOrderHandler(orderUseCase interfaces.OrderUseCase) *OrderHandler {
 	return &OrderHandler{
 
 		orderUseCase: orderUseCase,
-
 	}
 }
-
-
 
 func (u *OrderHandler) OrderFromCart(c *gin.Context) {
 
@@ -125,26 +122,26 @@ func (o *OrderHandler) CancelOrder(c *gin.Context) {
 	c.JSON(200, succesRes)
 }
 
+func (o *OrderHandler) ReturnOrder(c *gin.Context) {
+	userID, _ := c.Get("id")
 
-func (o *OrderHandler)ReturnOrder(c *gin.Context){
+	idString := c.Query("order_id")
 
-	idString:=c.Query("order_id")
-
-	orderID,err:=strconv.Atoi(idString)
-	if err!= nil {
-		errRes:=response.ClientResponse(http.StatusBadRequest,"error in string conversion",nil,err.Error())
-		c.JSON(http.StatusBadRequest,errRes)
-		return 
-	}
-
-	err=o.orderUseCase.ReturnOrder(orderID)
-	if err!= nil{
-		errRes:= response.ClientResponse(http.StatusBadRequest,"failed to return the order",nil,err.Error())
-		c.JSON(http.StatusBadRequest,errRes)
+	orderID, err := strconv.Atoi(idString)
+	if err != nil {
+		errRes := response.ClientResponse(http.StatusBadRequest, "error in string conversion", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errRes)
 		return
 	}
 
-	successRes:=response.ClientResponse(http.StatusBadRequest,"This Order has been Returned",nil,err.Error())
-	c.JSON(http.StatusBadRequest,successRes)
+	err = o.orderUseCase.ReturnOrder(orderID, userID.(int))
+	if err != nil {
+		errRes := response.ClientResponse(http.StatusBadRequest, "failed to return the order", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errRes)
+		return
+	}
+
+	successRes := response.ClientResponse(http.StatusOK, "This Order has been Requested for Return", nil, nil)
+	c.JSON(http.StatusOK, successRes)
 
 }

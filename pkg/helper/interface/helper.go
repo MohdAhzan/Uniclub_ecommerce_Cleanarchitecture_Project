@@ -16,4 +16,8 @@ type Helper interface {
 	TwilioVerifyOTP(serviceSID string, code string, phoneNo string) error
 
 	AddImageToAwsS3(file *multipart.FileHeader) (string, error)
+
+	SendMailToPhone(To, Subject, Msg string) error
+
+	// CacheManage(key string,)
 }

@@ -116,7 +116,7 @@ func (o *orderRepository) CancelOrder(orderID int) error {
 
 func (o *orderRepository) ReturnOrder(orderID int) error {
 
-	result := o.DB.Exec(`UPDATE orders SET order_status='RETURNED',updated_at = ? WHERE id = ?"`, time.Now(), orderID)
+	result := o.DB.Exec(`UPDATE orders SET order_status='RETURN_REQUESTED',updated_at = ? WHERE id = ?`, time.Now(), orderID)
 	if result.Error != nil {
 		return result.Error
 	}

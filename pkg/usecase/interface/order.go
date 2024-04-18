@@ -11,5 +11,5 @@ type OrderUseCase interface {
 	GetOrders(id int) ([]domain.OrderDetailsWithImages, error)
 	GetOrderDetailsByOrderID(orderID, userID int) (domain.OrderDetails, error)
 	CancelOrder(orderID int) error
-	ReturnOrder(orderID int)error
+	ReturnOrder(orderID,userID int)error
 }

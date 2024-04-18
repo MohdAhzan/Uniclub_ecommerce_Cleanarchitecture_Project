@@ -26,7 +26,7 @@ func UserRoutes(engine *gin.RouterGroup,
 			home.POST("/add_to_cart", cartHandler.AddtoCart)
 		}
 
-		search := engine.Group("/search")
+		search :=engine.Group("/search")
 		{
 			search.GET("", inventoryHandler.SearchProducts)
 		}

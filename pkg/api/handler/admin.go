@@ -1,11 +1,11 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 	services "project/pkg/usecase/interface"
 	response "project/pkg/utils/Response"
 	models "project/pkg/utils/models"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -58,8 +58,11 @@ func (ad *AdminHandler) GetUsers(c *gin.Context) {
 
 func (ad *AdminHandler) BlockUser(c *gin.Context) {
 	id := c.Query("id")
-	fmt.Println("\nTHE IN URL", id)
-	err := ad.adminUseCase.BlockUser(id)
+	userID, err := strconv.Atoi(id)
+	if err != nil {
+		response.ClientResponse(http.StatusBadRequest, "error string conversion", nil, err.Error())
+	}
+	err = ad.adminUseCase.BlockUser(userID)
 
 	if err != nil {
 		errRes := response.ClientResponse(http.StatusBadRequest, "couldn't block user", nil, err.Error())
@@ -74,7 +77,11 @@ func (ad *AdminHandler) BlockUser(c *gin.Context) {
 
 func (ad *AdminHandler) UnBlockUser(c *gin.Context) {
 	id := c.Query("id")
-	err := ad.adminUseCase.UnBlockUser(id)
+	userID, err := strconv.Atoi(id)
+	if err != nil {
+		response.ClientResponse(http.StatusBadRequest, "error string conversion", nil, err.Error())
+	}
+	err = ad.adminUseCase.UnBlockUser(userID)
 	if err != nil {
 		errRes := response.ClientResponse(http.StatusBadRequest, "couldn't block user", nil, err.Error())
 		c.JSON(http.StatusBadRequest, errRes)
@@ -82,5 +89,28 @@ func (ad *AdminHandler) UnBlockUser(c *gin.Context) {
 	}
 	successRess := response.ClientResponse(http.StatusOK, "successfully unblocked the user", nil, nil)
 	c.JSON(http.StatusOK, successRess)
+
+}
+
+func (ad *AdminHandler) OrderReturnApprove(c *gin.Context) {
+
+	idstr := c.Query("order_id")
+
+	orderID, err := strconv.Atoi(idstr)
+	if err != nil {
+		errRes := response.ClientResponse(http.StatusBadRequest, "error string conversion", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errRes)
+		return
+	}
+
+	err = ad.adminUseCase.OrderReturnApprove(orderID)
+	if err != nil {
+		errRes := response.ClientResponse(http.StatusBadRequest, "error approving order status", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errRes)
+		return
+	}
+
+	successRes := response.ClientResponse(http.StatusOK, "successfully approved order return", nil, nil)
+	c.JSON(http.StatusOK, successRes)
 
 }
