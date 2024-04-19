@@ -1,47 +1,89 @@
 package repository
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	interfaces "project/pkg/repository/interface"
 	"project/pkg/utils/models"
 	"strings"
+	"time"
 
+	"github.com/go-redis/redis/v8"
 	"gorm.io/gorm"
 )
 
 type InventoryRepository struct {
-	DB *gorm.DB
+	DB    *gorm.DB
+	Cache *redis.Client
 }
 
-func NewInventoryRepository(DB *gorm.DB) interfaces.InventoryRepository {
+func NewInventoryRepository(DB *gorm.DB, redis *redis.Client) interfaces.InventoryRepository {
 	return &InventoryRepository{
-		DB: DB,
+		DB:    DB,
+		Cache: redis,
 	}
 }
 
 func (inv *InventoryRepository) AddInventory(Inventory models.AddInventory, URL string) (models.InventoryResponse, error) {
 
-	query := `INSERT INTO Inventories (category_id,product_name,size,stock,price,image) VALUES (?,?,?,?,?,?);`
+	var response models.InventoryResponse
 
-	err := inv.DB.Exec(query, Inventory.CategoryID, Inventory.ProductName, Inventory.Size, Inventory.Stock, Inventory.Price, URL).Error
+	query := "INSERT INTO Inventories (category_id,product_name,size,stock,price,image) VALUES (?,?,?,?,?,?) RETURNING product_id,stock"
+
+	err := inv.DB.Raw(query, Inventory.CategoryID, Inventory.ProductName, Inventory.Size, Inventory.Stock, Inventory.Price, URL).Scan(&response).Error
 
 	if err != nil {
 		return models.InventoryResponse{}, err
 	}
 
-	var InventoryResponse models.InventoryResponse
-
-	return InventoryResponse, nil
+	return response, nil
 }
 
 func (inv *InventoryRepository) ListProducts() ([]models.Inventories, error) {
 
-	var productDetails []models.Inventories
+	// type Inventories struct {
+	// 	Product_ID  uint    `json:"product_id"`
+	// 	CategoryID  int     `json:"category_id"`
+	// 	ProductName string  `json:"product_name"`
+	// 	Image       string  `json:"image"`
+	// 	Size        string  `json:"size" `
+	// 	Stock       int     `json:"stock"`
+	// 	Price       float64 `json:"price"`
+	// }
+	//this is the cache model for listProducts
 
-	err := inv.DB.Raw("select * from inventories").Scan(&productDetails).Error
+	//we will get the cache if its not empty we wil return the cache without executing query
+	var productDetails []models.Inventories
+	key := "List_Home_products"
+	cache, err := inv.Cache.Get(inv.Cache.Context(), key).Result()
+	if err != nil && err != redis.Nil {
+		return []models.Inventories{}, err
+	}
+	if cache != "" {
+
+		// Decode cache into []models.Inventories
+		var productDetails []models.Inventories
+		if err := json.Unmarshal([]byte(cache), &productDetails); err != nil {
+			return []models.Inventories{}, err // Return empty slice and error if decoding fails
+		}
+		fmt.Println("CACHE", cache)
+		return productDetails, nil
+
+	}
+
+	err = inv.DB.Raw("select * from inventories").Scan(&productDetails).Error
 	if err != nil {
 		return []models.Inventories{}, err
+	}
+	//if cache is empty we will set the productDetails to cache
+	if len(productDetails) > 0 {
+		cacheBytes, err := json.Marshal(productDetails)
+		if err != nil {
+			return []models.Inventories{}, errors.New("unable to marshal details to cache")
+		}
+		statusCmd := inv.Cache.Set(inv.Cache.Context(), key, cacheBytes, time.Hour*12)
+		fmt.Println(statusCmd, "checkkkkkKKKKKKKKKKKKKKKKKKKKKKKKK")
 	}
 
 	return productDetails, nil
@@ -155,7 +197,7 @@ func (i *InventoryRepository) SearchProducts(pdtName string) ([]models.Inventori
 	var products []models.Inventories
 
 	pdtName = strings.TrimSpace(pdtName)
-	
+
 	err := i.DB.Raw("select product_id,category_id,product_name,image,stock,price from inventories where product_name ilike ?", "%"+pdtName+"%").Scan(&products).Error
 	if err != nil {
 		return []models.Inventories{}, err

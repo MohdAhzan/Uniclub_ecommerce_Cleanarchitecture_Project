@@ -22,7 +22,7 @@ func InitializeAPI(cfg config.Config) (*http.ServerHTTP, error) {
 		return nil, err
 	}
 
-	err = redis.InitializeClient()
+	redisClient, err := redis.InitializeClient()
 	if err != nil {
 		return nil, err
 	}
@@ -46,9 +46,9 @@ func InitializeAPI(cfg config.Config) (*http.ServerHTTP, error) {
 	categoryUseCase := usecase.NewCategoryUseCase(categoryRepository)
 	categoryHandler := handler.NewCategoryHandler(categoryUseCase)
 
-	inventoryRepository := repository.NewInventoryRepository(gormDB)
+	inventoryRepository := repository.NewInventoryRepository(gormDB, redisClient)
 	inventoryUsecase := usecase.NewInventoryUseCase(inventoryRepository, helper)
-	inventoryHandler := handler.NewInventoryHandler(inventoryUsecase)
+	inventoryHandler := handler.NewInventoryHandler(inventoryUsecase,redisClient)
 
 	cartRepository := repository.NewCartRepository(gormDB)
 	cartUseCase := usecase.NewCartUseCase(cartRepository, inventoryRepository)
@@ -57,7 +57,6 @@ func InitializeAPI(cfg config.Config) (*http.ServerHTTP, error) {
 	orderRepository = repository.NewOrderRepository(gormDB)
 	orderUseCase := usecase.NewOrderUseCase(orderRepository, cartRepository, cartUseCase, userRepository, helper)
 	orderHandler := handler.NewOrderHandler(orderUseCase)
-
 	serverHTTP := http.NewServerHTTP(userHandler, adminHandler, otpHandler, categoryHandler, inventoryHandler, cartHandler, orderHandler)
 
 	return serverHTTP, nil

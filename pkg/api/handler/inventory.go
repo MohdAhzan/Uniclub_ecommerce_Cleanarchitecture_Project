@@ -9,22 +9,32 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
 )
 
 type InventaryHandler struct {
 	InventoryUseCase services.InventoryUseCase
+	Cache            *redis.Client
 }
 
-func NewInventoryHandler(usecase services.InventoryUseCase) *InventaryHandler {
+func NewInventoryHandler(usecase services.InventoryUseCase, redis *redis.Client) *InventaryHandler {
 
 	return &InventaryHandler{
 		InventoryUseCase: usecase,
+		Cache:            redis,
 	}
 }
 
 func (Inv *InventaryHandler) AddInventory(c *gin.Context) {
 
 	var inventory models.AddInventory
+
+	err := Inv.Cache.Del(Inv.Cache.Context(), "List_Home_products").Err()
+	if err != nil {
+		errMsg := response.ClientResponse(http.StatusBadRequest, "err deleting cache", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errMsg)
+		return
+	}
 
 	CategoryID, err := strconv.Atoi(c.Request.FormValue("category_id"))
 
@@ -97,6 +107,9 @@ func (Inv *InventaryHandler) GetProductsForAdmin(c *gin.Context) {
 
 func (Inv *InventaryHandler) GetProductsForUsers(c *gin.Context) {
 
+	///
+
+	///
 	productDetails, err := Inv.InventoryUseCase.GetProductsForUsers()
 
 	if err != nil {
@@ -109,6 +122,7 @@ func (Inv *InventaryHandler) GetProductsForUsers(c *gin.Context) {
 }
 
 func (Inv *InventaryHandler) DeleteInventory(c *gin.Context) {
+
 	product_id := c.Query("id")
 
 	pid, err := strconv.Atoi(product_id)
@@ -117,7 +131,14 @@ func (Inv *InventaryHandler) DeleteInventory(c *gin.Context) {
 		c.JSON(400, errRes)
 		return
 	}
-
+	delCmd := Inv.Cache.Del(Inv.Cache.Context(), "List_Home_products")
+	res, _ := delCmd.Result()
+	fmt.Println(res, "checkinggg delteeeeetekjlekjtsdkljfkasjflasjfkluasldkfjaklsjfijsduxcm,fuhzyzdxukfhjkjsdfxjlidfsdl")
+	if err := delCmd.Err(); err != nil {
+		errMsg := response.ClientResponse(http.StatusBadRequest, "err deleting cache", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errMsg)
+		return
+	}
 	Err := Inv.InventoryUseCase.DeleteInventory(pid)
 	if Err != nil {
 		errRes := response.ClientResponse(400, "fields provided are in wrong format", nil, Err.Error())
@@ -138,7 +159,12 @@ func (inv *InventaryHandler) EditInventoryDetails(c *gin.Context) {
 		c.JSON(400, errRes)
 		return
 	}
-
+	err = inv.Cache.Del(inv.Cache.Context(), "List_Home_products").Err()
+	if err != nil {
+		errMsg := response.ClientResponse(http.StatusBadRequest, "err deleting cache", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errMsg)
+		return
+	}
 	var model models.EditInventory
 
 	Err := c.BindJSON(&model)

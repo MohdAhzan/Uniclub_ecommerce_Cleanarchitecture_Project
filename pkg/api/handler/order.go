@@ -78,7 +78,7 @@ func (o *OrderHandler) GetOrderDetailsByOrderID(c *gin.Context) {
 
 	userID, _ := c.Get("id")
 
-	idString := c.Param("id")
+	idString := c.Query("order_id")
 
 	orderID, err := strconv.Atoi(idString)
 	if err != nil {
@@ -123,7 +123,7 @@ func (o *OrderHandler) CancelOrder(c *gin.Context) {
 }
 
 func (o *OrderHandler) ReturnOrder(c *gin.Context) {
-	userID, _ := c.Get("id")
+	uID, _ := c.Get("id")
 
 	idString := c.Query("order_id")
 
@@ -133,8 +133,9 @@ func (o *OrderHandler) ReturnOrder(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, errRes)
 		return
 	}
+	userID := uID.(int)
 
-	err = o.orderUseCase.ReturnOrder(orderID, userID.(int))
+	err = o.orderUseCase.ReturnOrder(orderID, userID)
 	if err != nil {
 		errRes := response.ClientResponse(http.StatusBadRequest, "failed to return the order", nil, err.Error())
 		c.JSON(http.StatusBadRequest, errRes)

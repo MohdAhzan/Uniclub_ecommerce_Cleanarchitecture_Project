@@ -26,7 +26,7 @@ func UserRoutes(engine *gin.RouterGroup,
 			home.POST("/add_to_cart", cartHandler.AddtoCart)
 		}
 
-		search :=engine.Group("/search")
+		search := engine.Group("/search")
 		{
 			search.GET("", inventoryHandler.SearchProducts)
 		}
@@ -56,8 +56,8 @@ func UserRoutes(engine *gin.RouterGroup,
 			{
 				orders.GET("", orderHandler.GetOrders)
 				orders.GET("/:id", orderHandler.GetOrderDetailsByOrderID)
-					orders.DELETE("", orderHandler.CancelOrder)
-					orders.PUT("/return", orderHandler.ReturnOrder)
+				orders.DELETE("", orderHandler.CancelOrder)
+				orders.PUT("/return", orderHandler.ReturnOrder)
 				orders.GET("/checkout", orderHandler.Checkout)
 				orders.POST("", orderHandler.OrderFromCart)
 			}

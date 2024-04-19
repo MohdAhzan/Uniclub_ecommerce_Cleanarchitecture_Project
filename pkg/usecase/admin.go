@@ -120,10 +120,11 @@ func (ad *adminUseCase) OrderReturnApprove(orderID int) error {
 		return err
 	}
 	msg := fmt.Sprintf("User : %s has not requested to return the product", user.Name)
-	if status != "RETURN_REQUESTED" {
-		return errors.New(msg)
-	} else if status == "RETURNED" {
+	if status == "RETURNED" {
 		return fmt.Errorf("user :%s has already returned the product", user.Name)
+
+	} else if status != "RETURN_REQUESTED" {
+		return fmt.Errorf(msg)
 	}
 
 	err = ad.adminRepository.OrderReturnApprove(orderID)

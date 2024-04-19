@@ -206,7 +206,7 @@ func (h *helper) AddImageToAwsS3(file *multipart.FileHeader) (string, error) {
 		Key:         aws.String(file.Filename),
 		Body:        f,
 		ACL:         types.ObjectCannedACLPublicRead,
-		ContentType: aws.String("image/png"),					
+		ContentType: aws.String("image/png"),
 	})
 
 	if uploadErr != nil {
@@ -237,3 +237,5 @@ func (h *helper) SendMailToPhone(To, Subject, Msg string) error {
 	return nil
 
 }
+
+// func CacheGet()

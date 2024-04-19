@@ -7,21 +7,26 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
-func InitializeClient() error {
+type Redis struct{
+	
+}
+
+
+func InitializeClient() (*redis.Client, error) {
 
 	redisClient := redis.NewClient(&redis.Options{
-		Addr:     "localhost:9443",
+		Addr:     "localhost:6379",
 		Password: "",
 		DB:       0,
 	})
 
 	ctx := context.TODO()
 
-	_, err := redisClient.Ping(ctx).Result()
+	status, err := redisClient.Ping(ctx).Result()
 	if err != nil {
 		fmt.Println("error connecting to redis")
-		return err
+		return nil, err
 	}
-
-	return nil
+	fmt.Print(status, "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb")
+	return redisClient, nil
 }
