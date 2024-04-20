@@ -114,3 +114,63 @@ func (ad *AdminHandler) OrderReturnApprove(c *gin.Context) {
 	c.JSON(http.StatusOK, successRes)
 
 }
+
+func (ad *AdminHandler) GetAllOrderDetails(c *gin.Context) {
+
+	orders, err := ad.adminUseCase.GetAllOrderDetails()
+	if err != nil {
+		errRes := response.ClientResponse(http.StatusBadRequest, "error fetching orders", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errRes)
+		return
+	}
+
+	successRes := response.ClientResponse(http.StatusOK, "successfully retrieved the orders", orders, nil)
+	c.JSON(http.StatusOK, successRes)
+}
+
+func (ad *AdminHandler) EditOrderStatus(c *gin.Context) {
+
+	idStr := c.Query("order_id")
+	status := c.Query("status")
+
+	orderID, err := strconv.Atoi(idStr)
+	if err != nil {
+		errRes := response.ClientResponse(http.StatusBadRequest, "error strconv Atoi", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errRes)
+		return
+	}
+
+	err = ad.adminUseCase.EditOrderStatus(orderID, status)
+	if err != nil {
+		errREs := response.ClientResponse(http.StatusBadRequest, "error editing order status", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errREs)
+		return
+	}
+
+	successRes := response.ClientResponse(http.StatusOK, "successfully edited order status", nil, nil)
+	c.JSON(http.StatusBadRequest, successRes)
+
+}
+
+func (ad *AdminHandler) MakePaymentStatusAsPaid(c *gin.Context) {
+
+	idStr := c.Query("order_id")
+
+	orderID, err := strconv.Atoi(idStr)
+	if err != nil {
+		errRes := response.ClientResponse(http.StatusBadRequest, "error strconv Atoi", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errRes)
+		return
+	}
+
+	err = ad.adminUseCase.MakePaymentStatusAsPaid(orderID)
+	if err != nil {
+		errRes := response.ClientResponse(http.StatusBadRequest, "error updating payment-status", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errRes)
+		return
+	}
+
+	successRes := response.ClientResponse(http.StatusOK, "successfully updated payment-status as PAID", nil, nil)
+	c.JSON(http.StatusBadRequest, successRes)
+
+}

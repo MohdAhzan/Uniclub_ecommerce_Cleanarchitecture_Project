@@ -19,8 +19,6 @@ func AdminRoutes(engine *gin.RouterGroup,
 	// Create an HTTP client
 	// client := &http.Client
 
-	
-
 	{
 		userManagement := engine.Group("/users")
 		{
@@ -46,9 +44,12 @@ func AdminRoutes(engine *gin.RouterGroup,
 			productmanagement.PUT("/:id/edit_details", inventoryHandler.EditInventoryDetails)
 		}
 		ordermanagement := engine.Group("/orders")
-		{	
-		
-			ordermanagement.PUT("", adminHandler.OrderReturnApprove)
+		{
+			ordermanagement.GET("",adminHandler.GetAllOrderDetails)				
+			// ordermanagement.GET("/:id",GetOrderDetailsByID)
+			ordermanagement.PUT("/payment-status", adminHandler.MakePaymentStatusAsPaid)
+			ordermanagement.PUT("/status", adminHandler.EditOrderStatus)
+			ordermanagement.PUT("/return", adminHandler.OrderReturnApprove)
 		}
 
 	}

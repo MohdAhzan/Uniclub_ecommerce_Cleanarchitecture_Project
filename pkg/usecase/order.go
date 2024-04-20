@@ -125,12 +125,11 @@ func (o OrderUseCase) GetOrders(userID int) ([]domain.OrderDetailsWithImages, er
 
 func (o OrderUseCase) GetOrderDetailsByOrderID(orderID, userID int) (domain.OrderDetails, error) {
 
-	
-
 	user, err := o.userRepo.GetUserDetails(userID)
 	if err != nil {
 		return domain.OrderDetails{}, err
 	}
+	
 
 	address, orderData, err := o.orderRepo.GetOrderAddress(orderID)
 	if err != nil {
@@ -190,7 +189,7 @@ func (o OrderUseCase) ReturnOrder(orderID, userID int) error {
 
 	if status == "RETURNED" {
 		return errors.New("cannot return the order, already returned ")
-	} else if status != "DELIVERED" {
+	} else if status != "DELIVERED"{
 		return errors.New(msg)
 	}
 

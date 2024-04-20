@@ -12,4 +12,6 @@ type AdminRepository interface {
 	UpdateBlockUserByID(user domain.Users) error
 	OrderReturnApprove(orderID int) error
 	GetUserIDbyorderID(orderID int) (int, error)
+	MakePaymentStatusAsPaid(orderID int) error
+	GetAllOrderDetailsByStatus() (domain.AdminOrdersResponse, error)
 }

@@ -180,9 +180,12 @@ func (u *userDatabase) GetHashedPassword(id int) (string, error) {
 
 func (u *userDatabase) ChangePassword(id int, newHashedPass string) error {
 
-	err := u.DB.Raw("UPDATE users SET password = $1 where id = $2", newHashedPass, id).Error
-	if err != nil {
-		return err
+	result := u.DB.Exec(`UPDATE users SET password = ? where id = ?`, newHashedPass, id)
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected < 1 {
+		return errors.New("nothing updated")
 	}
 
 	return nil

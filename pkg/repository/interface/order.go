@@ -14,4 +14,6 @@ type OrderRepository interface {
 	CheckOrderStatusByID(orderID int) (string, error)
 	CancelOrder(orderID int) error
 	ReturnOrder(orderID int)error
+	CheckOrderByID(orderID int)error
+	EditOrderStatus(order int ,status string)error
 }

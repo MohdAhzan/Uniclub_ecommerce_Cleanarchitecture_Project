@@ -105,3 +105,117 @@ func (ad *adminRepository) GetUserIDbyorderID(orderID int) (int, error) {
 	}
 	return userID, nil
 }
+
+func (adm *adminRepository) MakePaymentStatusAsPaid(orderID int) error {
+
+	if err := adm.db.Exec(`UPDATE orders SET payment_status = 'PAID',updated_at = ? WHERE id = ?`, time.Now(), orderID).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (ad *adminRepository) GetAllOrderDetailsByStatus() (domain.AdminOrdersResponse, error) {
+
+	var orderData domain.AdminOrdersResponse
+
+	var pending []domain.AdminOrderDetails
+
+	err := ad.db.Raw(`SELECT o.id, o.created_at, o.updated_at,u.name, a.*,o.payment_method, o.price as total , o.order_status, o.payment_status 
+FROM 
+    orders o 
+JOIN 
+    users u ON o.user_id = u.id 
+JOIN 
+    addresses a ON o.address_id = a.id 
+WHERE 
+    o.order_status = 'PENDING'`).Scan(&pending).Error
+	fmt.Println(pending, "pending orders.............................................")
+	if err != nil {
+		return domain.AdminOrdersResponse{}, err
+	}
+
+	var shipped []domain.AdminOrderDetails
+
+	err = ad.db.Raw(`SELECT o.id, o.created_at, o.updated_at,u.name, a.*,o.payment_method, o.price as total, o.order_status, o.payment_status 
+	FROM 
+		orders o 
+	JOIN 
+		users u ON o.user_id = u.id 
+	JOIN 
+		addresses a ON o.address_id = a.id 
+	WHERE 
+		o.order_status = 'SHIPPED' `).Scan(&shipped).Error
+	if err != nil {
+		return domain.AdminOrdersResponse{}, err
+	}
+
+	var delivered []domain.AdminOrderDetails
+
+	err = ad.db.Raw(`SELECT o.id, o.created_at, o.updated_at,u.name, a.*,o.payment_method, o.price as total, o.order_status, o.payment_status 
+	FROM 
+		orders o 
+	JOIN 
+		users u ON o.user_id = u.id 
+	JOIN 
+		addresses a ON o.address_id = a.id 
+	WHERE 
+		o.order_status = 'DELIVERED'`).Scan(&delivered).Error
+	if err != nil {
+		return domain.AdminOrdersResponse{}, err
+	}
+
+	var cancelled []domain.AdminOrderDetails
+
+	err = ad.db.Raw(`SELECT o.id, o.created_at, o.updated_at,u.name, a.*,o.payment_method, o.price, o.order_status, o.payment_status 
+	FROM 
+		orders o 
+	JOIN 
+		users u ON o.user_id = u.id 
+	JOIN 
+		addresses a ON o.address_id = a.id 
+	WHERE 
+		o.order_status = 'CANCELED'`).Scan(&cancelled).Error
+	if err != nil {
+		return domain.AdminOrdersResponse{}, err
+	}
+
+	var return_requested []domain.AdminOrderDetails
+
+	err = ad.db.Raw(`SELECT o.id, o.created_at, o.updated_at,u.name , a.*,o.payment_method, o.price, o.order_status, o.payment_status 
+	FROM 
+		orders o 
+	JOIN 
+		users u ON o.user_id = u.id 
+	JOIN 
+		addresses a ON o.address_id = a.id 
+	WHERE 
+		o.order_status ='RETURN_REQUESTED'`).Scan(&return_requested).Error
+	if err != nil {
+		return domain.AdminOrdersResponse{}, err
+	}
+
+	var returned []domain.AdminOrderDetails
+
+	err = ad.db.Raw(`SELECT o.id, o.created_at, o.updated_at,u.name , a.*,o.payment_method, o.price, o.order_status, o.payment_status 
+	FROM 
+		orders o 
+	JOIN 
+		users u ON o.user_id = u.id 
+	JOIN 
+		addresses a ON o.address_id = a.id 
+	WHERE 
+		o.order_status = 'RETURNED'`).Scan(&returned).Error
+	if err != nil {
+		return domain.AdminOrdersResponse{}, err
+	}
+
+	orderData.PENDING = pending
+	orderData.SHIPPED = shipped
+	orderData.DELIVERED = delivered
+	orderData.CANCELED = cancelled
+	orderData.RETURN_REQUESTED = return_requested
+	orderData.RETURNED = returned
+
+	return orderData, nil
+
+}

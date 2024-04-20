@@ -103,7 +103,44 @@ func (ad *adminUseCase) UnBlockUser(id int) error {
 	return nil
 }
 
+func (ad *adminUseCase) EditOrderStatus(orderID int, status string) error {
+
+	err := ad.orderRepository.CheckOrderByID(orderID)
+	if err != nil {
+		return err
+	}
+
+	err = ad.orderRepository.EditOrderStatus(orderID, status)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
+func (ad *adminUseCase) MakePaymentStatusAsPaid(orderID int) error {
+
+	err := ad.orderRepository.CheckOrderByID(orderID)
+	if err != nil {
+		return err
+	}
+
+	err = ad.adminRepository.MakePaymentStatusAsPaid(orderID)
+	if err != nil {
+
+		return err
+	}
+
+	return nil
+}
+
 func (ad *adminUseCase) OrderReturnApprove(orderID int) error {
+
+	err := ad.orderRepository.CheckOrderByID(orderID)
+	if err != nil {
+		return err
+	}
 
 	status, err := ad.orderRepository.CheckOrderStatusByID(orderID)
 	if err != nil {
@@ -140,4 +177,14 @@ func (ad *adminUseCase) OrderReturnApprove(orderID int) error {
 	}
 	return nil
 
+}
+
+func (ad *adminUseCase) GetAllOrderDetails() (domain.AdminOrdersResponse, error) {
+
+	orders, err := ad.adminRepository.GetAllOrderDetailsByStatus()
+	if err != nil {
+		return domain.AdminOrdersResponse{}, err
+	}
+
+	return orders, nil
 }
