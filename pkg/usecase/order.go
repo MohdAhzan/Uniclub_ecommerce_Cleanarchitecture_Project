@@ -181,7 +181,7 @@ func (o OrderUseCase) ReturnOrder(orderID int) error {
 	if err != nil {
 		return err
 	}
-	msg := fmt.Sprintf("cannot return the order ,already %", status)
+	msg := fmt.Sprintf("cannot return the order ,already %s", status)
 
 	if status=="RETURNED"{
 		return errors.New("cannot return the order, already returned ")
