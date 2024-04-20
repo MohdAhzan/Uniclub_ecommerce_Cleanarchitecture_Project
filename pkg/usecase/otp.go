@@ -38,7 +38,7 @@ func (otp *otpUseCase) SendOTP(phoneNo string) error {
 
 	if err != nil {
 
-		return errors.New("error occurred while generating OTP")
+		return err
 
 	}
 

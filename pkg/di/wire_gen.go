@@ -10,8 +10,10 @@ import (
 	"project/pkg/config"
 	"project/pkg/db"
 	"project/pkg/helper"
+	"project/pkg/redis"
 	"project/pkg/repository"
 	"project/pkg/usecase"
+	// "project/pkg/redis"
 )
 
 func InitializeAPI(cfg config.Config) (*http.ServerHTTP, error) {
@@ -20,10 +22,16 @@ func InitializeAPI(cfg config.Config) (*http.ServerHTTP, error) {
 		return nil, err
 	}
 
+	redisClient, err := redis.InitializeClient()
+	if err != nil {
+		return nil, err
+	}
+
 	helper := helper.NewHelper(cfg)
 
 	adminRepository := repository.NewAdminRepository(gormDB)
-	adminUseCase := usecase.NewAdminUsecase(adminRepository, helper)
+	orderRepository := repository.NewOrderRepository(gormDB)
+	adminUseCase := usecase.NewAdminUsecase(adminRepository, helper, orderRepository)
 	adminHandler := handler.NewAdminHandler(adminUseCase)
 
 	userRepository := repository.NewUserRepository(gormDB)
@@ -38,18 +46,17 @@ func InitializeAPI(cfg config.Config) (*http.ServerHTTP, error) {
 	categoryUseCase := usecase.NewCategoryUseCase(categoryRepository)
 	categoryHandler := handler.NewCategoryHandler(categoryUseCase)
 
-	inventoryRepository := repository.NewInventoryRepository(gormDB)
+	inventoryRepository := repository.NewInventoryRepository(gormDB, redisClient)
 	inventoryUsecase := usecase.NewInventoryUseCase(inventoryRepository, helper)
-	inventoryHandler := handler.NewInventoryHandler(inventoryUsecase)
+	inventoryHandler := handler.NewInventoryHandler(inventoryUsecase,redisClient)
 
 	cartRepository := repository.NewCartRepository(gormDB)
 	cartUseCase := usecase.NewCartUseCase(cartRepository, inventoryRepository)
 	cartHandler := handler.NewCartHandler(cartUseCase)
 
-	orderRepository := repository.NewOrderRepository(gormDB)
-	orderUseCase := usecase.NewOrderUseCase(orderRepository, cartRepository, cartUseCase, userRepository)
+	orderRepository = repository.NewOrderRepository(gormDB)
+	orderUseCase := usecase.NewOrderUseCase(orderRepository, cartRepository, cartUseCase, userRepository, helper)
 	orderHandler := handler.NewOrderHandler(orderUseCase)
-
 	serverHTTP := http.NewServerHTTP(userHandler, adminHandler, otpHandler, categoryHandler, inventoryHandler, cartHandler, orderHandler)
 
 	return serverHTTP, nil

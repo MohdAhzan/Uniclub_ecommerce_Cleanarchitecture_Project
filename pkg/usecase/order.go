@@ -3,6 +3,7 @@ package usecase
 import (
 	"errors"
 	"fmt"
+	helper "project/pkg/helper/interface"
 	services "project/pkg/repository/interface"
 	interfaces "project/pkg/usecase/interface"
 	"project/pkg/utils/domain"
@@ -14,14 +15,16 @@ type OrderUseCase struct {
 	cartRepo    services.CartRepository
 	cartUseCase interfaces.CartUseCase
 	userRepo    services.UserRepository
+	helper      helper.Helper
 }
 
-func NewOrderUseCase(orderRepo services.OrderRepository, cartRepo services.CartRepository, cartUseCase interfaces.CartUseCase, userRepo services.UserRepository) *OrderUseCase {
+func NewOrderUseCase(orderRepo services.OrderRepository, cartRepo services.CartRepository, cartUseCase interfaces.CartUseCase, userRepo services.UserRepository, h helper.Helper) *OrderUseCase {
 	return &OrderUseCase{
 		orderRepo:   orderRepo,
 		cartRepo:    cartRepo,
 		cartUseCase: cartUseCase,
 		userRepo:    userRepo,
+		helper:      h,
 	}
 }
 func (o OrderUseCase) OrderFromCart(order models.Order) error {
@@ -126,6 +129,7 @@ func (o OrderUseCase) GetOrderDetailsByOrderID(orderID, userID int) (domain.Orde
 	if err != nil {
 		return domain.OrderDetails{}, err
 	}
+	
 
 	address, orderData, err := o.orderRepo.GetOrderAddress(orderID)
 	if err != nil {
@@ -174,7 +178,7 @@ func (o OrderUseCase) CancelOrder(orderID int) error {
 	return nil
 }
 
-func (o OrderUseCase) ReturnOrder(orderID int) error {
+func (o OrderUseCase) ReturnOrder(orderID, userID int) error {
 
 	status, err := o.orderRepo.CheckOrderStatusByID(orderID)
 
@@ -183,17 +187,28 @@ func (o OrderUseCase) ReturnOrder(orderID int) error {
 	}
 	msg := fmt.Sprintf("cannot return the order ,already %s", status)
 
-	if status=="RETURNED"{
+	if status == "RETURNED" {
 		return errors.New("cannot return the order, already returned ")
-	}else if status!="DELIVERED"{
+	} else if status != "DELIVERED"{
 		return errors.New(msg)
 	}
 
 	err = o.orderRepo.ReturnOrder(orderID)
 	if err != nil {
 		return err
-		
+
 	}
+	user, err := o.userRepo.GetUserDetails(userID)
+	if err != nil {
+		return err
+	}
+	Sub := "ORDER RETURN REQUEST"
+	mailMsg := fmt.Sprintf("Dear %s your request for returning the product of ID: %d is on process", user.Name, orderID)
+	err = o.helper.SendMailToPhone(user.Email, Sub, mailMsg)
+	if err != nil {
+		return err
+	}
+
 	return nil
 
 }

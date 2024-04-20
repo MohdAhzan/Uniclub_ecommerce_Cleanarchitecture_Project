@@ -284,7 +284,7 @@ func (u *UserHandler) ChangePassword(c *gin.Context) {
 		return
 	}
 
-	successRes := response.ClientResponse(http.StatusBadRequest, "Successfully changed Password", nil, nil)
-	c.JSON(http.StatusBadRequest, successRes)
+	successRes := response.ClientResponse(http.StatusOK, "Successfully changed Password", nil, nil)
+	c.JSON(http.StatusOK, successRes)
 
 }

@@ -116,12 +116,37 @@ func (o *orderRepository) CancelOrder(orderID int) error {
 
 func (o *orderRepository) ReturnOrder(orderID int) error {
 
-	result := o.DB.Exec(`UPDATE orders SET order_status='RETURNED',updated_at = ? WHERE id = ?"`, time.Now(), orderID)
+	result := o.DB.Exec(`UPDATE orders SET order_status='RETURN_REQUESTED',updated_at = ? WHERE id = ?`, time.Now(), orderID)
 	if result.Error != nil {
 		return result.Error
 	}
 	if result.RowsAffected < 1 {
 		return errors.New("no rows updated")
+	}
+	return nil
+}
+
+func (o *orderRepository) CheckOrderByID(orderID int) error {
+
+	var count int
+	err := o.DB.Raw("SELECT count(*) from orders where id = ?", orderID).Scan(&count).Error
+	if err != nil {
+		return err
+	}
+
+	if count < 1 {
+		return errors.New("no orders not availble in this id")
+	}
+
+	return nil
+
+}
+
+func (o *orderRepository) EditOrderStatus(orderID int, status string) error {
+
+	err := o.DB.Exec(`UPDATE orders SET order_status = $1 ,updated_at =$2  WHERE id = $3 `, status, time.Now(), orderID).Error
+	if err != nil {
+		return err
 	}
 	return nil
 }
