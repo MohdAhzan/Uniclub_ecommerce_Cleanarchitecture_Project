@@ -70,7 +70,7 @@ func (u CartUseCase) AddtoCart(pid, userID, quantity int) (models.CartResponse, 
 	}
 
 	if cartQuantity == 0 {
-		err = u.CartRepo.AddtoCartItems(cartID, pid)
+		err = u.CartRepo.AddtoCartItems(cartID, pid, quantity)
 		if err != nil {
 			return models.CartResponse{}, errors.New("failed to AddCartItems")
 		}
@@ -217,3 +217,48 @@ func (u CartUseCase) RemoveCart(userID, pid int) error {
 	return nil
 }
 
+func (u CartUseCase) DecreaseCartQuantity(userID, quantity, pID int) error {
+
+	if quantity < 0 {
+		return errors.New("quantity cant be negative")
+	}
+
+	cartID, err := u.CartRepo.GetCartID(userID)
+
+	if err != nil {
+		return err
+	}
+
+	cartQuantity, err := u.CartRepo.FindCartQuantity(pID, cartID)
+	if err != nil {
+		return err
+	}
+	fmt.Println("quantity", quantity)
+
+	updatedQuantity := cartQuantity - quantity
+	fmt.Println("updatedquantity", updatedQuantity)
+	fmt.Println("cartquantity", cartQuantity)
+	if quantity > cartQuantity {
+
+		err := fmt.Errorf("cant decrease cartquantity by %d cartquantity is only %d", quantity, cartQuantity)
+
+		return err
+	}
+
+	if updatedQuantity == 0 {
+
+		err = u.CartRepo.RemoveCartItems(pID, cartID)
+		if err != nil {
+			errMsg := fmt.Errorf("product of id %d is removed from the cart", pID)
+			return errMsg
+		}
+	}
+
+	err = u.CartRepo.UpdateCartQuantity(cartID, pID, updatedQuantity)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}

@@ -29,6 +29,7 @@ func (ad *AdminHandler) LoginHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, errRes)
 		return
 	}
+	
 	admin, err := ad.adminUseCase.LoginHandler(adminDetails)
 	if err != nil {
 		errRes := response.ClientResponse(http.StatusBadRequest, "cannot authenticate user", nil, err.Error())

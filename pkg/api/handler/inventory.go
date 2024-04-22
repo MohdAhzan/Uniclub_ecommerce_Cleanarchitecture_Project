@@ -36,6 +36,7 @@ func (Inv *InventaryHandler) AddInventory(c *gin.Context) {
 		return
 	}
 
+
 	CategoryID, err := strconv.Atoi(c.Request.FormValue("category_id"))
 
 	if err != nil {
@@ -94,6 +95,8 @@ func (Inv *InventaryHandler) AddInventory(c *gin.Context) {
 
 func (Inv *InventaryHandler) GetProductsForAdmin(c *gin.Context) {
 
+
+
 	productDetails, err := Inv.InventoryUseCase.GetProductsForAdmin()
 
 	if err != nil {
@@ -150,6 +153,8 @@ func (Inv *InventaryHandler) DeleteInventory(c *gin.Context) {
 }
 
 func (inv *InventaryHandler) EditInventoryDetails(c *gin.Context) {
+
+	
 
 	productID := c.Query("id")
 

@@ -33,6 +33,7 @@ func UserRoutes(engine *gin.RouterGroup,
 		cart := engine.Group("/cart")
 		{
 			cart.GET("", cartHandler.GetCart)
+			cart.PUT("",cartHandler.DecreaseCartQuantity)
 			cart.DELETE("/remove", cartHandler.RemoveCart)
 		}
 

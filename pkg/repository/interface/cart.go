@@ -5,7 +5,7 @@ import "project/pkg/utils/models"
 type CartRepository interface {
 	CreateNewCart(UserID int) (int, error)
 	GetCartID(userID int) (int, error)
-	AddtoCartItems(cartId, pid int) error
+	AddtoCartItems(cartId, pid, quantity int) error
 	CheckIfItemIsAlreadyAdded(cartID, pid int) (bool, error)
 	UpdateCartQuantity(cartID, pid, quantity int) error
 	GetProductIDs(cardTD int) ([]int, error)

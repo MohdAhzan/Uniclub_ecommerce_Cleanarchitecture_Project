@@ -71,9 +71,9 @@ func (c *CartRepository) UpdateCartQuantity(cartID, pid, quantity int) error {
 
 }
 
-func (c *CartRepository) AddtoCartItems(cartID, pid int) error {
+func (c *CartRepository) AddtoCartItems(cartID, pid, quantity int) error {
 
-	err := c.db.Exec("insert into cart_items (cart_id,product_id) values ($1,$2)", cartID, pid).Error
+	err := c.db.Exec("insert into cart_items (cart_id,product_id,quantity) values ($1,$2,$3)", cartID, pid, quantity).Error
 	if err != nil {
 		return errors.New("error adding product to cartITems")
 	}

@@ -16,8 +16,6 @@ func AdminRoutes(engine *gin.RouterGroup,
 	engine.POST("/adminlogin", adminHandler.LoginHandler)
 
 	engine.Use(middleware.AdminAuthMiddleware)
-	// Create an HTTP client
-	// client := &http.Client
 
 	{
 		userManagement := engine.Group("/users")
@@ -45,8 +43,7 @@ func AdminRoutes(engine *gin.RouterGroup,
 		}
 		ordermanagement := engine.Group("/orders")
 		{
-			ordermanagement.GET("",adminHandler.GetAllOrderDetails)				
-			// ordermanagement.GET("/:id",GetOrderDetailsByID)
+			ordermanagement.GET("", adminHandler.GetAllOrderDetails)
 			ordermanagement.PUT("/payment-status", adminHandler.MakePaymentStatusAsPaid)
 			ordermanagement.PUT("/status", adminHandler.EditOrderStatus)
 			ordermanagement.PUT("/return", adminHandler.OrderReturnApprove)
