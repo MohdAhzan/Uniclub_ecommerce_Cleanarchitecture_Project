@@ -2,8 +2,10 @@ package helper
 
 import (
 	"context"
+	"crypto/rand"
 	"errors"
 	"fmt"
+	"math/big"
 	"mime/multipart"
 	cfg "project/pkg/config"
 	"project/pkg/utils/models"
@@ -238,4 +240,21 @@ func (h *helper) SendMailToPhone(To, Subject, Msg string) error {
 
 }
 
-// func CacheGet()
+func (h *helper) GenerateReferralCode() (string, error) {
+	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	const length = 12
+
+	// Initialize the result string.
+	result := make([]byte, length)
+
+	// Generate a random index for each character in the result string.
+	for i := range result {
+		idx, err := rand.Int(rand.Reader, big.NewInt(int64(len(charset))))
+		if err != nil {
+			return "", err
+		}
+		result[i] = charset[idx.Int64()]
+	}
+
+	return string(result), nil
+}

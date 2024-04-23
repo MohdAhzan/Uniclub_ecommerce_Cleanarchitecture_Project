@@ -48,9 +48,12 @@ func (u *UserHandler) UserSignUp(c *gin.Context) {
 		return
 	}
 
-	// sending the struct from client to the
+	// fetching entered referall
+	ref := c.Query("referall_code")
 
-	userCreated, err := u.userUseCase.UserSignup(user)
+	// sending the struct and ref from client to UsecAse
+
+	userCreated, err := u.userUseCase.UserSignup(user, ref)
 	if err != nil {
 		errRes := response.ClientResponse(http.StatusBadRequest, "user couldnt signup", nil, err.Error())
 		c.JSON(http.StatusBadRequest, errRes)
@@ -287,4 +290,19 @@ func (u *UserHandler) ChangePassword(c *gin.Context) {
 	successRes := response.ClientResponse(http.StatusOK, "Successfully changed Password", nil, nil)
 	c.JSON(http.StatusOK, successRes)
 
+}
+
+func (u *UserHandler) GetWallet(c *gin.Context) {
+
+	user_id, _ := c.Get("id")
+
+	wallet, err := u.userUseCase.GetWallet(user_id.(int))
+	if err != nil {
+		errRes := response.ClientResponse(http.StatusBadRequest, "error fetching Wallet", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errRes)
+		return
+	}
+
+	successRes := response.ClientResponse(http.StatusOK, "Successfully Fetched Wallet", wallet, nil)
+	c.JSON(http.StatusOK, successRes)
 }

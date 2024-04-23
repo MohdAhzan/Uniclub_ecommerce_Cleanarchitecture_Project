@@ -27,9 +27,9 @@ func (c *userDatabase) CheckUserAvailability(email string) bool {
 	return count > 0
 }
 
-func (u *userDatabase) UserSignup(user models.UserDetails) (models.UserDetailsResponse, error) {
+func (u *userDatabase) UserSignup(user models.UserDetails, referalID string) (models.UserDetailsResponse, error) {
 	var userDetails models.UserDetailsResponse
-	err := u.DB.Raw("insert into users (name,email,password,phone) values (?,?,?,?) RETURNING id,name,email,phone", user.Name, user.Email, user.Password, user.Phone).Scan(&userDetails).Error
+	err := u.DB.Raw("insert into users (name,email,password,phone,referral_id) values (?,?,?,?,?) RETURNING id,name,email,phone,referral_id", user.Name, user.Email, user.Password, user.Phone, referalID).Scan(&userDetails).Error
 	if err != nil {
 		return models.UserDetailsResponse{}, err
 	}
@@ -62,7 +62,7 @@ func (u *userDatabase) GetUserDetails(user_id int) (models.UserDetailsResponse, 
 
 	var userDetails models.UserDetailsResponse
 
-	err := u.DB.Raw("select id,name,email,phone from users where id = ? ", user_id).Scan(&userDetails).Error
+	err := u.DB.Raw("select id,name,email,phone,referral_id from users where id = ? ", user_id).Scan(&userDetails).Error
 	if err != nil {
 		return models.UserDetailsResponse{}, err
 	}
@@ -189,4 +189,63 @@ func (u *userDatabase) ChangePassword(id int, newHashedPass string) error {
 	}
 
 	return nil
+}
+
+func (u *userDatabase) GetUserByReferralCode(refcode string) (int, error) {
+
+	var userID int
+
+	err := u.DB.Raw("SELECT id FROM users WHERE referral_id = ?", refcode).Scan(&userID).Error
+	if err != nil {
+		return 0, err
+	}
+	return userID, nil
+}
+
+func (u *userDatabase) CreateWallet(userID int) error {
+
+	err := u.DB.Exec(`INSERT INTO wallets (user_id) VALUES (?)`, userID).Error
+	if err != nil {
+		return err
+	}
+	fmt.Println("wallet creation working")
+	return nil
+
+}
+
+func (u *userDatabase) AddMoneytoWallet(model models.AddMoneytoWallet) error {
+
+	// var walletAmount float64
+
+	// err := u.DB.Raw("SELECT wallet_amount FROM wallets WHERE user_id = ?", userID).Scan(&walletAmount).Error
+	// if err != nil {
+	// 	return err
+	// }
+	// TotalWalletAmount := walletAmount + ReferredAmount
+	// err = u.DB.Exec(`UPDATE wallets SET wallet_amount = ? where user_id = ?`, TotalWalletAmount, userID).Error
+	// if err != nil {
+	// 	return err
+	// }
+
+	err := u.DB.Exec(`INSERT INTO wallets (user_id,wallet_amount,transaction_type) VALUES (?,?,?)`, model.UserID, model.Amount, model.TranscationType).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (u *userDatabase) GetWallet(userID int) (models.GetWallet, error) {
+
+	var Total float64
+
+	err := u.DB.Raw("select SUM(wallet_amount) from wallets where user_id = ?", userID).Scan(&Total).Error
+	if err != nil {
+		return models.GetWallet{}, err
+	}
+
+	var model models.GetWallet
+
+	model.TotalAmount = Total
+	return model, nil
 }

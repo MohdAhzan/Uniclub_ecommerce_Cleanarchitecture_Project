@@ -49,7 +49,10 @@ func ConnectDatabase(cfg config.Config) (*gorm.DB, error) {
 	if err := db.AutoMigrate(&domain.OrderItems{}); err != nil {
 		return db, err
 	}
-	fmt.Println("cartITEms is created ")
+	if err := db.AutoMigrate(&domain.Wallet{}); err != nil {
+		return db, err
+	}
+	fmt.Println("WALLETTTTTTTT CREEEAAAAAAAAATEEEEEEEEEEEEEEEEEEEEEEEEEEEDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD")
 	CheckAndCreateAdmin(db)
 
 	return db, dbErr

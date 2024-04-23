@@ -49,6 +49,8 @@ func (o OrderUseCase) OrderFromCart(order models.Order) error {
 		return err
 	}
 
+	
+
 	err = o.orderRepo.AddOrderProducts(orderID, cart.CartData)
 	if err != nil {
 		return err

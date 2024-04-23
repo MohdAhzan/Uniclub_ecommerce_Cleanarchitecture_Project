@@ -27,7 +27,7 @@ func NewUserUseCase(repo interfaces.UserRepository, cfg config.Config, h helper_
 
 var ErrorHashingPassword = "Error In Hashing Password"
 
-func (u *userUseCase) UserSignup(user models.UserDetails) (models.TokenUsers, error) {
+func (u *userUseCase) UserSignup(user models.UserDetails, refCode string) (models.TokenUsers, error) {
 
 	fmt.Println("<<<Add Users>>>")
 	//check if user already exists
@@ -49,11 +49,63 @@ func (u *userUseCase) UserSignup(user models.UserDetails) (models.TokenUsers, er
 
 	user.Password = hashedPassword
 
-	// INSERT USER DETAILS TO DATABASE
-
-	userdata, err := u.userRepo.UserSignup(user)
+	//create an referral ID for user
+	referalID, err := u.helper.GenerateReferralCode()
 	if err != nil {
-		return models.TokenUsers{}, errors.New("couldn't add the user")
+		return models.TokenUsers{}, err
+	}
+
+	// INSERT USER DETAILS HIS REFERRAL ID TO DATABASE
+	userdata, err := u.userRepo.UserSignup(user, referalID)
+	if err != nil {
+		return models.TokenUsers{}, errors.New("failed to add the user")
+	}
+
+	//CREATE A WALLET FOR NEW USER
+	err = u.userRepo.CreateWallet(userdata.Id)
+	if err != nil {
+		return models.TokenUsers{}, err
+	}
+
+	//CHECKS IF NEW USER HAS ANY REFERAL CODES
+	if len(refCode) != 0 {
+		//GET REFERRED USER DETAILS FOR REFERAL CASHBACK
+		userID, err := u.userRepo.GetUserByReferralCode(refCode)
+		if err != nil {
+			return models.TokenUsers{}, errors.New("invalid referall code please enter and valid referal code to earn cashback")
+		}
+		//get reffered users detail for checking and crediting amount
+		refferedUser, err := u.userRepo.GetUserDetails(userID)
+		if err != nil {
+			return models.TokenUsers{}, err
+		}
+		fmt.Println("WHAT THE FUCKKKKKKKKKKKKKKKKKKKKKKKKK")
+		exists := u.userRepo.CheckUserAvailability(refferedUser.Email)
+		if exists {
+			// credit 100rs to referred User
+			var model models.AddMoneytoWallet
+			model.UserID = userID
+			model.Amount = 100 //100rs  for referred user
+			model.TranscationType = "REFERAL"
+			fmt.Println("WHAT THE FUCKKKKKKKKKKKKKKKKKKKKKKKKK WORKINGG")
+
+			err = u.userRepo.AddMoneytoWallet(model)
+			if err != nil {
+				return models.TokenUsers{}, err
+			}
+			//and 50 to new signed User
+			model.UserID = userdata.Id
+			model.Amount = 50 //50rs for referred user
+			model.TranscationType = "REFERAL"
+			err = u.userRepo.AddMoneytoWallet(model)
+			if err != nil {
+				return models.TokenUsers{}, err
+			}
+
+		}
+	} else {
+		// noRefMsg:=fmt.Errorf("no refereal")
+		fmt.Println("What the fuck in else case where len")
 	}
 
 	// creating a jwt token for clients
@@ -104,6 +156,7 @@ func (u *userUseCase) UserLoginHandler(user models.UserLogin) (models.TokenUsers
 	userDetails.Name = user_details.Name
 	userDetails.Email = user_details.Email
 	userDetails.Phone = user_details.Phone
+	userDetails.ReferralID = user_details.ReferralID
 
 	tokenString, err := u.helper.GenerateTokenClients(userDetails)
 	if err != nil {
@@ -231,4 +284,20 @@ func (u userUseCase) ChangePassword(id int, changePass models.ChangePassword) er
 		return err
 	}
 	return nil
+}
+
+func (u userUseCase) GetWallet(userID int) (models.GetWallet, error) {
+
+	userdata, err := u.userRepo.GetUserDetails(userID)
+	if err != nil {
+		return models.GetWallet{}, err
+	}
+
+	walletData, err := u.userRepo.GetWallet(userID)
+	if err != nil {
+		return models.GetWallet{}, err
+	}
+	walletData.UserID = userID
+	walletData.Username = userdata.Name
+	return walletData, nil
 }

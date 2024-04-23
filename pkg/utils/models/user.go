@@ -24,19 +24,21 @@ type TokenUsersID struct {
 
 // userdetails shown after logging in
 type UserDetailsResponse struct {
-	Id    int    `json:"id"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
-	Phone string `json:"phone"`
+	Id         int    `json:"id"`
+	Name       string `json:"name"`
+	Email      string `json:"email"`
+	Phone      string `json:"phone"`
+	ReferralID string `json:"referral_id"`
 }
 
 type UserSignInResponse struct {
-	Id       uint   `json:"id"`
-	UserID   uint   `json:"user_id"`
-	Name     string `json:"name"`
-	Email    string `json:"email" validate:"email"`
-	Phone    string `json:"phone"`
-	Password string `json:"password"`
+	Id         uint   `json:"id"`
+	UserID     uint   `json:"user_id"`
+	Name       string `json:"name"`
+	Email      string `json:"email" validate:"email"`
+	Phone      string `json:"phone"`
+	Password   string `json:"password"`
+	ReferralID string `json:"referal_id"`
 }
 
 type UserDetailsAtAdmin struct {
@@ -95,4 +97,16 @@ type CheckOut struct {
 	Addresses  Address
 	Products   []GetCart
 	TotalPrice float64
+}
+
+type AddMoneytoWallet struct {
+	UserID          int
+	Amount          float64
+	TranscationType string
+}
+
+type GetWallet struct {
+	UserID    int
+	Username    string
+	TotalAmount float64
 }

@@ -33,7 +33,7 @@ func UserRoutes(engine *gin.RouterGroup,
 		cart := engine.Group("/cart")
 		{
 			cart.GET("", cartHandler.GetCart)
-			cart.PUT("",cartHandler.DecreaseCartQuantity)
+			cart.PUT("", cartHandler.DecreaseCartQuantity)
 			cart.DELETE("/remove", cartHandler.RemoveCart)
 		}
 
@@ -45,6 +45,11 @@ func UserRoutes(engine *gin.RouterGroup,
 			profile.POST("/address", userHandler.AddAddressess)
 			profile.DELETE("/address", userHandler.DeleteAddress)
 
+			wallet := engine.Group("/wallet")
+			{
+				wallet.GET("", userHandler.GetWallet)
+			}
+
 			edit := engine.Group("/edit")
 			{
 				edit.PUT("/account", userHandler.EditUserDetails)
@@ -52,17 +57,16 @@ func UserRoutes(engine *gin.RouterGroup,
 
 				edit.PUT("/password", userHandler.ChangePassword)
 			}
-
-			orders := engine.Group("/orders")
-			{
-				orders.GET("", orderHandler.GetOrders)
-				orders.GET("/:id", orderHandler.GetOrderDetailsByOrderID)
-				orders.DELETE("", orderHandler.CancelOrder)
-				orders.PUT("/return", orderHandler.ReturnOrder)
-				orders.GET("/checkout", orderHandler.Checkout)
-				orders.POST("", orderHandler.OrderFromCart)
-			}
-
 		}
+		orders := engine.Group("/orders")
+		{
+			orders.GET("", orderHandler.GetOrders)
+			orders.GET("/:id", orderHandler.GetOrderDetailsByOrderID)
+			orders.DELETE("", orderHandler.CancelOrder)
+			orders.PUT("/return", orderHandler.ReturnOrder)
+			orders.GET("/checkout", orderHandler.Checkout)
+			orders.POST("", orderHandler.OrderFromCart)
+		}
+
 	}
 }

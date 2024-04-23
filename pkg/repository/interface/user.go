@@ -6,7 +6,7 @@ import (
 )
 
 type UserRepository interface {
-	UserSignup(user models.UserDetails) (models.UserDetailsResponse, error)
+	UserSignup(user models.UserDetails, referallID string) (models.UserDetailsResponse, error)
 	CheckUserAvailability(email string) bool
 	FindUserByEmail(user models.UserLogin) (models.UserSignInResponse, error)
 	UserBlockStatus(email string) (bool, error)
@@ -18,5 +18,9 @@ type UserRepository interface {
 	GetHashedPassword(id int) (string, error)
 	EditUserDetails(id int, details models.EditUserDetails) error
 	ChangePassword(id int, newHashedPass string) error
-	DeleteAddress(addressID , userID int)error
+	DeleteAddress(addressID, userID int) error
+	GetUserByReferralCode(refcode string) (int, error)
+	CreateWallet(userID int) error
+	AddMoneytoWallet(model models.AddMoneytoWallet) error
+	GetWallet(userID int) (models.GetWallet, error)
 }

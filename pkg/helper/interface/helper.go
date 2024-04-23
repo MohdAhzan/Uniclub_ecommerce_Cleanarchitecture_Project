@@ -19,5 +19,5 @@ type Helper interface {
 
 	SendMailToPhone(To, Subject, Msg string) error
 
-	// CacheManage(key string,)
+	GenerateReferralCode() (string, error)
 }
