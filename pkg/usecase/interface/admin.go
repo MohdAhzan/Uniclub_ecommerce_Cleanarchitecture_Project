@@ -14,4 +14,7 @@ type AdminUseCase interface {
 	EditOrderStatus(orderID int, status string) error
 	MakePaymentStatusAsPaid(orderID int) error
 	GetAllOrderDetails() (domain.AdminOrdersResponse, error)
+	NewPaymentMethod(pMethod string) error
+	GetAllPaymentMethods() ([]models.GetPaymentMethods, error)
+	DeletePaymentMethod(paymentID int) error
 }

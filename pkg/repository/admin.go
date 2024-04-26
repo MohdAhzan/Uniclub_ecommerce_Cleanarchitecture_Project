@@ -219,3 +219,37 @@ WHERE
 	return orderData, nil
 
 }
+
+func (ad *adminRepository) AddNewPaymentMethod(pMethod string) error {
+
+	err := ad.db.Exec("INSERT INTO payment_methods (payment_name) VALUES(?)", pMethod).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (ad *adminRepository) GetAllPaymentMethods() ([]models.GetPaymentMethods, error) {
+
+	var data []models.GetPaymentMethods
+
+	err := ad.db.Raw("select id,payment_name from payment_methods").Scan(&data).Error
+	if err != nil {
+		return []models.GetPaymentMethods{}, err
+	}
+
+	return data, nil
+}
+
+func (ad *adminRepository) DeletePaymentMethod(paymentID int) error {
+
+	result := ad.db.Exec(`DELETE FROM payment_methods where id = ?`, paymentID)
+
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected < 1 {
+		return errors.New("no payment Method in this id")
+	}
+	return nil
+}

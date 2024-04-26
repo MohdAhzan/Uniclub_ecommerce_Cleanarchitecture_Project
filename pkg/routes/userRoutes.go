@@ -10,12 +10,19 @@ import (
 func UserRoutes(engine *gin.RouterGroup,
 	userHandler *handler.UserHandler,
 	otpHandler *handler.OtpHandler, inventoryHandler *handler.InventaryHandler,
-	cartHandler *handler.CartHandler, orderHandler *handler.OrderHandler) {
+	cartHandler *handler.CartHandler, orderHandler *handler.OrderHandler,
+	paymentHandler *handler.PaymentHandler) {
 
 	engine.POST("/signup", userHandler.UserSignUp)
 	engine.POST("/login", userHandler.UserLoginHandler)
 	engine.POST("/otplogin", otpHandler.SendOTPHandler)
 	engine.POST("/verifyotp", otpHandler.VerifyOTPHandler)
+
+	payment := engine.Group("/payment")
+	{
+		payment.GET("/razorpay", paymentHandler.MakePaymentFromRazorPay)
+		payment.GET("/update-status", paymentHandler.VerifyPaymentFromRazorPay)
+	}
 
 	engine.Use(middleware.UserAuthMiddleware)
 	{
@@ -64,8 +71,12 @@ func UserRoutes(engine *gin.RouterGroup,
 			orders.GET("/:id", orderHandler.GetOrderDetailsByOrderID)
 			orders.DELETE("", orderHandler.CancelOrder)
 			orders.PUT("/return", orderHandler.ReturnOrder)
-			orders.GET("/checkout", orderHandler.Checkout)
-			orders.POST("", orderHandler.OrderFromCart)
+		}
+
+		checkout := engine.Group("/checkout")
+		{
+			checkout.GET("/checkout", orderHandler.Checkout)
+			checkout.POST("/orders", orderHandler.OrderFromCart)
 		}
 
 	}

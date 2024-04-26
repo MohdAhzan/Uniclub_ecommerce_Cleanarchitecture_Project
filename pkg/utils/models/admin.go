@@ -10,3 +10,8 @@ type AdminDetailsResponse struct {
 	Name  string `json:"name"`
 	Email string `json:"email"`
 }
+
+type GetPaymentMethods struct {
+	ID          int    `json:"payment_id"`
+	PaymentName string `json:"payment_name"`
+}

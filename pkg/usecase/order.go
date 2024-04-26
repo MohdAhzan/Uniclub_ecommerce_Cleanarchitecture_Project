@@ -44,12 +44,10 @@ func (o OrderUseCase) OrderFromCart(order models.Order) error {
 		return errors.New("no items in Cart")
 	}
 
-	orderID, err := o.orderRepo.OrderItems(order.UserID, order.AddressID, TotalCartPrice)
+	orderID, err := o.orderRepo.OrderItems(order.UserID, order.AddressID, order.PaymentID, TotalCartPrice)
 	if err != nil {
 		return err
 	}
-
-	
 
 	err = o.orderRepo.AddOrderProducts(orderID, cart.CartData)
 	if err != nil {
@@ -91,6 +89,7 @@ func (o OrderUseCase) Checkout(userID int) (models.CheckOut, error) {
 	for _, data := range cart.CartData {
 		TotalCartPrice += data.TotalPrice
 	}
+
 	// fmt.Println(cart_id, "\n", address, "\n", cart.CartData, "\n", TotalCartPrice)
 	orderDetails.CartID = cart_id
 	orderDetails.Addresses = address
@@ -115,10 +114,14 @@ func (o OrderUseCase) GetOrders(userID int) ([]domain.OrderDetailsWithImages, er
 		if err != nil {
 			return []domain.OrderDetailsWithImages{}, err
 		}
+		paymentMethod, err := o.orderRepo.GetPaymentMethodsByID(int(data.PaymentMethodID))
+		if err != nil {
+			return []domain.OrderDetailsWithImages{}, err
+		}
 
 		or.OrderDetails = data
 		or.Images = images
-		or.PaymentMethod = "Cash on Delivery"
+		or.PaymentMethod = paymentMethod
 		result = append(result, or)
 	}
 
@@ -149,8 +152,14 @@ func (o OrderUseCase) GetOrderDetailsByOrderID(orderID, userID int) (domain.Orde
 	orderDetails.Username = user.Name
 	orderDetails.Address = address
 	orderDetails.OrderStatus = orderData.Order_status
-	orderDetails.PaymentMethod = orderData.Payment_method
-	orderDetails.Total = orderData.Price
+
+	paymentMethod, err := o.orderRepo.GetPaymentMethodsByID(orderData.Payment_method_id)
+	if err != nil {
+		return domain.OrderDetails{}, err
+	}
+
+	orderDetails.PaymentMethod = paymentMethod
+	orderDetails.Total = orderData.Final_Price
 	orderDetails.PaymentStatus = orderData.PaymentStatus
 
 	fmt.Println(orderDetails)

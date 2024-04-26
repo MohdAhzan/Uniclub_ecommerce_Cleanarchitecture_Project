@@ -14,4 +14,7 @@ type AdminRepository interface {
 	GetUserIDbyorderID(orderID int) (int, error)
 	MakePaymentStatusAsPaid(orderID int) error
 	GetAllOrderDetailsByStatus() (domain.AdminOrdersResponse, error)
+	AddNewPaymentMethod(pMethod string) error
+	GetAllPaymentMethods() ([]models.GetPaymentMethods, error)
+	DeletePaymentMethod(paymentID int) error
 }

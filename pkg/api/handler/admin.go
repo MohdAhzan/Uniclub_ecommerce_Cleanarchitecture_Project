@@ -29,7 +29,7 @@ func (ad *AdminHandler) LoginHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, errRes)
 		return
 	}
-	
+
 	admin, err := ad.adminUseCase.LoginHandler(adminDetails)
 	if err != nil {
 		errRes := response.ClientResponse(http.StatusBadRequest, "cannot authenticate user", nil, err.Error())
@@ -39,7 +39,7 @@ func (ad *AdminHandler) LoginHandler(c *gin.Context) {
 	c.Set("Access", admin.AccessToken)
 	// c.Set("Refresh", admin.RefreshToken)
 
-	successRes := response.ClientResponse(http.StatusBadRequest, "Admin authenticated succesfully", admin, nil)
+	successRes := response.ClientResponse(http.StatusOK, "Admin authenticated succesfully", admin, nil)
 	c.JSON(http.StatusOK, successRes)
 }
 
@@ -149,7 +149,7 @@ func (ad *AdminHandler) EditOrderStatus(c *gin.Context) {
 	}
 
 	successRes := response.ClientResponse(http.StatusOK, "successfully edited order status", nil, nil)
-	c.JSON(http.StatusBadRequest, successRes)
+	c.JSON(http.StatusOK, successRes)
 
 }
 
@@ -172,6 +172,56 @@ func (ad *AdminHandler) MakePaymentStatusAsPaid(c *gin.Context) {
 	}
 
 	successRes := response.ClientResponse(http.StatusOK, "successfully updated payment-status as PAID", nil, nil)
-	c.JSON(http.StatusBadRequest, successRes)
+	c.JSON(http.StatusOK, successRes)
+
+}
+
+func (ad *AdminHandler) NewPaymentHandler(c *gin.Context) {
+
+	pMethod := c.Query("payment_method")
+
+	err := ad.adminUseCase.NewPaymentMethod(pMethod)
+	if err != nil {
+		errRes := response.ClientResponse(http.StatusBadRequest, "error adding new payment method", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errRes)
+		return
+	}
+	successRes := response.ClientResponse(http.StatusBadRequest, "succesfully added new payment", nil, nil)
+	c.JSON(http.StatusOK, successRes)
+}
+
+func (ad *AdminHandler) GetPaymentMethods(c *gin.Context) {
+
+	data, err := ad.adminUseCase.GetAllPaymentMethods()
+	if err != nil {
+		errRes := response.ClientResponse(http.StatusBadRequest, "error fetching the payment methods", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errRes)
+		return
+	}
+
+	successRes := response.ClientResponse(http.StatusOK, "succesfully fetched all payment methods ", data, nil)
+	c.JSON(http.StatusOK, successRes)
+}
+
+func (ad *AdminHandler) DeletePaymentMethod(c *gin.Context) {
+
+	idStr := c.Query("payment_id")
+
+	paymentID, err := strconv.Atoi(idStr)
+	if err != nil {
+		errRes := response.ClientResponse(http.StatusBadRequest, "error in string conversion", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errRes)
+		return
+	}
+
+	err = ad.adminUseCase.DeletePaymentMethod(paymentID)
+	if err != nil {
+		errRes := response.ClientResponse(http.StatusBadRequest, "error deleting paymentmethod", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errRes)
+		return
+	}
+	
+	successRes := response.ClientResponse(http.StatusOK, "succesfully deleted this payment method ", nil, nil)
+	c.JSON(http.StatusOK, successRes)
 
 }

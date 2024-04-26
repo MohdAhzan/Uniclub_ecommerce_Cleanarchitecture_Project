@@ -19,12 +19,12 @@ func NewOrderRepository(db *gorm.DB) *orderRepository {
 	}
 }
 
-func (o *orderRepository) OrderItems(userID, addressID int, TotalCartPrice float64) (int, error) {
+func (o *orderRepository) OrderItems(userID, addressID, payment_id int, TotalCartPrice float64) (int, error) {
 
 	var orderID int
-	err := o.DB.Raw(`INSERT INTO orders (user_id,address_id,price)
-    VALUES (?, ?, ?)
-    RETURNING id`, userID, addressID, TotalCartPrice).Scan(&orderID).Error
+	err := o.DB.Raw(`INSERT INTO orders (user_id,address_id,payment_method_id,final_price)
+    VALUES (?, ?,?, ?)
+    RETURNING id`, userID, addressID, payment_id, TotalCartPrice).Scan(&orderID).Error
 
 	if err != nil {
 		return 0, err
@@ -82,7 +82,7 @@ func (o *orderRepository) GetOrderAddress(orderID int) (domain.Address, models.O
 
 	var orderData models.OrderData
 
-	err = o.DB.Raw("select payment_method,order_status, price,payment_status from orders where id = ?", orderID).Scan(&orderData).Error
+	err = o.DB.Raw("select payment_method_id,order_status, final_price,payment_status from orders where id = ?", orderID).Scan(&orderData).Error
 	if err != nil {
 		return domain.Address{}, models.OrderData{}, err
 	}
@@ -149,4 +149,13 @@ func (o *orderRepository) EditOrderStatus(orderID int, status string) error {
 		return err
 	}
 	return nil
+}
+
+func (o *orderRepository) GetPaymentMethodsByID(PaymentMethodID int) (string, error) {
+	var paymentMethod string
+	err := o.DB.Raw("select payment_name from payment_methods where id = ?", PaymentMethodID).Scan(&paymentMethod).Error
+	if err != nil {
+		return "", err
+	}
+	return paymentMethod, nil
 }

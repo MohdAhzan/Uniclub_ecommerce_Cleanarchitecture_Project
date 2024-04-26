@@ -34,7 +34,6 @@ func (ad *adminUseCase) LoginHandler(adminDetails models.AdminLogin) (domain.Tok
 		return domain.TokenAdmin{}, err
 	}
 
-	
 	err = bcrypt.CompareHashAndPassword([]byte(adminCompareDetails.Password), []byte(adminDetails.Password))
 	if err != nil {
 		return domain.TokenAdmin{}, err
@@ -188,4 +187,34 @@ func (ad *adminUseCase) GetAllOrderDetails() (domain.AdminOrdersResponse, error)
 	}
 
 	return orders, nil
+}
+
+func (ad *adminUseCase) NewPaymentMethod(pMethod string) error {
+
+	err := ad.adminRepository.AddNewPaymentMethod(pMethod)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (ad *adminUseCase) GetAllPaymentMethods() ([]models.GetPaymentMethods, error) {
+
+	data, err := ad.adminRepository.GetAllPaymentMethods()
+	if err != nil {
+		return []models.GetPaymentMethods{}, err
+	}
+
+	return data, nil
+}
+
+func (ad *adminUseCase) DeletePaymentMethod(paymentID int) error {
+
+	err := ad.adminRepository.DeletePaymentMethod(paymentID)
+	if err != nil {
+		return err
+	}
+	return nil
+
 }

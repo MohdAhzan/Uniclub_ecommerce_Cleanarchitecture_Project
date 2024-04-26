@@ -7,18 +7,20 @@ import (
 )
 
 type Order struct {
-	ID            uint           `gorm:"primarykey"`
-	CreatedAt     time.Time      `json:"created_at" gorm:"default:CURRENT_TIMESTAMP"`
-	UpdatedAt     time.Time      `json:"updated_at" gorm:"default:CURRENT_TIMESTAMP"`
-	DeletedAt     gorm.DeletedAt `gorm:"index"`
-	UserID        uint           `json:"user_id" gorm:"not null"`
-	Users         Users          `json:"-" gorm:"foreignkey:UserID"`
-	AddressID     uint           `json:"address_id" gorm:"not null"`
-	Address       Address        `json:"-" gorm:"foreignkey:AddressID"`
-	PaymentMethod string         `json:"payment_method" gorm:"default:'Cash on Delivery'"`
-	Price         float64        `json:"price"`
-	OrderStatus   string         `json:"order_status" gorm:"order_status:5;default:'PENDING';check:order_status IN ('PENDING', 'SHIPPED','DELIVERED','CANCELED','RETURN_REQUESTED','RETURNED')"`
-	PaymentStatus string         `json:"payment_status" gorm:"payment_status:2;default:'NOT PAID';check:payment_status IN ('PAID', 'NOT PAID')"`
+	ID              uint           `gorm:"primarykey"`
+	CreatedAt       time.Time      `json:"created_at" gorm:"default:CURRENT_TIMESTAMP"`
+	UpdatedAt       time.Time      `json:"updated_at" gorm:"default:CURRENT_TIMESTAMP"`
+	DeletedAt       gorm.DeletedAt `gorm:"index"`
+	UserID          uint           `json:"user_id" gorm:"not null"`
+	Users           Users          `json:"-" gorm:"foreignkey:UserID"`
+	AddressID       uint           `json:"address_id" gorm:"not null"`
+	Address         Address        `json:"-" gorm:"foreignkey:AddressID"`
+	PaymentMethodID uint           `json:"paymentmethod_id"`
+	PaymentMethod   PaymentMethod  `json:"-" gorm:"foreignkey:PaymentMethodID"`
+	// CouponUsed      string         `json:"coupon_used" gorm:"default:null"`
+	FinalPrice    float64 `json:"price"`
+	OrderStatus   string  `json:"order_status" gorm:"order_status:5;default:'PENDING';check:order_status IN ('PENDING', 'SHIPPED','DELIVERED','CANCELED','RETURN_REQUESTED','RETURNED')"`
+	PaymentStatus string  `json:"payment_status" gorm:"payment_status:2;default:'NOT PAID';check:payment_status IN ('PAID', 'NOT PAID')"`
 }
 
 type OrderItems struct {
@@ -74,4 +76,10 @@ type AdminOrderDetails struct {
 	Total         float64   `json:"total"`
 	OrderStatus   string    `json:"order_status"`
 	PaymentStatus string    `json:"payment_status"`
+}
+
+type PaymentMethod struct {
+	ID          uint   `gorm:"primarykey"`
+	PaymentName string `json:"payment_name"`
+	IsDeleted   bool   `json:"is_deleted" gorm:"default:false"`
 }
