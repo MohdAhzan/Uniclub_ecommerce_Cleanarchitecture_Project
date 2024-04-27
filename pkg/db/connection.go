@@ -53,6 +53,10 @@ func ConnectDatabase(cfg config.Config) (*gorm.DB, error) {
 		return db, err
 	}
 
+	if err := db.AutoMigrate(&domain.Wishlist{}); err != nil {
+		return db, err
+	}
+
 	if err := db.AutoMigrate(&domain.PaymentMethod{}); err != nil {
 		return db, err
 	}

@@ -11,7 +11,7 @@ func UserRoutes(engine *gin.RouterGroup,
 	userHandler *handler.UserHandler,
 	otpHandler *handler.OtpHandler, inventoryHandler *handler.InventaryHandler,
 	cartHandler *handler.CartHandler, orderHandler *handler.OrderHandler,
-	paymentHandler *handler.PaymentHandler) {
+	paymentHandler *handler.PaymentHandler, wishlistHandler *handler.WishlistHandler) {
 
 	engine.POST("/signup", userHandler.UserSignUp)
 	engine.POST("/login", userHandler.UserLoginHandler)
@@ -36,6 +36,13 @@ func UserRoutes(engine *gin.RouterGroup,
 		search := engine.Group("/search")
 		{
 			search.GET("", inventoryHandler.SearchProducts)
+		}
+
+		wishlist := engine.Group("/wishlist")
+		{
+			wishlist.POST("", wishlistHandler.AddToWishlist)
+			wishlist.GET("", wishlistHandler.GetWishlist)
+			wishlist.DELETE("", wishlistHandler.RemoveFromWishlist)
 		}
 		cart := engine.Group("/cart")
 		{
