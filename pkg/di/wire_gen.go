@@ -47,6 +47,10 @@ func InitializeAPI(cfg config.Config) (*http.ServerHTTP, error) {
 	categoryUseCase := usecase.NewCategoryUseCase(categoryRepository)
 	categoryHandler := handler.NewCategoryHandler(categoryUseCase)
 
+	couponRepository := repository.NewCouponRepository(gormDB)
+	couponUsecase := usecase.NewCouponUseCase(couponRepository)
+	couponHandler := handler.NewCouponHandler(couponUsecase)
+
 	inventoryRepository := repository.NewInventoryRepository(gormDB, redisClient)
 	offerRepository := repository.NewOfferRepository(gormDB)
 	inventoryUsecase := usecase.NewInventoryUseCase(inventoryRepository, helper, offerRepository)
@@ -73,7 +77,7 @@ func InitializeAPI(cfg config.Config) (*http.ServerHTTP, error) {
 	offerHandler := handler.NewOfferHandler(offerUseCase)
 
 	serverHTTP := http.NewServerHTTP(userHandler, adminHandler, otpHandler,
-		categoryHandler, inventoryHandler, cartHandler, orderHandler, paymentHandler, wishlistHandler, offerHandler)
+		categoryHandler, inventoryHandler, cartHandler, orderHandler, paymentHandler, wishlistHandler, offerHandler, couponHandler)
 
 	return serverHTTP, nil
 

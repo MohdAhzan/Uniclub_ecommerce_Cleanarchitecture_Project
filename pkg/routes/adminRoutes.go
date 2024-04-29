@@ -10,7 +10,7 @@ import (
 func AdminRoutes(engine *gin.RouterGroup,
 	adminHandler *handler.AdminHandler,
 	categoryHandler *handler.CategoryHandler,
-	inventoryHandler *handler.InventaryHandler, OfferHandler *handler.OfferHandler) {
+	inventoryHandler *handler.InventaryHandler, OfferHandler *handler.OfferHandler, couponHandler *handler.CouponHandler) {
 
 	engine.POST("/adminlogin", adminHandler.LoginHandler)
 
@@ -41,6 +41,12 @@ func AdminRoutes(engine *gin.RouterGroup,
 			productmanagement.DELETE("", inventoryHandler.DeleteInventory)
 			productmanagement.PUT("/:id/edit_details", inventoryHandler.EditInventoryDetails)
 		}
+
+		couponManagement := engine.Group("/coupons")
+		{
+			couponManagement.POST("", couponHandler.CreateNewCoupon)
+		}
+
 		offerManagment := engine.Group("/offers")
 		{
 			offerManagment.POST("/category", OfferHandler.AddCategoryOffer)
