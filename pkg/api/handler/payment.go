@@ -98,9 +98,8 @@ func (p *PaymentHandler) PaymentFromWallet(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, errorRes)
 		return
 	}
-	var iS float64
-	iS = 0
-	if body.FinalPrice == iS {
+	iS := 0
+	if body.FinalPrice == float64(iS) {
 		successRes := response.ClientResponse(http.StatusOK, "Successfully paid using wallet", nil, nil)
 		c.JSON(http.StatusOK, successRes)
 		return

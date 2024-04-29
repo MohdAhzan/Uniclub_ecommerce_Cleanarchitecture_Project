@@ -85,7 +85,7 @@ func (o OrderUseCase) OrderFromCart(order models.Order, couponID int) error {
 
 }
 
-func (o OrderUseCase) Checkout(userID int) (models.CheckOut, error) {
+func (o OrderUseCase) Checkout(userID, couponID int) (models.CheckOut, error) {
 
 	var orderDetails models.CheckOut
 
@@ -93,7 +93,6 @@ func (o OrderUseCase) Checkout(userID int) (models.CheckOut, error) {
 	if err != nil {
 		return models.CheckOut{}, err
 	}
-
 	// o.orderRepo.GetOrderedProducts()
 
 	cart, err := o.cartUseCase.GetCart(userID)
@@ -112,11 +111,34 @@ func (o OrderUseCase) Checkout(userID int) (models.CheckOut, error) {
 		TotalCartPrice += data.TotalPrice
 	}
 
+	//final price after applying coupon if any
+	var Final_Price float64
+	Final_Price = TotalCartPrice
+	used, err := o.couponRepo.CheckIfUserUsedCoupon(userID, couponID)
+	if err != nil {
+		return models.CheckOut{}, err
+	}
+	if used {
+		return models.CheckOut{}, errors.New("this coupon is alreay used")
+	}
+
+	if !used {
+
+		coupon, err := o.couponRepo.FindCouponDetails(couponID)
+		if err != nil {
+			return models.CheckOut{}, err
+		}
+
+		totalDiscount := (Final_Price * float64(coupon.DiscountRate)) / 100
+		Final_Price = Final_Price - totalDiscount
+	}
+
 	// fmt.Println(cart_id, "\n", address, "\n", cart.CartData, "\n", TotalCartPrice)
 	orderDetails.CartID = cart_id
 	orderDetails.Addresses = address
 	orderDetails.Products = cart.CartData
 	orderDetails.TotalPrice = TotalCartPrice
+	orderDetails.Final_Price = Final_Price
 
 	// fmt.Println(orderDetails)
 	return orderDetails, nil

@@ -97,6 +97,7 @@ type CheckOut struct {
 	Addresses  Address
 	Products   []GetCart
 	TotalPrice float64
+	Final_Price float64
 }
 
 type AddMoneytoWallet struct {

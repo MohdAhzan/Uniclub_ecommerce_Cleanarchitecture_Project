@@ -23,15 +23,15 @@ func NewOrderHandler(orderUseCase interfaces.OrderUseCase) *OrderHandler {
 
 func (u *OrderHandler) OrderFromCart(c *gin.Context) {
 
-	couponIDstr:=c.Query("coupon_id")
+	couponIDstr := c.Query("coupon_id")
 
-	couponID,err:=strconv.Atoi(couponIDstr)
+	couponID, err := strconv.Atoi(couponIDstr)
 	if err != nil {
 		errMsg := response.ClientResponse(http.StatusBadRequest, "error string conversion of CouponID from string ", nil, err.Error())
 		c.JSON(http.StatusBadRequest, errMsg)
 		return
 	}
-	
+
 	var order models.Order
 
 	err = c.BindJSON(&order)
@@ -40,7 +40,7 @@ func (u *OrderHandler) OrderFromCart(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, errMsg)
 		return
 	}
-	if err = u.orderUseCase.OrderFromCart(order,couponID); err != nil {
+	if err = u.orderUseCase.OrderFromCart(order, couponID); err != nil {
 		errMsg := response.ClientResponse(400, "error placing order", nil, err.Error())
 		c.JSON(400, errMsg)
 		return
@@ -55,7 +55,15 @@ func (o *OrderHandler) Checkout(c *gin.Context) {
 
 	userID, _ := c.Get("id")
 
-	orderDetails, err := o.orderUseCase.Checkout(userID.(int))
+	coupIDstr := c.Query("coupon_id")
+	couponID, err := strconv.Atoi(coupIDstr)
+	if err != nil {
+		errRes := response.ClientResponse(http.StatusBadRequest, "error converting coupon_id to Integer", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errRes)
+		return
+	}
+
+	orderDetails, err := o.orderUseCase.Checkout(userID.(int), couponID)
 	if err != nil {
 		errRes := response.ClientResponse(http.StatusBadRequest, "error checkout", nil, err.Error())
 		c.JSON(http.StatusBadRequest, errRes)

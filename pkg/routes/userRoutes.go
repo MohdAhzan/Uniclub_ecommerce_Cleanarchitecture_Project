@@ -83,7 +83,7 @@ func UserRoutes(engine *gin.RouterGroup,
 
 		checkout := engine.Group("/checkout")
 		{
-			checkout.GET("/checkout", orderHandler.Checkout)
+			checkout.GET("", orderHandler.Checkout)
 			checkout.POST("/orders", orderHandler.OrderFromCart)
 		}
 
