@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"errors"
 	interfaces "project/pkg/repository/interface"
 	"project/pkg/utils/models"
 )
@@ -16,5 +17,19 @@ func NewCouponUseCase(coup interfaces.CouponRepository) *couponUseCase {
 }
 
 func (c *couponUseCase) CreateNewCoupon(coupon models.Coupons) error {
+
+	exist, err := c.couponRepo.CheckIfCouponExist(coupon.CouponCode)
+	if err != nil {
+		return err
+	}
+	if exist {
+		return errors.New("coupon already exist in this name")
+	}
+
+	err = c.couponRepo.CreateNewCoupon(coupon)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

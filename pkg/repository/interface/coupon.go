@@ -1,5 +1,8 @@
 package interfaces
 
+import "project/pkg/utils/models"
+
 type CouponRepository interface {
-	CreateNewCoupon() error
+	CreateNewCoupon(coupon models.Coupons) error
+	CheckIfCouponExist(couponCode string) (bool, error)
 }
