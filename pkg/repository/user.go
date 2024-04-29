@@ -215,18 +215,6 @@ func (u *userDatabase) CreateWallet(userID int) error {
 
 func (u *userDatabase) AddMoneytoWallet(model models.AddMoneytoWallet) error {
 
-	// var walletAmount float64
-
-	// err := u.DB.Raw("SELECT wallet_amount FROM wallets WHERE user_id = ?", userID).Scan(&walletAmount).Error
-	// if err != nil {
-	// 	return err
-	// }
-	// TotalWalletAmount := walletAmount + ReferredAmount
-	// err = u.DB.Exec(`UPDATE wallets SET wallet_amount = ? where user_id = ?`, TotalWalletAmount, userID).Error
-	// if err != nil {
-	// 	return err
-	// }
-
 	err := u.DB.Exec(`INSERT INTO wallets (user_id,wallet_amount,transaction_type) VALUES (?,?,?)`, model.UserID, model.Amount, model.TranscationType).Error
 	if err != nil {
 		return err

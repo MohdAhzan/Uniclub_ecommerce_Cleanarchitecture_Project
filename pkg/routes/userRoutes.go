@@ -22,6 +22,7 @@ func UserRoutes(engine *gin.RouterGroup,
 	{
 		payment.GET("/razorpay", paymentHandler.MakePaymentFromRazorPay)
 		payment.GET("/update-status", paymentHandler.VerifyPaymentFromRazorPay)
+		payment.GET("/wallet", paymentHandler.PaymentFromWallet)
 	}
 
 	engine.Use(middleware.UserAuthMiddleware)

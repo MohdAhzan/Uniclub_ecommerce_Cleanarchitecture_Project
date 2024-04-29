@@ -3,8 +3,8 @@ package repository
 import (
 	"errors"
 	"fmt"
-	"project/pkg/utils/domain"
 	interfaces "project/pkg/repository/interface"
+	"project/pkg/utils/domain"
 	"strconv"
 
 	"gorm.io/gorm"
@@ -94,4 +94,19 @@ func (cd *categoryRepository) DeleteCategory(CategoryID string) error {
 	}
 
 	return nil
+}
+
+func (cat *categoryRepository) CheckCategoryByID(categoryID int) (bool, error) {
+
+	var count int
+
+	err := cat.DB.Raw("select count(*) from categories where id = ? ", categoryID).Scan(&count).Error
+	if err != nil {
+		return false, err
+	}
+
+	if count >= 1 {
+		return true, nil
+	}
+	return false, nil
 }

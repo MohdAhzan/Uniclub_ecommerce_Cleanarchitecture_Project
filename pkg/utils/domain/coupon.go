@@ -1,10 +1,12 @@
 package domain
 
-import "gorm.io/gorm"
+import "time"
 
 type Coupons struct {
-	gorm.Model
-	Coupon       string `json:"coupon" gorm:"unique;not null"`
-	DiscountRate int    `json:"discount_rate" gorm:"not null"`
-	Valid        bool   `json:"valid" gorm:"default:true"`
+	ID           uint      `json:"id" gorm:"primarykey;not null"`
+	CouponCode   string    `json:"coupon_code" gorm:"unique;not null"`
+	DiscountRate int       `json:"discount_rate" gorm:"not null"`
+	CreatedAt    time.Time `json:"created_at"`
+	ValidTill    time.Time `json:"valid_till"`
+	IsActive     bool      `json:"valid" gorm:"default:true"`
 }

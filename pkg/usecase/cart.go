@@ -10,12 +10,14 @@ import (
 type CartUseCase struct {
 	CartRepo interfaces.CartRepository
 	invRepo  interfaces.InventoryRepository
+	offRepo  interfaces.OfferRepository
 }
 
-func NewCartUseCase(CartRepo interfaces.CartRepository, InvRepo interfaces.InventoryRepository) *CartUseCase {
+func NewCartUseCase(CartRepo interfaces.CartRepository, InvRepo interfaces.InventoryRepository, off interfaces.OfferRepository) *CartUseCase {
 	return &CartUseCase{
 		CartRepo: CartRepo,
 		invRepo:  InvRepo,
+		offRepo:  off,
 	}
 }
 
@@ -91,6 +93,17 @@ func (u CartUseCase) AddtoCart(pid, userID, quantity int) (models.CartResponse, 
 	price, _ := u.invRepo.FindPrice(pid)
 
 	cartProduct.TotalPrice = price * float64(cartProduct.Quantity)
+	//check if any offers are there
+
+	// if the category id of these products are in offer table discount the price to new one
+
+	DiscountRate, err := u.offRepo.GetOfferDiscountPercentage(cartProduct.Category_id)
+	if err != nil {
+		return models.CartResponse{}, err
+	}
+	//Discounted Price = Original Price - (Original Price * (Discount Percentage / 100))
+
+	cartProduct.DiscountedPrice = cartProduct.TotalPrice - (cartProduct.TotalPrice * (DiscountRate / 100))
 
 	var cartResponse models.CartResponse
 	cartResponse.CartID = uint(cartID)
@@ -190,6 +203,18 @@ func (u CartUseCase) GetCart(userID int) (models.CartResponse, error) {
 		c.Quantity = quantity[i]
 		c.StockAvailable = stock[i] - quantity[i]
 		c.TotalPrice = price[i]
+
+		//check if any offers are there
+
+		// if the category id of these products are in offer table discount the price to new one
+
+		DiscountRate, err := u.offRepo.GetOfferDiscountPercentage(c.Category_id)
+		if err != nil {
+			return models.CartResponse{}, err
+		}
+		//Discounted Price = Original Price - (Original Price * (Discount Percentage / 100))
+
+		c.DiscountedPrice = c.TotalPrice - (c.TotalPrice * (DiscountRate / 100))
 
 		cart = append(cart, c)
 	}

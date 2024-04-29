@@ -13,12 +13,14 @@ import (
 type InventoryUseCase struct {
 	repository interfaces.InventoryRepository
 	helper     helper_interfaces.Helper
+	offerRepo  interfaces.OfferRepository
 }
 
-func NewInventoryUseCase(repo interfaces.InventoryRepository, h helper_interfaces.Helper) *InventoryUseCase {
+func NewInventoryUseCase(repo interfaces.InventoryRepository, h helper_interfaces.Helper, off interfaces.OfferRepository) *InventoryUseCase {
 	return &InventoryUseCase{
 		repository: repo,
 		helper:     h,
+		offerRepo:  off,
 	}
 
 }
@@ -63,6 +65,33 @@ func (Inv *InventoryUseCase) GetProductsForAdmin() ([]models.Inventories, error)
 	if err != nil {
 		return []models.Inventories{}, err
 	}
+
+	//check if any offers are there
+
+	for i, Product := range productDetails {
+
+		// if the category id of these products are in offer table discount the price to new one
+
+		DiscountRate, err := Inv.offerRepo.GetOfferDiscountPercentage(Product.CategoryID)
+		if err != nil {
+			return []models.Inventories{}, err
+		}
+
+		var discount float64
+
+		if DiscountRate > 0 {
+			discount = (Product.Price * float64(DiscountRate)) / 100
+		}
+
+		//Discounted Price = Original Price - (Original Price * (Discount Percentage / 100))
+
+		Product.DiscountedPrice = Product.Price - discount
+
+		fmt.Println("discounted Price", Product.DiscountedPrice)
+		fmt.Println("ORginal Price", Product.Price)
+
+		productDetails[i].DiscountedPrice = Product.DiscountedPrice
+	}
 	return productDetails, nil
 }
 
@@ -71,6 +100,33 @@ func (Inv *InventoryUseCase) GetProductsForUsers() ([]models.Inventories, error)
 	productDetails, err := Inv.repository.ListProducts()
 	if err != nil {
 		return []models.Inventories{}, err
+	}
+
+	//check if any offers are there
+
+	for i, Product := range productDetails {
+
+		// if the category id of these products are in offer table discount the price to new one
+
+		DiscountRate, err := Inv.offerRepo.GetOfferDiscountPercentage(Product.CategoryID)
+		if err != nil {
+			return []models.Inventories{}, err
+		}
+
+		var discount float64
+
+		if DiscountRate > 0 {
+			discount = (Product.Price * float64(DiscountRate)) / 100
+		}
+
+		//Discounted Price = Original Price - (Original Price * (Discount Percentage / 100))
+
+		Product.DiscountedPrice = Product.Price - discount
+
+		fmt.Println("discounted Price", Product.DiscountedPrice)
+		fmt.Println("ORginal Price", Product.Price)
+
+		productDetails[i].DiscountedPrice = Product.DiscountedPrice
 	}
 
 	return productDetails, nil
@@ -100,11 +156,38 @@ func (Inv *InventoryUseCase) EditInventory(pid int, model models.EditInventory) 
 
 func (Inv *InventoryUseCase) SearchProducts(pdtName string) ([]models.Inventories, error) {
 
-	products, err := Inv.repository.SearchProducts(pdtName)
+	productDetails, err := Inv.repository.SearchProducts(pdtName)
 	if err != nil {
 		return []models.Inventories{}, err
 	}
 
-	return products, nil
+	//check if any offers are there
+
+	for i, Product := range productDetails {
+
+		// if the category id of these products are in offer table discount the price to new one
+
+		DiscountRate, err := Inv.offerRepo.GetOfferDiscountPercentage(Product.CategoryID)
+		if err != nil {
+			return []models.Inventories{}, err
+		}
+
+		var discount float64
+
+		if DiscountRate > 0 {
+			discount = (Product.Price * float64(DiscountRate)) / 100
+		}
+
+		//Discounted Price = Original Price - (Original Price * (Discount Percentage / 100))
+
+		Product.DiscountedPrice = Product.Price - discount
+
+		fmt.Println("discounted Price", Product.DiscountedPrice)
+		fmt.Println("ORginal Price", Product.Price)
+
+		productDetails[i].DiscountedPrice = Product.DiscountedPrice
+	}
+
+	return productDetails, nil
 
 }

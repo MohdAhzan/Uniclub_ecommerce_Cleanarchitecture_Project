@@ -72,3 +72,39 @@ func (p *PaymentHandler) VerifyPaymentFromRazorPay(c *gin.Context) {
 	c.JSON(http.StatusOK, successRes)
 
 }
+
+func (p *PaymentHandler) PaymentFromWallet(c *gin.Context) {
+
+	useridStr := c.Query("user_id")
+	orderIdString := c.Query("order_id")
+
+	OrderID, err := strconv.Atoi(orderIdString)
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "error converting orderID to string please enter in valid format", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+
+	userID, err := strconv.Atoi(useridStr)
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "error converting orderID to string please enter in valid format", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+
+	body, err := p.payUseCase.PaymentFromWallet(OrderID, userID)
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "error while paying from wallet", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+	var iS float64
+	iS = 0
+	if body.FinalPrice == iS {
+		successRes := response.ClientResponse(http.StatusOK, "Successfully paid using wallet", nil, nil)
+		c.JSON(http.StatusOK, successRes)
+		return
+	}
+
+	c.HTML(http.StatusOK, "razorpay.html", body)
+}

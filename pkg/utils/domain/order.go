@@ -46,6 +46,7 @@ type OrderDetails struct {
 
 type OrderDetailsWithImages struct {
 	OrderDetails  Order
+	ProductID     []int
 	Images        []string
 	PaymentMethod string
 }

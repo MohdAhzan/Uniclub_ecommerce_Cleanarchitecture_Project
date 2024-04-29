@@ -111,7 +111,9 @@ func (o *OrderHandler) CancelOrder(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, errRes)
 		return
 	}
-	err = o.orderUseCase.CancelOrder(orderID)
+	user_id, _ := c.Get("id")
+
+	err = o.orderUseCase.CancelOrder(orderID, user_id.(int))
 	if err != nil {
 		errRes := response.ClientResponse(http.StatusBadRequest, "failed to cancel the order ", nil, err.Error())
 		c.JSON(http.StatusBadRequest, errRes)

@@ -16,14 +16,16 @@ import (
 type adminUseCase struct {
 	adminRepository interfaces.AdminRepository
 	orderRepository interfaces.OrderRepository
+	userRepository  interfaces.UserRepository
 	helper          helper.Helper
 }
 
-func NewAdminUsecase(repo interfaces.AdminRepository, h helper.Helper, o interfaces.OrderRepository) services.AdminUseCase {
+func NewAdminUsecase(repo interfaces.AdminRepository, h helper.Helper, o interfaces.OrderRepository, u interfaces.UserRepository) services.AdminUseCase {
 	return &adminUseCase{
 		adminRepository: repo,
 		helper:          h,
 		orderRepository: o,
+		userRepository:  u,
 	}
 }
 
@@ -152,10 +154,12 @@ func (ad *adminUseCase) OrderReturnApprove(orderID int) error {
 		return err
 	}
 	user, err := ad.adminRepository.GetUserByID(userID)
-
 	if err != nil {
 		return err
 	}
+
+
+
 	msg := fmt.Sprintf("User : %s has not requested to return the product", user.Name)
 	if status == "RETURNED" {
 		return fmt.Errorf("user :%s has already returned the product", user.Name)
@@ -169,8 +173,25 @@ func (ad *adminUseCase) OrderReturnApprove(orderID int) error {
 		return err
 	}
 
-	mailSub := "Order Return Approval"
-	mailMsg := "Hey " + user.Name + "...your request for Order Return has been approved!!!"
+	
+	
+	orderAmount, err := ad.orderRepository.FindOrderAmount(orderID)
+	if err != nil {
+		return err
+	}
+	var model models.AddMoneytoWallet
+
+	model.UserID = userID
+	model.Amount = orderAmount
+	model.TranscationType = "PDT_RETURNED"
+
+	err = ad.userRepository.AddMoneytoWallet(model)
+	if err != nil {
+		return err
+	}
+
+	mailSub := "Order Return Approval "
+	mailMsg := "Hey " + user.Name + "...your request for Order Return has been approved and Order Amount is transfered to your Wallet!!! "
 	err = ad.helper.SendMailToPhone(user.Email, mailSub, mailMsg)
 	if err != nil {
 		return err

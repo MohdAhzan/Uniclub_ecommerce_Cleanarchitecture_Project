@@ -66,6 +66,9 @@ func ConnectDatabase(cfg config.Config) (*gorm.DB, error) {
 	if err := db.AutoMigrate(&domain.RazorPay{}); err != nil {
 		return db, err
 	}
+	if err := db.AutoMigrate(&domain.CategoryOffers{}); err != nil {
+		return db, err
+	}
 	CheckAndCreateAdmin(db)
 
 	return db, dbErr

@@ -34,17 +34,17 @@ func (o OrderUseCase) OrderFromCart(order models.Order) error {
 		return err
 	}
 	fmt.Println("model GET CART", cart)
-	var TotalCartPrice float64
+	var Total float64
 	for _, data := range cart.CartData {
-		TotalCartPrice += data.TotalPrice
+		Total += data.DiscountedPrice
 
 	}
 
-	if TotalCartPrice == 0 {
+	if Total == 0 {
 		return errors.New("no items in Cart")
 	}
 
-	orderID, err := o.orderRepo.OrderItems(order.UserID, order.AddressID, order.PaymentID, TotalCartPrice)
+	orderID, err := o.orderRepo.OrderItems(order.UserID, order.AddressID, order.PaymentID, Total)
 	if err != nil {
 		return err
 	}
@@ -118,8 +118,12 @@ func (o OrderUseCase) GetOrders(userID int) ([]domain.OrderDetailsWithImages, er
 		if err != nil {
 			return []domain.OrderDetailsWithImages{}, err
 		}
-
+		inventoryIDs, err := o.orderRepo.GetOrderProductIDs(int(data.ID))
+		if err != nil {
+			return []domain.OrderDetailsWithImages{}, err
+		}
 		or.OrderDetails = data
+		or.ProductID = inventoryIDs
 		or.Images = images
 		or.PaymentMethod = paymentMethod
 		result = append(result, or)
@@ -166,7 +170,7 @@ func (o OrderUseCase) GetOrderDetailsByOrderID(orderID, userID int) (domain.Orde
 	return orderDetails, nil
 }
 
-func (o OrderUseCase) CancelOrder(orderID int) error {
+func (o OrderUseCase) CancelOrder(orderID, userID int) error {
 
 	status, err := o.orderRepo.CheckOrderStatusByID(orderID)
 	if err != nil {
@@ -183,6 +187,31 @@ func (o OrderUseCase) CancelOrder(orderID int) error {
 	err = o.orderRepo.CancelOrder(orderID)
 	if err != nil {
 		return err
+	}
+
+	// only refund if the user has already prepaid orderAmount
+
+	paymentStatus, err := o.orderRepo.GetPaymentStatusByID(orderID)
+	if err != nil {
+		return err
+	}
+
+	if paymentStatus == "PAID" {
+
+		orderAmount, err := o.orderRepo.FindOrderAmount(orderID)
+		if err != nil {
+			return err
+		}
+		var model models.AddMoneytoWallet
+
+		model.UserID = userID
+		model.Amount = orderAmount
+		model.TranscationType = "PDT_CANCELLED"
+		
+		err = o.userRepo.AddMoneytoWallet(model)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -208,6 +237,7 @@ func (o OrderUseCase) ReturnOrder(orderID, userID int) error {
 		return err
 
 	}
+
 	user, err := o.userRepo.GetUserDetails(userID)
 	if err != nil {
 		return err

@@ -70,6 +70,16 @@ func (o *orderRepository) GetOrderImages(orderID int) ([]string, error) {
 	}
 	return images, nil
 }
+func (o *orderRepository) GetOrderProductIDs(orderID int) ([]int, error) {
+
+	var inventoryIDs []int
+
+	err := o.DB.Raw("select inventory_id from order_items where order_id = ? ", orderID).Scan(&inventoryIDs).Error
+	if err != nil {
+		return nil, err
+	}
+	return inventoryIDs, nil
+}
 
 func (o *orderRepository) GetOrderAddress(orderID int) (domain.Address, models.OrderData, error) {
 
@@ -158,4 +168,40 @@ func (o *orderRepository) GetPaymentMethodsByID(PaymentMethodID int) (string, er
 		return "", err
 	}
 	return paymentMethod, nil
+}
+
+func (o *orderRepository) FindOrderAmount(orderID int) (float64, error) {
+
+	var orderAmount float64
+
+	err := o.DB.Raw("select final_price from orders where id = ?", orderID).Scan(&orderAmount).Error
+	if err != nil {
+		return 0, err
+	}
+
+	return orderAmount, nil
+}
+
+func (o *orderRepository) FindOrderedUserID(orderID int) (int, error) {
+
+	var userid int
+
+	err := o.DB.Raw("select user_id from orders where id = ?", orderID).Scan(&userid).Error
+	if err != nil {
+		return 0, err
+	}
+
+	return userid, nil
+}
+
+func (o *orderRepository) GetPaymentStatusByID(orderID int) (string, error) {
+
+	var paymentStatus string
+
+	err := o.DB.Raw("select payment_status  from orders where id = ?", orderID).Scan(&paymentStatus).Error
+	if err != nil {
+		return "", err
+	}
+
+	return paymentStatus, nil
 }

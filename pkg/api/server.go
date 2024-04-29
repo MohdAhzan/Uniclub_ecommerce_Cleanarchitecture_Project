@@ -15,7 +15,7 @@ type ServerHTTP struct {
 func NewServerHTTP(userHandler *handler.UserHandler, adminHandler *handler.AdminHandler, otpHandler *handler.OtpHandler,
 	categoryHandler *handler.CategoryHandler, inventoryHandler *handler.InventaryHandler,
 	cartHandler *handler.CartHandler, orderHandler *handler.OrderHandler, paymentHandler *handler.PaymentHandler,
-	wishlistHandler *handler.WishlistHandler) *ServerHTTP {
+	wishlistHandler *handler.WishlistHandler, offerHandler *handler.OfferHandler) *ServerHTTP {
 	engine := gin.New()
 	// logger
 	engine.Use(gin.Logger())
@@ -23,7 +23,7 @@ func NewServerHTTP(userHandler *handler.UserHandler, adminHandler *handler.Admin
 	engine.LoadHTMLGlob("../template/*.html")
 
 	routes.UserRoutes(engine.Group("/users"), userHandler, otpHandler, inventoryHandler, cartHandler, orderHandler, paymentHandler, wishlistHandler)
-	routes.AdminRoutes(engine.Group("/admin"), adminHandler, categoryHandler, inventoryHandler)
+	routes.AdminRoutes(engine.Group("/admin"), adminHandler, categoryHandler, inventoryHandler, offerHandler)
 
 	return &ServerHTTP{engine: engine}
 }

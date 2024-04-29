@@ -10,14 +10,14 @@ import (
 func AdminRoutes(engine *gin.RouterGroup,
 	adminHandler *handler.AdminHandler,
 	categoryHandler *handler.CategoryHandler,
-	inventoryHandler *handler.InventaryHandler,
-) {
+	inventoryHandler *handler.InventaryHandler, OfferHandler *handler.OfferHandler) {
 
 	engine.POST("/adminlogin", adminHandler.LoginHandler)
 
 	engine.Use(middleware.AdminAuthMiddleware)
 
 	{
+
 		userManagement := engine.Group("/users")
 		{
 			userManagement.GET("", adminHandler.GetUsers)
@@ -41,12 +41,19 @@ func AdminRoutes(engine *gin.RouterGroup,
 			productmanagement.DELETE("", inventoryHandler.DeleteInventory)
 			productmanagement.PUT("/:id/edit_details", inventoryHandler.EditInventoryDetails)
 		}
+		offerManagment := engine.Group("/offers")
+		{
+			offerManagment.POST("/category", OfferHandler.AddCategoryOffer)
+			offerManagment.GET("/category", OfferHandler.GetAllCategoryOffers)
+			offerManagment.PUT("/category", OfferHandler.EditCategoryOffer)
+			offerManagment.DELETE("/category", OfferHandler.ValidorInvalidCategoryOffers)
+		}
 
 		payment := engine.Group("/payment-methods")
 		{
-			payment.GET("",adminHandler.GetPaymentMethods)
+			payment.GET("", adminHandler.GetPaymentMethods)
 			payment.POST("", adminHandler.NewPaymentHandler)
-			payment.DELETE("",adminHandler.DeletePaymentMethod)
+			payment.DELETE("", adminHandler.DeletePaymentMethod)
 
 		}
 
@@ -60,4 +67,3 @@ func AdminRoutes(engine *gin.RouterGroup,
 
 	}
 }
- 

@@ -10,6 +10,6 @@ type OrderUseCase interface {
 	Checkout(userID int) (models.CheckOut, error)
 	GetOrders(id int) ([]domain.OrderDetailsWithImages, error)
 	GetOrderDetailsByOrderID(orderID, userID int) (domain.OrderDetails, error)
-	CancelOrder(orderID int) error
-	ReturnOrder(orderID,userID int)error
+	CancelOrder(orderID, userID int) error
+	ReturnOrder(orderID, userID int) error
 }

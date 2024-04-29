@@ -23,4 +23,5 @@ type UserRepository interface {
 	CreateWallet(userID int) error
 	AddMoneytoWallet(model models.AddMoneytoWallet) error
 	GetWallet(userID int) (models.GetWallet, error)
+	
 }
