@@ -23,15 +23,24 @@ func NewOrderHandler(orderUseCase interfaces.OrderUseCase) *OrderHandler {
 
 func (u *OrderHandler) OrderFromCart(c *gin.Context) {
 
+	couponIDstr:=c.Query("coupon_id")
+
+	couponID,err:=strconv.Atoi(couponIDstr)
+	if err != nil {
+		errMsg := response.ClientResponse(http.StatusBadRequest, "error string conversion of CouponID from string ", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errMsg)
+		return
+	}
+	
 	var order models.Order
 
-	err := c.BindJSON(&order)
+	err = c.BindJSON(&order)
 	if err != nil {
 		errMsg := response.ClientResponse(http.StatusBadRequest, "error binding JSON", nil, err.Error())
 		c.JSON(http.StatusBadRequest, errMsg)
 		return
 	}
-	if err = u.orderUseCase.OrderFromCart(order); err != nil {
+	if err = u.orderUseCase.OrderFromCart(order,couponID); err != nil {
 		errMsg := response.ClientResponse(400, "error placing order", nil, err.Error())
 		c.JSON(400, errMsg)
 		return

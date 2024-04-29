@@ -19,15 +19,28 @@ func NewOrderRepository(db *gorm.DB) *orderRepository {
 	}
 }
 
-func (o *orderRepository) OrderItems(userID, addressID, payment_id int, TotalCartPrice float64) (int, error) {
+func (o *orderRepository) OrderItems(userID, addressID, payment_id, couponID int, TotalCartPrice float64) (int, error) {
 
 	var orderID int
-	err := o.DB.Raw(`INSERT INTO orders (user_id,address_id,payment_method_id,final_price)
-    VALUES (?, ?,?, ?)
-    RETURNING id`, userID, addressID, payment_id, TotalCartPrice).Scan(&orderID).Error
 
-	if err != nil {
-		return 0, err
+	if couponID == 0 {
+
+		err := o.DB.Raw(`INSERT INTO orders (user_id,address_id,payment_method_id,final_price,coupon_used_by_id)
+		VALUES (?, ?,?, ?,NULL)
+		RETURNING id`, userID, addressID, payment_id, TotalCartPrice).Scan(&orderID).Error
+		if err != nil {
+			return 0, err
+		}
+
+	} else {
+
+		err := o.DB.Raw(`INSERT INTO orders (user_id,address_id,payment_method_id,final_price,coupon_used_by_id)
+		VALUES (?, ?,?, ?,?)
+		RETURNING id`, userID, addressID, payment_id, TotalCartPrice, couponID).Scan(&orderID).Error
+		if err != nil {
+			return 0, err
+		}
+
 	}
 
 	return orderID, nil

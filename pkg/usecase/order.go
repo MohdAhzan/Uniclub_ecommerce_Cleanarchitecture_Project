@@ -16,35 +16,57 @@ type OrderUseCase struct {
 	cartUseCase interfaces.CartUseCase
 	userRepo    services.UserRepository
 	helper      helper.Helper
+	couponRepo  services.CouponRepository
 }
 
-func NewOrderUseCase(orderRepo services.OrderRepository, cartRepo services.CartRepository, cartUseCase interfaces.CartUseCase, userRepo services.UserRepository, h helper.Helper) *OrderUseCase {
+func NewOrderUseCase(orderRepo services.OrderRepository, cartRepo services.CartRepository, cartUseCase interfaces.CartUseCase, userRepo services.UserRepository, h helper.Helper, c services.CouponRepository) *OrderUseCase {
 	return &OrderUseCase{
 		orderRepo:   orderRepo,
 		cartRepo:    cartRepo,
 		cartUseCase: cartUseCase,
 		userRepo:    userRepo,
 		helper:      h,
+		couponRepo:  c,
 	}
 }
-func (o OrderUseCase) OrderFromCart(order models.Order) error {
+func (o OrderUseCase) OrderFromCart(order models.Order, couponID int) error {
 
 	cart, err := o.cartUseCase.GetCart(order.UserID)
 	if err != nil {
 		return err
 	}
+
 	fmt.Println("model GET CART", cart)
 	var Total float64
 	for _, data := range cart.CartData {
+
 		Total += data.DiscountedPrice
 
 	}
 
+	used, err := o.couponRepo.CheckIfUserUsedCoupon(order.UserID, couponID)
+	if err != nil {
+		return err
+	}
+	if used {
+		return errors.New("this coupon is alreay used")
+	}
+
+	if !used {
+
+		coupon, err := o.couponRepo.FindCouponDetails(couponID)
+		if err != nil {
+			return err
+		}
+
+		totalDiscount := (Total * float64(coupon.DiscountRate)) / 100
+		Total = Total - totalDiscount
+	}
 	if Total == 0 {
 		return errors.New("no items in Cart")
 	}
 
-	orderID, err := o.orderRepo.OrderItems(order.UserID, order.AddressID, order.PaymentID, Total)
+	orderID, err := o.orderRepo.OrderItems(order.UserID, order.AddressID, order.PaymentID, couponID, Total)
 	if err != nil {
 		return err
 	}
@@ -207,7 +229,7 @@ func (o OrderUseCase) CancelOrder(orderID, userID int) error {
 		model.UserID = userID
 		model.Amount = orderAmount
 		model.TranscationType = "PDT_CANCELLED"
-		
+
 		err = o.userRepo.AddMoneytoWallet(model)
 		if err != nil {
 			return err

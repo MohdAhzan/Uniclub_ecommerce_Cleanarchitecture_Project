@@ -17,10 +17,11 @@ type Order struct {
 	Address         Address        `json:"-" gorm:"foreignkey:AddressID"`
 	PaymentMethodID uint           `json:"paymentmethod_id"`
 	PaymentMethod   PaymentMethod  `json:"-" gorm:"foreignkey:PaymentMethodID"`
-	// CouponUsed      string         `json:"coupon_used" gorm:"default:null"`
-	FinalPrice    float64 `json:"price"`
-	OrderStatus   string  `json:"order_status" gorm:"order_status:5;default:'PENDING';check:order_status IN ('PENDING', 'SHIPPED','DELIVERED','CANCELED','RETURN_REQUESTED','RETURNED')"`
-	PaymentStatus string  `json:"payment_status" gorm:"payment_status:2;default:'NOT PAID';check:payment_status IN ('PAID', 'NOT PAID')"`
+	CouponUsedByID  int            `json:"coupon_used_by_id" gorm:"default:null"`
+	Coupons         Coupons        `json:"-" gorm:"foreignkey:CouponUsedByID"`
+	FinalPrice      float64        `json:"price"`
+	OrderStatus     string         `json:"order_status" gorm:"order_status:5;default:'PENDING';check:order_status IN ('PENDING', 'SHIPPED','DELIVERED','CANCELED','RETURN_REQUESTED','RETURNED')"`
+	PaymentStatus   string         `json:"payment_status" gorm:"payment_status:2;default:'NOT PAID';check:payment_status IN ('PAID', 'NOT PAID')"`
 }
 
 type OrderItems struct {

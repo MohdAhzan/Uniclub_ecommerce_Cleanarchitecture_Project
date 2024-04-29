@@ -61,7 +61,7 @@ func InitializeAPI(cfg config.Config) (*http.ServerHTTP, error) {
 	cartHandler := handler.NewCartHandler(cartUseCase)
 
 	orderRepository = repository.NewOrderRepository(gormDB)
-	orderUseCase := usecase.NewOrderUseCase(orderRepository, cartRepository, cartUseCase, userRepository, helper)
+	orderUseCase := usecase.NewOrderUseCase(orderRepository, cartRepository, cartUseCase, userRepository, helper,couponRepository)
 	orderHandler := handler.NewOrderHandler(orderUseCase)
 
 	paymentRepository := repository.NewPaymentRepository(gormDB)

@@ -11,7 +11,7 @@ func UserRoutes(engine *gin.RouterGroup,
 	userHandler *handler.UserHandler,
 	otpHandler *handler.OtpHandler, inventoryHandler *handler.InventaryHandler,
 	cartHandler *handler.CartHandler, orderHandler *handler.OrderHandler,
-	paymentHandler *handler.PaymentHandler, wishlistHandler *handler.WishlistHandler) {
+	paymentHandler *handler.PaymentHandler, wishlistHandler *handler.WishlistHandler, couponHandler *handler.CouponHandler) {
 
 	engine.POST("/signup", userHandler.UserSignUp)
 	engine.POST("/login", userHandler.UserLoginHandler)
@@ -30,8 +30,8 @@ func UserRoutes(engine *gin.RouterGroup,
 		home := engine.Group("/home")
 		{
 			home.GET("", inventoryHandler.GetProductsForUsers)
-
 			home.POST("/add_to_cart", cartHandler.AddtoCart)
+			home.GET("/coupons", couponHandler.GetAllCoupons)
 		}
 
 		search := engine.Group("/search")

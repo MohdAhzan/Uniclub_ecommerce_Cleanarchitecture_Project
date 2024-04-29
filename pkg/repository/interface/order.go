@@ -6,7 +6,7 @@ import (
 )
 
 type OrderRepository interface {
-	OrderItems(userID, address, paymentID int, TotalCartPrice float64) (int, error)
+	OrderItems(userID, address, paymentID, couponID int, TotalCartPrice float64) (int, error)
 	AddOrderProducts(orderID int, cart []models.GetCart) error
 
 	GetOrders(userID int) ([]domain.Order, error)
