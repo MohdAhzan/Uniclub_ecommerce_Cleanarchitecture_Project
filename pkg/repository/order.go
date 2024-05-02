@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"fmt"
 	"project/pkg/utils/domain"
 	"project/pkg/utils/models"
 	"time"
@@ -217,4 +218,28 @@ func (o *orderRepository) GetPaymentStatusByID(orderID int) (string, error) {
 	}
 
 	return paymentStatus, nil
+}
+
+func (o *orderRepository) GetAllOrderItemsByOrderID(orderID int) ([]domain.EachProductOrderDetails, error) {
+
+	var Allmodel []domain.EachProductOrderDetails
+
+	var data []models.EachOrderData
+
+	err := o.DB.Raw("SELECT inventory_id as product_id , SUM(quantity) AS total_quantity,CAST(SUM(total_price) AS DECIMAL(10, 2)) AS total_price FROM order_items WHERE order_id = ? GROUP BY inventory_id", orderID).Scan(&data).Error
+	if err != nil {
+		return []domain.EachProductOrderDetails{}, err
+
+	}
+
+	for _, value := range data {
+		var model domain.EachProductOrderDetails
+		model.ProductID = uint(value.ProductID)
+		model.Quantity = uint(value.TotalQuantity)
+		model.ProductPrice = value.TotalPrice
+		Allmodel = append(Allmodel, model)
+	}
+	fmt.Println(data)
+	return Allmodel, nil
+
 }

@@ -20,3 +20,9 @@ type OrderPaymentDetails struct {
 	OrderID    int     `json:"order_id"`
 	FinalPrice float64 `json:"final_price"`
 }
+
+type EachOrderData struct {
+	ProductID     int     `json:"product_id"`
+	TotalQuantity int     `json:"total_quantity"`
+	TotalPrice    float64 `json:"total_price"`
+}

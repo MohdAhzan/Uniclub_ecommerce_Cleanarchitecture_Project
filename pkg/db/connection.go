@@ -71,6 +71,9 @@ func ConnectDatabase(cfg config.Config) (*gorm.DB, error) {
 	}
 	CheckAndCreateAdmin(db)
 
+	if err := db.AutoMigrate(&domain.InventoryOffers{}); err != nil {
+		return db, err
+	}
 	return db, dbErr
 }
 

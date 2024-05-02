@@ -74,5 +74,8 @@ func AdminRoutes(engine *gin.RouterGroup,
 			ordermanagement.PUT("/return", adminHandler.OrderReturnApprove)
 		}
 
+		engine.GET("/printsales", adminHandler.PrintSalesByDate)
+		engine.GET("/currentsalesreport", adminHandler.FilteredSalesReport)
+
 	}
 }

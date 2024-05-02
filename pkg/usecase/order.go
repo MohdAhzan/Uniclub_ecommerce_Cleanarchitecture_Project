@@ -17,9 +17,10 @@ type OrderUseCase struct {
 	userRepo    services.UserRepository
 	helper      helper.Helper
 	couponRepo  services.CouponRepository
+	offerRepo   services.OfferRepository
 }
 
-func NewOrderUseCase(orderRepo services.OrderRepository, cartRepo services.CartRepository, cartUseCase interfaces.CartUseCase, userRepo services.UserRepository, h helper.Helper, c services.CouponRepository) *OrderUseCase {
+func NewOrderUseCase(orderRepo services.OrderRepository, cartRepo services.CartRepository, cartUseCase interfaces.CartUseCase, userRepo services.UserRepository, h helper.Helper, c services.CouponRepository, o services.OfferRepository) *OrderUseCase {
 	return &OrderUseCase{
 		orderRepo:   orderRepo,
 		cartRepo:    cartRepo,
@@ -27,6 +28,7 @@ func NewOrderUseCase(orderRepo services.OrderRepository, cartRepo services.CartR
 		userRepo:    userRepo,
 		helper:      h,
 		couponRepo:  c,
+		offerRepo:   o,
 	}
 }
 func (o OrderUseCase) OrderFromCart(order models.Order, couponID int) error {
@@ -295,4 +297,66 @@ func (o OrderUseCase) ReturnOrder(orderID, userID int) error {
 
 	return nil
 
+}
+
+func (o OrderUseCase) GetEachProductOrderDetails(orderID, userID int) (domain.OrderDetailsSeparate, error) {
+
+	var AllData domain.OrderDetailsSeparate
+
+	AllData.ID = userID
+
+	user, err := o.userRepo.GetUserDetails(userID)
+	if err != nil {
+		return domain.OrderDetailsSeparate{}, err
+	}
+
+	AllData.Username = user.Name
+
+	//get address used by user for order
+	orderAddress, orderData, err := o.orderRepo.GetOrderAddress(orderID)
+	if err != nil {
+		return domain.OrderDetailsSeparate{}, err
+	}
+
+	AllData.Address = orderAddress
+	//get order Status
+	AllData.OrderStatus = orderData.Order_status
+	//get payment method
+	paymentMethod, err := o.orderRepo.GetPaymentMethodsByID(orderData.Payment_method_id)
+	if err != nil {
+		return domain.OrderDetailsSeparate{}, err
+	}
+	AllData.PaymentMethod = paymentMethod
+
+	individualOrders, err := o.orderRepo.GetAllOrderItemsByOrderID(orderID)
+	if err != nil {
+		return domain.OrderDetailsSeparate{}, err
+	}
+
+	fmt.Println(individualOrders)
+
+	var AllIndividualOrders []domain.EachProductOrderDetails
+
+	for _, value := range individualOrders {
+		var model domain.EachProductOrderDetails
+		model.ProductID = uint(value.ProductID)
+		model.Quantity = uint(value.Quantity)
+		model.ProductPrice = value.ProductPrice
+
+		model.DiscountPrice = value.ProductPrice
+		model.ProductOffer = "No offer For you BITCHHH ASS MOTHERF**KER"
+		AllIndividualOrders = append(AllIndividualOrders, model)
+	}
+
+	orderPaymentStatus, err := o.orderRepo.GetPaymentStatusByID(orderID)
+	if err != nil {
+		return domain.OrderDetailsSeparate{}, err
+	}
+	AllData.PaymentStatus = orderPaymentStatus
+
+	AllData.EachProductOrderDetails = AllIndividualOrders
+
+	AllData.Total = orderData.Final_Price
+
+	return AllData, nil
 }

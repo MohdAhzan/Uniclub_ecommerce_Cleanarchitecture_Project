@@ -22,4 +22,6 @@ type OrderRepository interface {
 	FindOrderedUserID(orderID int) (int, error)
 	GetPaymentMethodsByID(PaymentMethodID int) (string, error)
 	GetPaymentStatusByID(orderID int) (string, error)
+	GetAllOrderItemsByOrderID(orderID int) ([]domain.EachProductOrderDetails, error)
+	// FindOrderProductOffers(orderID int)
 }

@@ -37,12 +37,14 @@ require (
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
+	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/razorpay/razorpay-go v1.3.2 // indirect
 	golang.org/x/sync v0.7.0 // indirect
 )
 
 require (
+	github.com/360EntSecGroup-Skylar/excelize v1.4.1
 	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.16.15
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.53.1
 	github.com/bytedance/sonic v1.11.3 // indirect
@@ -63,6 +65,7 @@ require (
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
+	github.com/jung-kurt/gofpdf v1.16.2
 	github.com/klauspost/cpuid/v2 v2.2.7 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect

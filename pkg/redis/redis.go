@@ -7,10 +7,8 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
-type Redis struct{
-	
+type Redis struct {
 }
-
 
 func InitializeClient() (*redis.Client, error) {
 

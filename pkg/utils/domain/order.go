@@ -44,7 +44,33 @@ type OrderDetails struct {
 	PaymentStatus string  `json:"payment_status"`
 	Total         float64 `json:"total"`
 }
+type OrderDetailsSeparate struct {
+	ID       int    `json:"id" gorm:"id"`
+	Username string `json:"name"`
+	// AddressID               uint                      `json:"address_id"`
+	Address                 Address                   `json:"address"`
+	OrderStatus             string                    `json:"order_status"`
+	PaymentMethod           string                    `json:"payment_method" gorm:"payment_method"`
+	PaymentStatus           string                    `json:"payment_status"`
+	EachProductOrderDetails []EachProductOrderDetails `json:"product_order_details"`
+	Total                   float64                   `json:"total"`
+}
 
+// type EachProductOrderDetails struct {
+// 	ProductID     uint    `json:"product_id"`
+// 	Quantity      int    `json:"total_quantity"`
+// 	ProductPrice  float64 `json:"total_price"`
+// 	DiscountPrice float64 `json:"discount_price"`
+// 	ProductOffer  string  `json:"offer_name"`
+// }
+
+type EachProductOrderDetails struct {
+	ProductID     uint    `json:"product_id"`
+	Quantity      uint    `json:"total_quantity"`
+	ProductPrice  float64 `json:"total_price"`
+	DiscountPrice float64 `json:"discount_price"`
+	ProductOffer  string  `json:"offer_name"`
+}
 type OrderDetailsWithImages struct {
 	OrderDetails  Order
 	ProductID     []int

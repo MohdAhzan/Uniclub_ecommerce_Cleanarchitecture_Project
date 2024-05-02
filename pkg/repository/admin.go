@@ -253,3 +253,130 @@ func (ad *adminRepository) DeletePaymentMethod(paymentID int) error {
 	}
 	return nil
 }
+
+func (ad *adminRepository) FilteredSalesReport(startTime time.Time, endTime time.Time) (models.SalesReport, error) {
+	var salesReport models.SalesReport
+	querry := `
+		SELECT COALESCE(SUM(final_price),0) 
+		FROM orders WHERE payment_status='PAID'
+		AND created_at >= ? AND created_at <= ?
+		`
+	result := ad.db.Raw(querry, startTime, endTime).Scan(&salesReport.TotalSalesAmount)
+	if result.Error != nil {
+		return models.SalesReport{}, result.Error
+	}
+
+	result = ad.db.Raw("SELECT COUNT(*) FROM orders where created_at >= ? AND created_at <= ?", startTime, endTime).Scan(&salesReport.TotalOrders)
+	if result.Error != nil {
+		return models.SalesReport{}, result.Error
+	}
+
+	querry = `
+		SELECT COUNT(*) FROM orders 
+		WHERE payment_status = 'PAID' and 
+		created_at >= ? AND created_at <= ?
+		`
+
+	result = ad.db.Raw(querry, startTime, endTime).Scan(&salesReport.CompletedOrders)
+	if result.Error != nil {
+		return models.SalesReport{}, result.Error
+	}
+
+	querry = `
+		SELECT COUNT(*) FROM orders WHERE 
+		order_status = 'PENDING' AND created_at >= ? AND created_at<=?
+		`
+	result = ad.db.Raw(querry, startTime, endTime).Scan(&salesReport.PendingOrders)
+	if result.Error != nil {
+		return models.SalesReport{}, result.Error
+	}
+	querry = `
+		SELECT COUNT(*) FROM orders WHERE 
+		order_status = 'CANCELED' AND created_at >= ? AND created_at<=?
+		`
+	result = ad.db.Raw(querry, startTime, endTime).Scan(&salesReport.CancelledOrders)
+	if result.Error != nil {
+		return models.SalesReport{}, result.Error
+	}
+	querry = `
+		SELECT COUNT(*) FROM orders WHERE 
+		order_status = 'RETURNED' AND created_at >= ? AND created_at<=?
+		`
+	result = ad.db.Raw(querry, startTime, endTime).Scan(&salesReport.ReturnedOrders)
+	if result.Error != nil {
+		return models.SalesReport{}, result.Error
+	}
+
+	var inventoryID int
+	querry = `
+		SELECT inventory_id FROM order_items 
+		GROUP BY inventory_id order by SUM(quantity) DESC LIMIT 1
+		`
+	result = ad.db.Raw(querry).Scan(&inventoryID)
+	if result.Error != nil {
+		return models.SalesReport{}, result.Error
+	}
+
+	result = ad.db.Raw("SELECT product_name FROM inventories WHERE product_id = ?", inventoryID).Scan(&salesReport.MostSelledProduct)
+	if result.Error != nil {
+		return models.SalesReport{}, result.Error
+	}
+	return salesReport, nil
+}
+
+func (ad *adminRepository) SalesByYear(yearInt int) ([]models.OrderDetailsAdmin, error) {
+	var orderDetails []models.OrderDetailsAdmin
+
+	query := `SELECT i.product_name, SUM(oi.total_price) AS total_amount
+	FROM orders o
+	JOIN order_items oi ON o.id = oi.order_id
+	JOIN inventories i ON oi.inventory_id = i.product_id
+	WHERE o.payment_status = 'PAID'
+	AND EXTRACT(YEAR FROM o.created_at) = ?
+	GROUP BY i.product_name;`
+
+	if err := ad.db.Raw(query, yearInt).Scan(&orderDetails).Error; err != nil {
+		return []models.OrderDetailsAdmin{}, err
+	}
+
+	return orderDetails, nil
+}
+
+func (ad *adminRepository) SalesByMonth(yearInt int, monthInt int) ([]models.OrderDetailsAdmin, error) {
+	var orderDetails []models.OrderDetailsAdmin
+
+	query := `SELECT i.product_name, SUM(oi.total_price) AS total_amount
+	FROM orders o
+	JOIN order_items oi ON o.id = oi.order_id
+	JOIN inventories i ON oi.inventory_id = i.product_id
+	WHERE o.payment_status = 'PAID'
+	AND EXTRACT(YEAR FROM o.created_at) = ?
+	AND EXTRACT(MONTH FROM o.created_at) = ?
+	GROUP BY i.product_name;`
+
+	if err := ad.db.Raw(query, yearInt, monthInt).Scan(&orderDetails).Error; err != nil {
+		return []models.OrderDetailsAdmin{}, err
+	}
+
+	return orderDetails, nil
+}
+
+func (ad *adminRepository) SalesByDay(yearInt int, monthInt int, dayInt int) ([]models.OrderDetailsAdmin, error) {
+	var orderDetails []models.OrderDetailsAdmin
+
+	query := `SELECT i.product_name, SUM(oi.total_price) AS total_amount
+	FROM orders o
+	JOIN order_items oi ON o.id = oi.order_id
+	JOIN inventories i ON oi.inventory_id = i.product_id
+	WHERE o.payment_status = 'PAID'
+	AND EXTRACT(YEAR FROM o.created_at) = ?
+	AND EXTRACT(MONTH FROM o.created_at) = ?
+	AND EXTRACT(DAY FROM o.created_at) = ?
+	GROUP BY i.product_name;`
+
+	if err := ad.db.Raw(query, yearInt, monthInt, dayInt).Scan(&orderDetails).Error; err != nil {
+		return []models.OrderDetailsAdmin{}, err
+	}
+
+	return orderDetails, nil
+}

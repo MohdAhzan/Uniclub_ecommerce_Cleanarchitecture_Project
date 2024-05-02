@@ -15,3 +15,18 @@ type GetPaymentMethods struct {
 	ID          int    `json:"payment_id"`
 	PaymentName string `json:"payment_name"`
 }
+
+type SalesReport struct {
+	TotalSalesAmount  float64
+	TotalOrders       int
+	CompletedOrders   int
+	PendingOrders     int
+	ReturnedOrders    int
+	CancelledOrders   int
+	MostSelledProduct string
+}
+
+type OrderDetailsAdmin struct {
+	TotalAmount float64 `gorm:"column:total_amount"`
+	ProductName string  `gorm:"column:product_name"`
+}

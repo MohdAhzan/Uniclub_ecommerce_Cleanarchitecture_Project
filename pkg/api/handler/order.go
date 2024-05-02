@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 	interfaces "project/pkg/usecase/interface"
 	response "project/pkg/utils/Response"
@@ -163,5 +164,35 @@ func (o *OrderHandler) ReturnOrder(c *gin.Context) {
 
 	successRes := response.ClientResponse(http.StatusOK, "This Order has been Requested for Return", nil, nil)
 	c.JSON(http.StatusOK, successRes)
+
+}
+
+func (o *OrderHandler) GetEachProductOrderDetails(c *gin.Context) {
+
+	orderIdStr := c.Query("order_id")
+
+	orderID, err := strconv.Atoi(orderIdStr)
+	if err != nil {
+		errRes := response.ClientResponse(http.StatusBadRequest, "error string conversion of order_id please enter in a valid format ", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errRes)
+		return
+	}
+
+	userID, found := c.Get("id")
+	if !found {
+		errRes := response.ClientResponse(http.StatusBadRequest, "user id not found on server", nil, errors.New("userID not found on jwt payload"))
+		c.JSON(http.StatusBadRequest, errRes)
+		return
+	}
+
+	orderData, err := o.orderUseCase.GetEachProductOrderDetails(orderID, userID.(int))
+	if err != nil {
+		errRes := response.ClientResponse(http.StatusBadRequest, "error fetching each order details", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errRes)
+		return
+	}
+
+	succesRes := response.ClientResponse(http.StatusOK, "succesfully fetchef each product detaisl", orderData, nil)
+	c.JSON(http.StatusOK, succesRes)
 
 }

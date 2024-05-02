@@ -3,6 +3,8 @@ package interfaces
 import (
 	"project/pkg/utils/domain"
 	"project/pkg/utils/models"
+
+	"github.com/jung-kurt/gofpdf"
 )
 
 type AdminUseCase interface {
@@ -17,4 +19,7 @@ type AdminUseCase interface {
 	NewPaymentMethod(pMethod string) error
 	GetAllPaymentMethods() ([]models.GetPaymentMethods, error)
 	DeletePaymentMethod(paymentID int) error
+	FilteredSalesReport(timePeriod string) (models.SalesReport, error)
+	PrintSalesReport(sales []models.OrderDetailsAdmin) (*gofpdf.Fpdf, error)
+	SalesByDate(dayInt int, monthInt int, yearInt int) ([]models.OrderDetailsAdmin, error)
 }

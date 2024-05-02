@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
+	interfaces "project/pkg/helper/interface"
 	services "project/pkg/usecase/interface"
 	response "project/pkg/utils/Response"
 	models "project/pkg/utils/models"
@@ -12,11 +14,13 @@ import (
 
 type AdminHandler struct {
 	adminUseCase services.AdminUseCase
+	helper       interfaces.Helper
 }
 
-func NewAdminHandler(usecase services.AdminUseCase) *AdminHandler {
+func NewAdminHandler(usecase services.AdminUseCase, h interfaces.Helper) *AdminHandler {
 	return &AdminHandler{
 		adminUseCase: usecase,
+		helper:       h,
 	}
 }
 
@@ -220,8 +224,117 @@ func (ad *AdminHandler) DeletePaymentMethod(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, errRes)
 		return
 	}
-	
+
 	successRes := response.ClientResponse(http.StatusOK, "succesfully deleted this payment method ", nil, nil)
 	c.JSON(http.StatusOK, successRes)
 
+}
+
+func (ah *AdminHandler) FilteredSalesReport(c *gin.Context) {
+
+	timePeriod := c.Query("period")
+	salesReport, err := ah.adminUseCase.FilteredSalesReport(timePeriod)
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusInternalServerError, "error fetching filtered salesReport ", nil, err.Error())
+		c.JSON(http.StatusInternalServerError, errorRes)
+		return
+	}
+	message := "Successfully retrieved current " + timePeriod + " Data"
+
+	success := response.ClientResponse(http.StatusOK, message, salesReport, nil)
+	c.JSON(http.StatusOK, success)
+}
+
+func (a *AdminHandler) PrintSalesByDate(c *gin.Context) {
+	year := c.Query("year")
+	yearInt, err := strconv.Atoi(year)
+
+	if err != nil {
+		errRes := response.ClientResponse(http.StatusBadRequest, " error year conversion from string", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errRes)
+		return
+	}
+
+	month := c.Query("month")
+	monthInt, err := strconv.Atoi(month)
+
+	if err != nil {
+		errRes := response.ClientResponse(http.StatusBadRequest, "error month conversion from string", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errRes)
+		return
+	}
+
+	day := c.Query("day")
+	dayInt, err := strconv.Atoi(day)
+
+	if err != nil {
+		errRes := response.ClientResponse(http.StatusBadRequest, "error day conversion from string ", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errRes)
+		return
+	}
+
+	body, err := a.adminUseCase.SalesByDate(dayInt, monthInt, yearInt)
+
+	if err != nil {
+		errRes := response.ClientResponse(http.StatusBadRequest, "failed to fetch sales data", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errRes)
+		return
+	}
+	fmt.Println("body", body)
+
+	download := c.Query("download")
+	if download == "pdf" {
+		pdf, err := a.adminUseCase.PrintSalesReport(body)
+		if err != nil {
+			errRes := response.ClientResponse(http.StatusBadGateway, "error fetching sales data", nil, err.Error())
+			c.JSON(http.StatusBadRequest, errRes)
+			return
+		}
+		c.Header("Content-Disposition", "attachment;filename=totalsalesreport.pdf")
+
+		pdfFilePath := "../salesReport/totalsalesreport.pdf"
+
+		err = pdf.OutputFileAndClose(pdfFilePath)
+		if err != nil {
+			errRes := response.ClientResponse(http.StatusBadGateway, "error opening file", nil, err.Error())
+			c.JSON(http.StatusBadRequest, errRes)
+			return
+		}
+
+		c.Header("Content-Disposition", "attachment; filename=total_sales_report.pdf")
+		c.Header("Content-Type", "application/pdf")
+
+		c.File(pdfFilePath)
+
+		c.Header("Content-Type", "application/pdf")
+
+		err = pdf.Output(c.Writer)
+		if err != nil {
+			errRes := response.ClientResponse(http.StatusBadGateway, "error Printing", nil, err.Error())
+			c.JSON(http.StatusBadRequest, errRes)
+			return
+		}
+	} else {
+
+		excel, err := a.helper.ConvertToExel(body)
+		if err != nil {
+			errRes := response.ClientResponse(http.StatusBadGateway, "error Printing SAles Report", nil, err.Error())
+			c.JSON(http.StatusBadRequest, errRes)
+			return
+		}
+
+		fileName := "sales_report.xlsx"
+
+		c.Header("Content-Disposition", "attachment; filename="+fileName)
+		c.Header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+		if err := excel.Write(c.Writer); err != nil {
+			errRes := response.ClientResponse(http.StatusBadGateway, "Error in serving the sales report", nil, err.Error())
+			c.JSON(http.StatusBadRequest, errRes)
+			return
+		}
+	}
+
+	succesRes := response.ClientResponse(http.StatusOK, "successFully printed sales report", body, nil)
+	c.JSON(http.StatusOK, succesRes)
 }

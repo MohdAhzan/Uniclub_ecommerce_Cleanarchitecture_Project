@@ -3,6 +3,9 @@ package interfaces
 import (
 	"mime/multipart"
 	"project/pkg/utils/models"
+	"time"
+
+	"github.com/360EntSecGroup-Skylar/excelize"
 )
 
 type Helper interface {
@@ -20,4 +23,6 @@ type Helper interface {
 	SendMailToPhone(To, Subject, Msg string) error
 
 	GenerateReferralCode() (string, error)
+	ConvertToExel(sales []models.OrderDetailsAdmin) (*excelize.File, error)
+	GetTimeFromPeriod(timePeriod string) (time.Time, time.Time)
 }
