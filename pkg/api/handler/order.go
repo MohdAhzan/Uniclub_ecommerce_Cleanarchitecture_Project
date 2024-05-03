@@ -2,6 +2,7 @@ package handler
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	interfaces "project/pkg/usecase/interface"
 	response "project/pkg/utils/Response"
@@ -195,4 +196,34 @@ func (o *OrderHandler) GetEachProductOrderDetails(c *gin.Context) {
 	succesRes := response.ClientResponse(http.StatusOK, "succesfully fetchef each product detaisl", orderData, nil)
 	c.JSON(http.StatusOK, succesRes)
 
+}
+
+func (o *OrderHandler) CancelProductInOrder(c *gin.Context) {
+
+	odrString := c.Query("order_id")
+	pdtString := c.Query("product_id")
+	user_id, exist := c.Get("id")
+
+	orderID, err := strconv.Atoi(odrString)
+	if err != nil {
+		errRes := response.ClientResponse(http.StatusBadRequest, "error string conversion of order_id please enter in a valid format ", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errRes)
+		return
+	}
+
+	pID, err := strconv.Atoi(pdtString)
+	if err != nil {
+		errRes := response.ClientResponse(http.StatusBadRequest, "error string conversion of product_id please enter in a valid format ", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errRes)
+		return
+	}
+
+	if !exist {
+		errRes := response.ClientResponse(http.StatusBadRequest, "user id not found on server", nil, errors.New("userID not found on jwt payload").Error())
+		c.JSON(http.StatusBadRequest, errRes)
+		return
+
+	}
+	fmt.Println(user_id, orderID, pID)
+	// data,err:=o.orderUseCase.CancelProductInOrder(orderID, pID, user_id.(int))
 }
