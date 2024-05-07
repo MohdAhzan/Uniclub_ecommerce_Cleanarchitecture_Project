@@ -51,11 +51,12 @@ func (o *orderRepository) OrderItems(userID, addressID, payment_id, couponID int
 func (o *orderRepository) AddOrderProducts(orderID int, cart []models.GetCart) error {
 
 	for _, data := range cart {
-		var pID int
-		if err := o.DB.Raw("select product_id from inventories where product_name = ?", data.ProductName).Scan(&pID).Error; err != nil {
-			return err
-		}
-		if err := o.DB.Exec(`INSERT INTO order_items (order_id,inventory_id,quantity,total_price) VALUES(?,?,?,?)`, orderID, pID, data.Quantity, data.TotalPrice).Error; err != nil {
+		// var pID int
+		// data.
+		// if err := o.DB.Raw("select product_id from inventories where product_name = ?", data.ProductName).Scan(&pID).Error; err != nil {
+		// 	return err
+		// }
+		if err := o.DB.Exec(`INSERT INTO order_items (order_id,inventory_id,quantity,total_price) VALUES(?,?,?,?)`, orderID, data.ProductID, data.Quantity, data.TotalPrice).Error; err != nil {
 			return err
 		}
 	}

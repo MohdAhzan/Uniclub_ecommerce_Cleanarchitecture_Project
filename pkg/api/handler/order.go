@@ -225,5 +225,5 @@ func (o *OrderHandler) CancelProductInOrder(c *gin.Context) {
 
 	}
 	fmt.Println(user_id, orderID, pID)
-	// data,err:=o.orderUseCase.CancelProductInOrder(orderID, pID, user_id.(int))
+	// data, err := o.orderUseCase.CancelProductInOrder(orderID, pID, user_id.(int))
 }
