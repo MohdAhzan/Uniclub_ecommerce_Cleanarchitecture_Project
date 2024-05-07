@@ -18,5 +18,7 @@ type GetCart struct {
 	Quantity        int     `json:"quantity"`
 	StockAvailable  int     `json:"stock_available"`
 	TotalPrice      float64 `json:"total_price"`
+	CategoryOffer   string  `json:"category_offer"`
+	ProductOffer    string  `json:"product_offer"`
 	DiscountedPrice float64 `json:"discounted_price"`
 }

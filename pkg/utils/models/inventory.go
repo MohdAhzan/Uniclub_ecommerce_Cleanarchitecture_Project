@@ -10,6 +10,8 @@ type Inventories struct {
 	Price               float64 `json:"price"`
 	IfPresentAtWishlist bool    `json:"if_present_at_wishlist"`
 	IfPresentAtCart     bool    `json:"if_present_at_cart"`
+	Categoryoffer       string  `json:"category_offer"`
+	Productoffer        string  `json:"product_offer"`
 	DiscountedPrice     float64 `json:"discounted_price"`
 }
 

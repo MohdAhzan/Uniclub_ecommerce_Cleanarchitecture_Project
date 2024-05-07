@@ -15,7 +15,7 @@ type CategoryOffers struct {
 
 type InventoryOffers struct {
 	ID           uint        `json:"id" gorm:"primarykey;not null"`
-	InventoryID  uint        `json:"category_id"`
+	InventoryID  uint        `json:"product_id"`
 	Inventories  Inventories `json:"-" gorm:"foreignkey:InventoryID;constraint:OnDelete:CASCADE"`
 	OfferName    string      `json:"offer_name"`
 	DiscountRate float64     `json:"discount_rate"`

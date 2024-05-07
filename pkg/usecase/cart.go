@@ -97,10 +97,18 @@ func (u CartUseCase) AddtoCart(pid, userID, quantity int) (models.CartResponse, 
 
 	// if the category id of these products are in offer table discount the price to new one
 
-	DiscountRate, err := u.offRepo.GetOfferDiscountPercentage(cartProduct.Category_id)
+	CategoryDiscountRate, CategoryOffer, err := u.offRepo.GetCategoryOfferDiscountPercentage(cartProduct.Category_id)
 	if err != nil {
 		return models.CartResponse{}, err
 	}
+	cartProduct.CategoryOffer = CategoryOffer
+	ProductDiscountRate, ProductOffer, err := u.offRepo.GetInventoryOfferDiscountPercentage(cartProduct.ProductID)
+	if err != nil {
+		return models.CartResponse{}, err
+	}
+	cartProduct.ProductOffer = ProductOffer
+	DiscountRate := CategoryDiscountRate + ProductDiscountRate
+
 	//Discounted Price = Original Price - (Original Price * (Discount Percentage / 100))
 
 	cartProduct.DiscountedPrice = cartProduct.TotalPrice - (cartProduct.TotalPrice * (DiscountRate / 100))
@@ -208,10 +216,17 @@ func (u CartUseCase) GetCart(userID int) (models.CartResponse, error) {
 
 		// if the category id of these products are in offer table discount the price to new one
 
-		DiscountRate, err := u.offRepo.GetOfferDiscountPercentage(c.Category_id)
+		CategoryDiscountRate, CategoryOffer, err := u.offRepo.GetCategoryOfferDiscountPercentage(c.Category_id)
 		if err != nil {
 			return models.CartResponse{}, err
 		}
+		c.CategoryOffer = CategoryOffer
+		ProductDiscountRate, ProductOffer, err := u.offRepo.GetInventoryOfferDiscountPercentage(c.ProductID)
+		if err != nil {
+			return models.CartResponse{}, err
+		}
+		c.ProductOffer = ProductOffer
+		DiscountRate := CategoryDiscountRate + ProductDiscountRate
 		//Discounted Price = Original Price - (Original Price * (Discount Percentage / 100))
 
 		c.DiscountedPrice = c.TotalPrice - (c.TotalPrice * (DiscountRate / 100))

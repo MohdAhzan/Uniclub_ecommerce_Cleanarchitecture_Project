@@ -72,13 +72,19 @@ func (Inv *InventoryUseCase) GetProductsForAdmin() ([]models.Inventories, error)
 
 		// if the category id of these products are in offer table discount the price to new one
 
-		DiscountRate, err := Inv.offerRepo.GetOfferDiscountPercentage(Product.CategoryID)
+		CategoryDiscountRate, CategoryOffer, err := Inv.offerRepo.GetCategoryOfferDiscountPercentage(Product.CategoryID)
 		if err != nil {
 			return []models.Inventories{}, err
 		}
+		Product.Categoryoffer = CategoryOffer
+		ProductDiscountRate, ProductOffer, err := Inv.offerRepo.GetInventoryOfferDiscountPercentage(int(Product.Product_ID))
+		if err != nil {
+			return []models.Inventories{}, err
+		}
+		Product.Productoffer = ProductOffer
 
 		var discount float64
-
+		DiscountRate := CategoryDiscountRate + ProductDiscountRate
 		if DiscountRate > 0 {
 			discount = (Product.Price * float64(DiscountRate)) / 100
 		}
@@ -107,14 +113,20 @@ func (Inv *InventoryUseCase) GetProductsForUsers() ([]models.Inventories, error)
 	for i, Product := range productDetails {
 
 		// if the category id of these products are in offer table discount the price to new one
-
-		DiscountRate, err := Inv.offerRepo.GetOfferDiscountPercentage(Product.CategoryID)
+		CategoryDiscountRate, categoryOffer, err := Inv.offerRepo.GetCategoryOfferDiscountPercentage(Product.CategoryID)
+		if err != nil {
+			return []models.Inventories{}, err
+		}
+		Product.Categoryoffer = categoryOffer
+		ProductDiscountRate, productOffer, err := Inv.offerRepo.GetInventoryOfferDiscountPercentage(int(Product.Product_ID))
 		if err != nil {
 			return []models.Inventories{}, err
 		}
 
-		var discount float64
+		Product.Productoffer = productOffer
 
+		var discount float64
+		DiscountRate := CategoryDiscountRate + ProductDiscountRate
 		if DiscountRate > 0 {
 			discount = (Product.Price * float64(DiscountRate)) / 100
 		}
@@ -167,13 +179,20 @@ func (Inv *InventoryUseCase) SearchProducts(pdtName string) ([]models.Inventorie
 
 		// if the category id of these products are in offer table discount the price to new one
 
-		DiscountRate, err := Inv.offerRepo.GetOfferDiscountPercentage(Product.CategoryID)
+		CategoryDiscountRate, CategoryOffer, err := Inv.offerRepo.GetCategoryOfferDiscountPercentage(Product.CategoryID)
 		if err != nil {
 			return []models.Inventories{}, err
 		}
 
-		var discount float64
+		Product.Categoryoffer = CategoryOffer
+		ProductDiscountRate, ProductOffer, err := Inv.offerRepo.GetInventoryOfferDiscountPercentage(int(Product.Product_ID))
+		if err != nil {
+			return []models.Inventories{}, err
+		}
 
+		Product.Productoffer = ProductOffer
+		var discount float64
+		DiscountRate := CategoryDiscountRate + ProductDiscountRate
 		if DiscountRate > 0 {
 			discount = (Product.Price * float64(DiscountRate)) / 100
 		}

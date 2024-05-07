@@ -56,6 +56,11 @@ func AdminRoutes(engine *gin.RouterGroup,
 			offerManagment.GET("/category", OfferHandler.GetAllCategoryOffers)
 			offerManagment.PUT("/category", OfferHandler.EditCategoryOffer)
 			offerManagment.DELETE("/category", OfferHandler.ValidorInvalidCategoryOffers)
+
+			offerManagment.POST("/product", OfferHandler.AddInventoryOffer)
+			offerManagment.GET("/product", OfferHandler.GetInventoryOffers)
+			offerManagment.PUT("/product", OfferHandler.EditInventoryOffer)
+			offerManagment.DELETE("/product", OfferHandler.ValidorInvalidInventoryOffers)
 		}
 
 		payment := engine.Group("/payment-methods")

@@ -59,7 +59,7 @@ func (h *helper) GenerateTokenAdmin(admin models.AdminDetailsResponse) (string, 
 		Email: admin.Email,
 		Role:  "admin",
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * 20)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 12)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
 	}
@@ -306,7 +306,7 @@ func (h *helper) ConvertToExel(sales []models.OrderDetailsAdmin) (*excelize.File
 		col2 := fmt.Sprintf("B%d", i+2)
 
 		file.SetCellValue("Sheet1", col1, sale.ProductName)
-		file.SetCellValue("Sheet1", col2, sale.TotalAmount)	
+		file.SetCellValue("Sheet1", col2, sale.TotalAmount)
 		Limit = i + 3
 		Total += sale.TotalAmount
 
