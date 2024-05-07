@@ -76,12 +76,12 @@ func (Inv *InventoryUseCase) GetProductsForAdmin() ([]models.Inventories, error)
 		if err != nil {
 			return []models.Inventories{}, err
 		}
-		Product.Categoryoffer = CategoryOffer
+		productDetails[i].Categoryoffer = CategoryOffer
 		ProductDiscountRate, ProductOffer, err := Inv.offerRepo.GetInventoryOfferDiscountPercentage(int(Product.Product_ID))
 		if err != nil {
 			return []models.Inventories{}, err
 		}
-		Product.Productoffer = ProductOffer
+		productDetails[i].Productoffer = ProductOffer
 
 		var discount float64
 		DiscountRate := CategoryDiscountRate + ProductDiscountRate
@@ -117,13 +117,13 @@ func (Inv *InventoryUseCase) GetProductsForUsers() ([]models.Inventories, error)
 		if err != nil {
 			return []models.Inventories{}, err
 		}
-		Product.Categoryoffer = categoryOffer
+		productDetails[i].Categoryoffer = categoryOffer
 		ProductDiscountRate, productOffer, err := Inv.offerRepo.GetInventoryOfferDiscountPercentage(int(Product.Product_ID))
 		if err != nil {
 			return []models.Inventories{}, err
 		}
 
-		Product.Productoffer = productOffer
+		productDetails[i].Productoffer = productOffer
 
 		var discount float64
 		DiscountRate := CategoryDiscountRate + ProductDiscountRate
@@ -135,8 +135,8 @@ func (Inv *InventoryUseCase) GetProductsForUsers() ([]models.Inventories, error)
 
 		Product.DiscountedPrice = Product.Price - discount
 
-		fmt.Println("discounted Price", Product.DiscountedPrice)
-		fmt.Println("ORginal Price", Product.Price)
+		// fmt.Println("discounted Price", Product.DiscountedPrice)
+		// fmt.Println("ORginal Price", Product.Price)
 
 		productDetails[i].DiscountedPrice = Product.DiscountedPrice
 	}
@@ -184,13 +184,13 @@ func (Inv *InventoryUseCase) SearchProducts(pdtName string) ([]models.Inventorie
 			return []models.Inventories{}, err
 		}
 
-		Product.Categoryoffer = CategoryOffer
+		productDetails[i].Categoryoffer = CategoryOffer
 		ProductDiscountRate, ProductOffer, err := Inv.offerRepo.GetInventoryOfferDiscountPercentage(int(Product.Product_ID))
 		if err != nil {
 			return []models.Inventories{}, err
 		}
 
-		Product.Productoffer = ProductOffer
+		productDetails[i].Productoffer = ProductOffer
 		var discount float64
 		DiscountRate := CategoryDiscountRate + ProductDiscountRate
 		if DiscountRate > 0 {
