@@ -18,9 +18,10 @@ type OrderUseCase struct {
 	helper      helper.Helper
 	couponRepo  services.CouponRepository
 	offerRepo   services.OfferRepository
+	invRepo     services.InventoryRepository
 }
 
-func NewOrderUseCase(orderRepo services.OrderRepository, cartRepo services.CartRepository, cartUseCase interfaces.CartUseCase, userRepo services.UserRepository, h helper.Helper, c services.CouponRepository, o services.OfferRepository) *OrderUseCase {
+func NewOrderUseCase(orderRepo services.OrderRepository, cartRepo services.CartRepository, cartUseCase interfaces.CartUseCase, userRepo services.UserRepository, h helper.Helper, c services.CouponRepository, o services.OfferRepository, inv services.InventoryRepository) *OrderUseCase {
 	return &OrderUseCase{
 		orderRepo:   orderRepo,
 		cartRepo:    cartRepo,
@@ -29,6 +30,7 @@ func NewOrderUseCase(orderRepo services.OrderRepository, cartRepo services.CartR
 		helper:      h,
 		couponRepo:  c,
 		offerRepo:   o,
+		invRepo:     inv,
 	}
 }
 func (o OrderUseCase) OrderFromCart(order models.Order, couponID int) error {
@@ -42,7 +44,8 @@ func (o OrderUseCase) OrderFromCart(order models.Order, couponID int) error {
 	var Total float64
 	for _, data := range cart.CartData {
 
-		Total += data.DiscountedPrice
+		Total = data.DiscountedPrice + Total
+		fmt.Println("total according to cart", Total)
 
 	}
 
@@ -343,8 +346,28 @@ func (o OrderUseCase) GetEachProductOrderDetails(orderID, userID int) (domain.Or
 		model.Quantity = uint(value.Quantity)
 		model.ProductPrice = value.ProductPrice
 
-		model.DiscountPrice = value.ProductPrice
-		model.ProductOffer = "No offer For you BITCHHH ASS MOTHERF**KER"
+		CategoryID, err := o.invRepo.GetCategoryID(int(value.ProductID))
+		if err != nil {
+			return domain.OrderDetailsSeparate{}, err
+		}
+		catOFF, catOfferName, err := o.offerRepo.GetCategoryOfferDiscountPercentage(CategoryID)
+		if err != nil {
+			return domain.OrderDetailsSeparate{}, err
+		}
+
+		pdtOFF, pdtOfferName, err := o.offerRepo.GetInventoryOfferDiscountPercentage(int(value.ProductID))
+		if err != nil {
+			return domain.OrderDetailsSeparate{}, err
+		}
+
+		totalOFF := catOFF + pdtOFF
+
+		totalDiscount := (value.ProductPrice * totalOFF) / 100
+		value.DiscountPrice = value.ProductPrice - totalDiscount
+
+		model.DiscountPrice = value.DiscountPrice
+		OfferName := catOfferName + "," + pdtOfferName
+		model.ProductOffer = OfferName
 		AllIndividualOrders = append(AllIndividualOrders, model)
 	}
 
@@ -359,4 +382,104 @@ func (o OrderUseCase) GetEachProductOrderDetails(orderID, userID int) (domain.Or
 	AllData.Total = orderData.Final_Price
 
 	return AllData, nil
+}
+
+func (o OrderUseCase) CancelProductInOrder(orderID, pID, user_id int) (domain.OrderDetailsSeparate, error) {
+
+	err := o.orderRepo.CheckOrderByID(orderID)
+	if err != nil {
+		return domain.OrderDetailsSeparate{}, err
+	}
+
+	status, err := o.orderRepo.CheckOrderStatusByID(orderID)
+	if err != nil {
+		return domain.OrderDetailsSeparate{}, err
+	}
+	if status == "CANCELED" {
+		return domain.OrderDetailsSeparate{}, errors.New("this order is already cancelled")
+	}
+	if status == "RETURNED" {
+		return domain.OrderDetailsSeparate{}, errors.New("this order is already Returned")
+
+	}
+	if status == "DELIVERED" {
+		return domain.OrderDetailsSeparate{}, errors.New("this order is already DELIVERED ")
+
+	}
+
+	count, err := o.orderRepo.CheckIndividualOrders(orderID, pID)
+	if err != nil {
+		return domain.OrderDetailsSeparate{}, err
+	}
+
+	if count < 1 {
+		return domain.OrderDetailsSeparate{}, errors.New("no product is in this order ID ")
+	}
+
+	//delete from order_items
+	//take that product order amount from it
+	//(order 24 has 2 products	product 2 and 3 suppose user want to cancel 3  so in
+	// order_items table the price of this pdt is 15000 which is the actual amount)
+
+	productPrice, err := o.orderRepo.DeleteProductInOrder(orderID, pID)
+	fmt.Println("priiiiiiiiiiiiiiiiiiiiiiiiiiiiii", productPrice)
+	if err != nil {
+		return domain.OrderDetailsSeparate{}, err
+	}
+
+	//apply the discount to make the product price same as when user ordered ...
+
+	categoryID, err := o.invRepo.GetCategoryID(pID)
+	if err != nil {
+		return domain.OrderDetailsSeparate{}, err
+	}
+	catOFF, _, err := o.offerRepo.GetCategoryOfferDiscountPercentage(categoryID)
+	if err != nil {
+		return domain.OrderDetailsSeparate{}, err
+	}
+
+	pdtOFF, _, err := o.offerRepo.GetInventoryOfferDiscountPercentage(pID)
+	if err != nil {
+		return domain.OrderDetailsSeparate{}, err
+	}
+	totalOFF := catOFF + pdtOFF
+	pdtDiscountPrice := (productPrice * totalOFF) / 100
+	newProductPrice := productPrice - pdtDiscountPrice
+
+	OrderPrice, err := o.orderRepo.FindOrderAmount(orderID)
+	if err != nil {
+		return domain.OrderDetailsSeparate{}, err
+	}
+
+	//reduce the product order price from total order price
+	NewPrice := OrderPrice - newProductPrice
+	err = o.orderRepo.UpdateFinalOrderPrice(orderID, NewPrice)
+	if err != nil {
+		return domain.OrderDetailsSeparate{}, err
+	}
+
+	// check if user paid the order if paid transfer the amount to his wallet
+	paymentStatus, err := o.orderRepo.GetPaymentStatusByID(orderID)
+	if err != nil {
+		return domain.OrderDetailsSeparate{}, err
+	}
+	if paymentStatus == "PAID" {
+		var wallet models.AddMoneytoWallet
+
+		wallet.Amount = newProductPrice
+		wallet.UserID = user_id
+		wallet.TranscationType = "PDT_CANCELLED"
+		err := o.userRepo.AddMoneytoWallet(wallet)
+		if err != nil {
+			return domain.OrderDetailsSeparate{}, err
+		}
+
+	}
+
+	orderData, err := o.GetEachProductOrderDetails(orderID, user_id)
+	if err != nil {
+		return domain.OrderDetailsSeparate{}, err
+	}
+
+	return orderData, nil
 }

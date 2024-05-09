@@ -225,5 +225,15 @@ func (o *OrderHandler) CancelProductInOrder(c *gin.Context) {
 
 	}
 	fmt.Println(user_id, orderID, pID)
-	// data, err := o.orderUseCase.CancelProductInOrder(orderID, pID, user_id.(int))
+	orderData, err := o.orderUseCase.CancelProductInOrder(orderID, pID, user_id.(int))
+
+	if err != nil {
+		errRes := response.ClientResponse(http.StatusBadRequest, "error cancelling Product from this Order", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errRes)
+		return
+	}
+
+	successRes := response.ClientResponse(http.StatusOK, "successfully cancelled the product from this order", orderData, nil)
+	c.JSON(http.StatusOK, successRes)
+
 }

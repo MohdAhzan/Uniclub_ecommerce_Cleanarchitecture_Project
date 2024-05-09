@@ -51,11 +51,7 @@ func (o *orderRepository) OrderItems(userID, addressID, payment_id, couponID int
 func (o *orderRepository) AddOrderProducts(orderID int, cart []models.GetCart) error {
 
 	for _, data := range cart {
-		// var pID int
-		// data.
-		// if err := o.DB.Raw("select product_id from inventories where product_name = ?", data.ProductName).Scan(&pID).Error; err != nil {
-		// 	return err
-		// }
+
 		if err := o.DB.Exec(`INSERT INTO order_items (order_id,inventory_id,quantity,total_price) VALUES(?,?,?,?)`, orderID, data.ProductID, data.Quantity, data.TotalPrice).Error; err != nil {
 			return err
 		}
@@ -243,4 +239,37 @@ func (o *orderRepository) GetAllOrderItemsByOrderID(orderID int) ([]domain.EachP
 	fmt.Println(data)
 	return Allmodel, nil
 
+}
+
+func (o *orderRepository) CheckIndividualOrders(orderID, pID int) (int, error) {
+
+	var count int
+
+	err := o.DB.Raw("select count(*) from order_items where order_id = ? and inventory_id = ?", orderID, pID).Scan(&count).Error
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
+func (o *orderRepository) DeleteProductInOrder(orderID, pID int) (float64, error) {
+
+	var productPrice float64
+
+	// err := o.DB.Exec(`delete from order_items where order_id = ? and inventory_id = ? RETURNING total_price`).Scan(&productPrice).Error
+	err := o.DB.Raw("DELETE FROM order_items WHERE order_id = $1 AND inventory_id = $2 RETURNING total_price", orderID, pID).Scan(&productPrice).Error
+	if err != nil {
+		return 0, err
+	}
+
+	return productPrice, nil
+}
+
+func (o *orderRepository) UpdateFinalOrderPrice(orderID int, NewPrice float64) error {
+
+	err := o.DB.Exec(`UPDATE orders SET final_price = ? where id = ?`, NewPrice, orderID).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }
