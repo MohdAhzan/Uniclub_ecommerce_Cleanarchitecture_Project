@@ -256,7 +256,6 @@ func (o *orderRepository) DeleteProductInOrder(orderID, pID int) (float64, error
 
 	var productPrice float64
 
-	// err := o.DB.Exec(`delete from order_items where order_id = ? and inventory_id = ? RETURNING total_price`).Scan(&productPrice).Error
 	err := o.DB.Raw("DELETE FROM order_items WHERE order_id = $1 AND inventory_id = $2 RETURNING total_price", orderID, pID).Scan(&productPrice).Error
 	if err != nil {
 		return 0, err

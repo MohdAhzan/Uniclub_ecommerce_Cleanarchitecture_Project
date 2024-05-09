@@ -418,8 +418,6 @@ func (o OrderUseCase) CancelProductInOrder(orderID, pID, user_id int) (domain.Or
 
 	//delete from order_items
 	//take that product order amount from it
-	//(order 24 has 2 products	product 2 and 3 suppose user want to cancel 3  so in
-	// order_items table the price of this pdt is 15000 which is the actual amount)
 
 	productPrice, err := o.orderRepo.DeleteProductInOrder(orderID, pID)
 	if err != nil {
