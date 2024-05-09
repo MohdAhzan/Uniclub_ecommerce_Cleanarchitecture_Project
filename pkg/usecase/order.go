@@ -422,7 +422,6 @@ func (o OrderUseCase) CancelProductInOrder(orderID, pID, user_id int) (domain.Or
 	// order_items table the price of this pdt is 15000 which is the actual amount)
 
 	productPrice, err := o.orderRepo.DeleteProductInOrder(orderID, pID)
-	fmt.Println("priiiiiiiiiiiiiiiiiiiiiiiiiiiiii", productPrice)
 	if err != nil {
 		return domain.OrderDetailsSeparate{}, err
 	}
