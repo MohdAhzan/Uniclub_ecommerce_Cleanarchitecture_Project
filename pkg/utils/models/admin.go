@@ -30,3 +30,11 @@ type OrderDetailsAdmin struct {
 	TotalAmount float64 `gorm:"column:total_amount"`
 	ProductName string  `gorm:"column:product_name"`
 }
+
+type TopSellers struct {
+	ProductName string `gorm:"column:product_name"`
+	CategoryID  int    `gorm:"column:category_id"`
+	Image       string `gorm:"column:image"`
+	Size        string `gorm:"column:size"`
+	TotalSold   int    `gorm:"column:total_sold"`
+}

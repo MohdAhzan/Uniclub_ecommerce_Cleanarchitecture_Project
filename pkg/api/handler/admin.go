@@ -338,3 +338,40 @@ func (a *AdminHandler) PrintSalesByDate(c *gin.Context) {
 	succesRes := response.ClientResponse(http.StatusOK, "successFully printed sales report", body, nil)
 	c.JSON(http.StatusOK, succesRes)
 }
+
+func (a *AdminHandler) ChartReportWithFilter(c *gin.Context) {
+
+	yearStr := c.Query("yearly")
+
+	year, err := strconv.Atoi(yearStr)
+	if err != nil {
+		errRes := response.ClientResponse(http.StatusBadRequest, "error year conversion from string", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errRes)
+		return
+
+	}
+
+	monthStr := c.Query("monthly")
+	// if err!= nil {
+	// 	errRes := response.ClientResponse(http.StatusBadRequest, "error month conversion from string", nil, err.Error())
+	// 	c.JSON(http.StatusBadRequest, errRes)
+	// 	return
+	// }
+
+	fmt.Println(year, monthStr)
+
+}
+
+func (a *AdminHandler) TopSellers(c *gin.Context) {
+
+	salesData, err := a.adminUseCase.TopSellers()
+	if err != nil {
+		errRes := response.ClientResponse(http.StatusBadRequest, "error fetching sales Data", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errRes)
+		return
+	}
+
+	succesRes := response.ClientResponse(http.StatusOK, "successFully fetched sales Data", salesData, nil)
+	c.JSON(http.StatusOK, succesRes)
+
+}

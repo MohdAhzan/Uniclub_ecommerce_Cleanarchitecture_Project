@@ -24,7 +24,8 @@ type OrderRepository interface {
 	GetPaymentStatusByID(orderID int) (string, error)
 	GetAllOrderItemsByOrderID(orderID int) ([]domain.EachProductOrderDetails, error)
 	CheckIndividualOrders(orderID, pID int) (int, error)
-	// FindOrderProductOffers(orderID int)
+	CheckOrderCount(orderID int) (int, error)
 	DeleteProductInOrder(orderID, pID int) (float64, error)
 	UpdateFinalOrderPrice(orderID int, NewPrice float64) error
+	GetOrderProductNames(pID int) (string, error)
 }

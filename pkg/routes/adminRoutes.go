@@ -81,6 +81,8 @@ func AdminRoutes(engine *gin.RouterGroup,
 
 		engine.GET("/printsales", adminHandler.PrintSalesByDate)
 		engine.GET("/currentsalesreport", adminHandler.FilteredSalesReport)
+		// engine.GET("/saleschart", adminHandler.ChartReportWithFilter)
+		engine.GET("/topsellers",adminHandler.TopSellers)
 
 	}
 }

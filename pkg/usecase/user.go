@@ -79,7 +79,7 @@ func (u *userUseCase) UserSignup(user models.UserDetails, refCode string) (model
 		if err != nil {
 			return models.TokenUsers{}, err
 		}
-		fmt.Println("WHAT THE FUCKKKKKKKKKKKKKKKKKKKKKKKKK")
+
 		exists := u.userRepo.CheckUserAvailability(refferedUser.Email)
 		if exists {
 			// credit 100rs to referred User
@@ -87,7 +87,6 @@ func (u *userUseCase) UserSignup(user models.UserDetails, refCode string) (model
 			model.UserID = userID
 			model.Amount = 100 //100rs  for referred user
 			model.TranscationType = "REFERAL"
-			fmt.Println("WHAT THE FUCKKKKKKKKKKKKKKKKKKKKKKKKK WORKINGG")
 
 			err = u.userRepo.AddMoneytoWallet(model)
 			if err != nil {
@@ -103,9 +102,6 @@ func (u *userUseCase) UserSignup(user models.UserDetails, refCode string) (model
 			}
 
 		}
-	} else {
-		// noRefMsg:=fmt.Errorf("no refereal")
-		fmt.Println("What the fuck in else case where len")
 	}
 
 	// creating a jwt token for clients

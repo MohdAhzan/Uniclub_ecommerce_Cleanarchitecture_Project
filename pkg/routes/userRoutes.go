@@ -81,6 +81,7 @@ func UserRoutes(engine *gin.RouterGroup,
 			orders.DELETE("", orderHandler.CancelOrder)
 			orders.DELETE("/product/:id", orderHandler.CancelProductInOrder)
 			orders.PUT("/return", orderHandler.ReturnOrder)
+			orders.GET("/invoice",orderHandler.PrintInvoice)
 		}
 
 		checkout := engine.Group("/checkout")
