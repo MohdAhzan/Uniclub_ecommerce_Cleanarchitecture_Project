@@ -252,17 +252,6 @@ func (o *orderRepository) CheckIndividualOrders(orderID, pID int) (int, error) {
 	return count, nil
 }
 
-func (o *orderRepository) CheckOrderCount(orderID int) (int, error) {
-
-	var count int
-
-	err := o.DB.Raw("select count(*) from order_items where order_id = ? ", orderID).Scan(&count).Error
-	if err != nil {
-		return 0, err
-	}
-	return count, nil
-}
-
 func (o *orderRepository) DeleteProductInOrder(orderID, pID int) (float64, error) {
 
 	var productPrice float64
@@ -282,13 +271,4 @@ func (o *orderRepository) UpdateFinalOrderPrice(orderID int, NewPrice float64) e
 		return err
 	}
 	return nil
-}
-
-func (o *orderRepository) GetOrderProductNames(pID int) (string, error) {
-	var pdtName string
-	err := o.DB.Raw("select product_name from inventories where product_id = ?", pID).Scan(&pdtName).Error
-	if err != nil {
-		return "", err
-	}
-	return pdtName, nil
 }

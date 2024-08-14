@@ -120,15 +120,13 @@ func (ad *adminRepository) GetAllOrderDetailsByStatus() (domain.AdminOrdersRespo
 
 	var pending []domain.AdminOrderDetails
 
-	err := ad.db.Raw(`SELECT o.id, o.created_at, o.updated_at,u.name, a.*,p.payment_name, o.final_price as total , o.order_status, o.payment_status 
+	err := ad.db.Raw(`SELECT o.id, o.created_at, o.updated_at,u.name, a.*,o.payment_method, o.price as total , o.order_status, o.payment_status 
 FROM 
     orders o 
 JOIN 
     users u ON o.user_id = u.id 
 JOIN 
     addresses a ON o.address_id = a.id 
-JOIN
-payment_methods p ON o.payment_method_id = p.id
 WHERE 
     o.order_status = 'PENDING'`).Scan(&pending).Error
 	fmt.Println(pending, "pending orders.............................................")
@@ -138,33 +136,28 @@ WHERE
 
 	var shipped []domain.AdminOrderDetails
 
-	err = ad.db.Raw(`SELECT o.id, o.created_at, o.updated_at,u.name, a.*,p.payment_name, o.final_price as total , o.order_status, o.payment_status 
+	err = ad.db.Raw(`SELECT o.id, o.created_at, o.updated_at,u.name, a.*,o.payment_method, o.price as total, o.order_status, o.payment_status 
 	FROM 
 		orders o 
 	JOIN 
 		users u ON o.user_id = u.id 
 	JOIN 
 		addresses a ON o.address_id = a.id 
-	JOIN
-	payment_methods p ON o.payment_method_id = p.id
 	WHERE 
-		o.order_status = 'SHIPPED'`).Scan(&shipped).Error
-	fmt.Println(pending, "SHIPEEEEEE orders.............................................")
+		o.order_status = 'SHIPPED' `).Scan(&shipped).Error
 	if err != nil {
 		return domain.AdminOrdersResponse{}, err
 	}
 
 	var delivered []domain.AdminOrderDetails
 
-	err = ad.db.Raw(`SELECT o.id, o.created_at, o.updated_at,u.name, a.*,p.payment_name, o.final_price as total , o.order_status, o.payment_status 
+	err = ad.db.Raw(`SELECT o.id, o.created_at, o.updated_at,u.name, a.*,o.payment_method, o.price as total, o.order_status, o.payment_status 
 	FROM 
 		orders o 
 	JOIN 
 		users u ON o.user_id = u.id 
 	JOIN 
 		addresses a ON o.address_id = a.id 
-	JOIN
-	payment_methods p ON o.payment_method_id = p.id
 	WHERE 
 		o.order_status = 'DELIVERED'`).Scan(&delivered).Error
 	if err != nil {
@@ -173,15 +166,13 @@ WHERE
 
 	var cancelled []domain.AdminOrderDetails
 
-	err = ad.db.Raw(`SELECT o.id, o.created_at, o.updated_at,u.name, a.*,p.payment_name, o.final_price as total , o.order_status, o.payment_status 
+	err = ad.db.Raw(`SELECT o.id, o.created_at, o.updated_at,u.name, a.*,o.payment_method, o.price, o.order_status, o.payment_status 
 	FROM 
 		orders o 
 	JOIN 
 		users u ON o.user_id = u.id 
 	JOIN 
 		addresses a ON o.address_id = a.id 
-	JOIN
-	payment_methods p ON o.payment_method_id = p.id
 	WHERE 
 		o.order_status = 'CANCELED'`).Scan(&cancelled).Error
 	if err != nil {
@@ -190,32 +181,28 @@ WHERE
 
 	var return_requested []domain.AdminOrderDetails
 
-	err = ad.db.Raw(`SELECT o.id, o.created_at, o.updated_at,u.name, a.*,p.payment_name, o.final_price as total , o.order_status, o.payment_status 
+	err = ad.db.Raw(`SELECT o.id, o.created_at, o.updated_at,u.name , a.*,o.payment_method, o.price, o.order_status, o.payment_status 
 	FROM 
 		orders o 
 	JOIN 
 		users u ON o.user_id = u.id 
 	JOIN 
 		addresses a ON o.address_id = a.id 
-	JOIN
-	payment_methods p ON o.payment_method_id = p.id
 	WHERE 
-		o.order_status = 'RETURN_REQUESTED'`).Scan(&return_requested).Error
+		o.order_status ='RETURN_REQUESTED'`).Scan(&return_requested).Error
 	if err != nil {
 		return domain.AdminOrdersResponse{}, err
 	}
 
 	var returned []domain.AdminOrderDetails
 
-	err = ad.db.Raw(`SELECT o.id, o.created_at, o.updated_at,u.name, a.*,p.payment_name, o.final_price as total , o.order_status, o.payment_status 
+	err = ad.db.Raw(`SELECT o.id, o.created_at, o.updated_at,u.name , a.*,o.payment_method, o.price, o.order_status, o.payment_status 
 	FROM 
 		orders o 
 	JOIN 
 		users u ON o.user_id = u.id 
 	JOIN 
 		addresses a ON o.address_id = a.id 
-	JOIN
-	payment_methods p ON o.payment_method_id = p.id
 	WHERE 
 		o.order_status = 'RETURNED'`).Scan(&returned).Error
 	if err != nil {
@@ -269,12 +256,12 @@ func (ad *adminRepository) DeletePaymentMethod(paymentID int) error {
 
 func (ad *adminRepository) FilteredSalesReport(startTime time.Time, endTime time.Time) (models.SalesReport, error) {
 	var salesReport models.SalesReport
-	query := `
+	querry := `
 		SELECT COALESCE(SUM(final_price),0) 
 		FROM orders WHERE payment_status='PAID'
 		AND created_at >= ? AND created_at <= ?
 		`
-	result := ad.db.Raw(query, startTime, endTime).Scan(&salesReport.TotalSalesAmount)
+	result := ad.db.Raw(querry, startTime, endTime).Scan(&salesReport.TotalSalesAmount)
 	if result.Error != nil {
 		return models.SalesReport{}, result.Error
 	}
@@ -284,48 +271,48 @@ func (ad *adminRepository) FilteredSalesReport(startTime time.Time, endTime time
 		return models.SalesReport{}, result.Error
 	}
 
-	query = `
+	querry = `
 		SELECT COUNT(*) FROM orders 
 		WHERE payment_status = 'PAID' and 
 		created_at >= ? AND created_at <= ?
 		`
 
-	result = ad.db.Raw(query, startTime, endTime).Scan(&salesReport.CompletedOrders)
+	result = ad.db.Raw(querry, startTime, endTime).Scan(&salesReport.CompletedOrders)
 	if result.Error != nil {
 		return models.SalesReport{}, result.Error
 	}
 
-	query = `
+	querry = `
 		SELECT COUNT(*) FROM orders WHERE 
 		order_status = 'PENDING' AND created_at >= ? AND created_at<=?
 		`
-	result = ad.db.Raw(query, startTime, endTime).Scan(&salesReport.PendingOrders)
+	result = ad.db.Raw(querry, startTime, endTime).Scan(&salesReport.PendingOrders)
 	if result.Error != nil {
 		return models.SalesReport{}, result.Error
 	}
-	query = `
+	querry = `
 		SELECT COUNT(*) FROM orders WHERE 
 		order_status = 'CANCELED' AND created_at >= ? AND created_at<=?
 		`
-	result = ad.db.Raw(query, startTime, endTime).Scan(&salesReport.CancelledOrders)
+	result = ad.db.Raw(querry, startTime, endTime).Scan(&salesReport.CancelledOrders)
 	if result.Error != nil {
 		return models.SalesReport{}, result.Error
 	}
-	query = `
+	querry = `
 		SELECT COUNT(*) FROM orders WHERE 
 		order_status = 'RETURNED' AND created_at >= ? AND created_at<=?
 		`
-	result = ad.db.Raw(query, startTime, endTime).Scan(&salesReport.ReturnedOrders)
+	result = ad.db.Raw(querry, startTime, endTime).Scan(&salesReport.ReturnedOrders)
 	if result.Error != nil {
 		return models.SalesReport{}, result.Error
 	}
 
 	var inventoryID int
-	query = `
+	querry = `
 		SELECT inventory_id FROM order_items 
 		GROUP BY inventory_id order by SUM(quantity) DESC LIMIT 1
 		`
-	result = ad.db.Raw(query).Scan(&inventoryID)
+	result = ad.db.Raw(querry).Scan(&inventoryID)
 	if result.Error != nil {
 		return models.SalesReport{}, result.Error
 	}
@@ -392,16 +379,4 @@ func (ad *adminRepository) SalesByDay(yearInt int, monthInt int, dayInt int) ([]
 	}
 
 	return orderDetails, nil
-}
-
-func (ad *adminRepository) TopSellers() ([]models.TopSellers, error) {
-
-	var salesData []models.TopSellers
-
-	err := ad.db.Raw("SELECT i.product_name, i.category_id, i.image, i.size, SUM(o.quantity) AS total_sold	FROM order_items o	JOIN inventories i ON o.inventory_id = i.product_id GROUP BY i.product_name, i.category_id, i.image, i.size ORDER BY total_sold DESC LIMIT 10").Scan(&salesData).Error
-	if err != nil {
-		return []models.TopSellers{}, err
-	}
-
-	return salesData, nil
 }

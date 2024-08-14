@@ -333,14 +333,3 @@ func (ad *adminUseCase) PrintSalesReport(sales []models.OrderDetailsAdmin) (*gof
 
 	return pdf, nil
 }
-
-func (a *adminUseCase) TopSellers() ([]models.TopSellers, error) {
-
-	salesData, err := a.adminRepository.TopSellers()
-	if err != nil {
-		return []models.TopSellers{}, err
-	}
-
-	return salesData, nil
-
-}

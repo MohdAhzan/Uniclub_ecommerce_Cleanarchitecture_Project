@@ -22,5 +22,4 @@ type AdminUseCase interface {
 	FilteredSalesReport(timePeriod string) (models.SalesReport, error)
 	PrintSalesReport(sales []models.OrderDetailsAdmin) (*gofpdf.Fpdf, error)
 	SalesByDate(dayInt int, monthInt int, yearInt int) ([]models.OrderDetailsAdmin, error)
-	TopSellers() ([]models.TopSellers, error)
 }

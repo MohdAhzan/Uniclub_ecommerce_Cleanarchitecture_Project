@@ -8,10 +8,6 @@ import (
 	interfaces "project/pkg/usecase/interface"
 	"project/pkg/utils/domain"
 	"project/pkg/utils/models"
-	"strconv"
-	"time"
-
-	"github.com/jung-kurt/gofpdf"
 )
 
 type OrderUseCase struct {
@@ -46,23 +42,11 @@ func (o OrderUseCase) OrderFromCart(order models.Order, couponID int) error {
 
 	fmt.Println("model GET CART", cart)
 	var Total float64
-	paymentMethod, err := o.orderRepo.GetPaymentMethodsByID(order.PaymentID)
-	if err != nil {
-		return err
-	}
 	for _, data := range cart.CartData {
-		fmt.Println("cartPrice", data.TotalPrice)
 
 		Total = data.DiscountedPrice + Total
 		fmt.Println("total according to cart", Total)
 
-	}
-
-	//ORDERS ABOVE 5000RS SHOULD NOT BE ALLOWED FOR CASH ON DELIVERY
-	if Total > 5000 && paymentMethod == "Cash on Delivery" {
-
-		errMSg := fmt.Sprintln("ORDERS ABOVE 5000RS CAN'T ALLOW FOR CASH ON DELIVERY PAY USING ONLINEPAYMENT METHOD")
-		return errors.New(errMSg)
 	}
 
 	used, err := o.couponRepo.CheckIfUserUsedCoupon(order.UserID, couponID)
@@ -128,17 +112,13 @@ func (o OrderUseCase) Checkout(userID, couponID int) (models.CheckOut, error) {
 	}
 	fmt.Println(address)
 	var TotalCartPrice float64
-	var Final_Price float64
 	for _, data := range cart.CartData {
 		TotalCartPrice += data.TotalPrice
-		Final_Price += data.DiscountedPrice
-
 	}
 
-	fmt.Println(Final_Price, "this is after the for loop ")
-
 	//final price after applying coupon if any
-
+	var Final_Price float64
+	Final_Price = TotalCartPrice
 	used, err := o.couponRepo.CheckIfUserUsedCoupon(userID, couponID)
 	if err != nil {
 		return models.CheckOut{}, err
@@ -436,28 +416,6 @@ func (o OrderUseCase) CancelProductInOrder(orderID, pID, user_id int) (domain.Or
 		return domain.OrderDetailsSeparate{}, errors.New("no product is in this order ID ")
 	}
 
-	orderCount, err := o.orderRepo.CheckOrderCount(orderID)
-	if err != nil {
-		return domain.OrderDetailsSeparate{}, err
-	}
-	fmt.Println("count of products", orderCount)
-
-	if orderCount == 1 {
-		//if single product mark as cancelled and if paid add the money to wallet
-		fmt.Println("count of products", orderCount)
-		err := o.CancelOrder(orderID, user_id)
-		if err != nil {
-			return domain.OrderDetailsSeparate{}, err
-		}
-
-		orderData, err := o.GetEachProductOrderDetails(orderID, user_id)
-		if err != nil {
-			return domain.OrderDetailsSeparate{}, err
-		}
-
-		return orderData, nil
-	}
-	
 	//delete from order_items
 	//take that product order amount from it
 
@@ -521,146 +479,4 @@ func (o OrderUseCase) CancelProductInOrder(orderID, pID, user_id int) (domain.Or
 	}
 
 	return orderData, nil
-}
-
-func (o *OrderUseCase) PrintInvoice(orderID, userID int) (*gofpdf.Fpdf, error) {
-	if orderID <= 0 {
-		return nil, errors.New("enter valid Order ID")
-	}
-
-	err := o.orderRepo.CheckOrderByID(orderID)
-	if err != nil {
-		return nil, err
-	}
-
-	// userTest, err := or.orderRepository.UserOrderRelationship(orderId, userId)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// if userTest != userId {
-	// 	return nil, errors.New(errmsg.ErrUserOwnedOrder)
-	// }
-
-	orderDetails, err := o.GetOrderDetailsByOrderID(orderID, userID)
-	if err != nil {
-		return nil, err
-	}
-
-	// Address,orderData, err
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	items, err := o.orderRepo.GetAllOrderItemsByOrderID(orderID)
-	if err != nil {
-		return nil, err
-	}
-
-	if orderDetails.OrderStatus != "DELIVERED" {
-		return nil, errors.New("order is not yet delivered ")
-	}
-
-	// walletAmount, err := or.walletRepo.GetWalletHistoryAmount(orderId)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	totalPriceAmount, err := o.orderRepo.FindOrderAmount(orderID)
-	if err != nil {
-		return nil, err
-	}
-
-	pdf := gofpdf.New("P", "mm", "A4", "")
-	pdf.AddPage()
-
-	pdf.SetFont("Arial", "B", 30)
-	pdf.SetTextColor(31, 73, 125)
-	pdf.Cell(0, 20, "                 Product Invoice")
-	pdf.Ln(20)
-
-	pdf.SetFont("Arial", "I", 14)
-	pdf.SetTextColor(51, 51, 51)
-	pdf.Cell(0, 10, "Customer Details")
-	pdf.Ln(10)
-	customerDetails := []string{
-		"Name: " + orderDetails.Username,
-		"Address: " + orderDetails.Address.Address,
-		"LandMark: " + orderDetails.Address.LandMark,
-		"State: " + orderDetails.Address.State,
-		"City: " + orderDetails.Address.City,
-	}
-	for _, detail := range customerDetails {
-		pdf.Cell(0, 10, detail)
-		pdf.Ln(10)
-	}
-	pdf.Ln(10)
-
-	pdf.SetFont("Arial", "B", 16)
-	pdf.SetFillColor(217, 217, 217)
-	pdf.SetTextColor(0, 0, 0)
-	pdf.CellFormat(70, 10, "Item", "1", 0, "C", true, 0, "")
-	pdf.CellFormat(40, 10, "Price", "1", 0, "C", true, 0, "")
-	pdf.CellFormat(40, 10, "Quantity", "1", 0, "C", true, 0, "")
-	pdf.CellFormat(40, 10, "Final Price", "1", 0, "C", true, 0, "")
-	pdf.Ln(10)
-
-	pdf.SetFont("Arial", "", 12)
-	pdf.SetFillColor(255, 255, 255)
-	for _, item := range items {
-
-		ProductName, err := o.orderRepo.GetOrderProductNames(int(item.ProductID))
-		if err != nil {
-			return nil, err
-		}
-
-		pdf.CellFormat(70, 10, ProductName, "1", 0, "L", true, 0, "")
-		pdf.CellFormat(40, 10, "$"+strconv.FormatFloat(item.ProductPrice, 'f', 2, 64), "1", 0, "C", true, 0, "")
-		pdf.CellFormat(40, 10, strconv.Itoa(int(item.Quantity)), "1", 0, "C", true, 0, "")
-		pdf.CellFormat(40, 10, "$"+strconv.FormatFloat(item.ProductPrice*float64(item.Quantity), 'f', 2, 64), "1", 0, "C", true, 0, "")
-		pdf.Ln(10)
-	}
-	pdf.Ln(10)
-
-	var totalPrice float64
-	for _, item := range items {
-		totalPrice += item.ProductPrice * float64(item.Quantity)
-	}
-
-	pdf.SetFont("Arial", "B", 16)
-	pdf.SetFillColor(217, 217, 217)
-	pdf.CellFormat(120, 10, "Total Price:", "1", 0, "R", true, 0, "")
-	pdf.CellFormat(40, 10, "$"+strconv.FormatFloat(totalPrice, 'f', 2, 64), "1", 0, "C", true, 0, "")
-	pdf.Ln(10)
-
-	offerApplied := totalPrice - totalPriceAmount
-
-	pdf.SetFont("Arial", "B", 16)
-	pdf.SetFillColor(217, 217, 217)
-	pdf.CellFormat(120, 10, "Offer Applied:", "1", 0, "R", true, 0, "")
-	pdf.CellFormat(40, 10, "$"+strconv.FormatFloat(offerApplied, 'f', 2, 64), "1", 0, "C", true, 0, "")
-	pdf.Ln(10)
-	orderFinalPrice := totalPrice - offerApplied
-	pdf.SetFont("Arial", "B", 16)
-	pdf.SetFillColor(217, 217, 217)
-	pdf.CellFormat(120, 10, "Final Amount:", "1", 0, "R", true, 0, "")
-	pdf.CellFormat(40, 10, "$"+strconv.FormatFloat(orderFinalPrice, 'f', 2, 64), "1", 0, "C", true, 0, "")
-	pdf.Ln(10)
-
-	// pdf.SetFont("Arial", "B", 16)
-	// pdf.SetFillColor(217, 217, 217)
-	// pdf.CellFormat(120, 10, "Wallet Used:", "1", 0, "R", true, 0, "")
-	// pdf.CellFormat(40, 10, "$"+strconv.FormatFloat(walletAmount, 'f', 2, 64), "1", 0, "C", true, 0, "")
-	// pdf.Ln(10)
-
-	// LastFinal := orderFinalPrice - walletAmount
-	pdf.SetFont("Arial", "B", 16)
-	pdf.SetFillColor(217, 217, 217)
-	pdf.CellFormat(120, 10, "Final Paid Amount:", "1", 0, "R", true, 0, "")
-	pdf.CellFormat(40, 10, "$"+strconv.FormatFloat(orderDetails.Total, 'f', 2, 64), "1", 0, "C", true, 0, "")
-	pdf.Ln(10)
-
-	pdf.SetFont("Arial", "I", 12)
-	pdf.Cell(0, 10, "Generated by Uniclub Private Ltd. - "+time.Now().Format("2006-01-02 15:04:05"))
-	pdf.Ln(10)
-
-	return pdf, nil
 }
