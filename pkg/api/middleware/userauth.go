@@ -3,12 +3,25 @@ package middleware
 import (
 	"fmt"
 	"net/http"
+	"project/pkg/config"
 	"strings"
+
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 )
 
+var cfg config.Config
+
+func CfgHelper(conf config.Config){
+
+    cfg=conf
+}
+
+
+
+  
 func UserAuthMiddleware(c *gin.Context) {
+
 	tokenString := c.GetHeader("Authorization")
 	if tokenString == "" {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Missing authorization token"})
@@ -16,10 +29,11 @@ func UserAuthMiddleware(c *gin.Context) {
 		return
 	}
 	tokenString = strings.TrimPrefix(tokenString, "Bearer ")
+    
 
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-
-		return []byte("useraccesstokenasdioufou23854284jsdf9823jsdfh"), nil
+token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+      
+		return []byte(cfg.USERSECRET), nil
 	})
 
 	if err != nil || !token.Valid {

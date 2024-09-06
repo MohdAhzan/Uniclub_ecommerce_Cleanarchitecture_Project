@@ -15,8 +15,10 @@ func ConnectDatabase(cfg config.Config) (*gorm.DB, error) {
 	dsn := fmt.Sprintf("host=%s user=%s dbname=%s port=%s password=%s", cfg.DBHost, cfg.DBUser, cfg.DBName, cfg.DBPort, cfg.DBPassword)
 
 	db, dbErr := gorm.Open(postgres.Open(dsn), &gorm.Config{SkipDefaultTransaction: true})
+  
+  fmt.Println("admin secret\n",cfg.ADMINPASSWORD)
 
-	fmt.Println("error creating tables")
+	fmt.Println("error creating tables",cfg.ADMINSECRET)
 
 	if err := db.AutoMigrate(&domain.Inventories{}); err != nil {
 
@@ -69,7 +71,7 @@ func ConnectDatabase(cfg config.Config) (*gorm.DB, error) {
 	if err := db.AutoMigrate(&domain.CategoryOffers{}); err != nil {
 		return db, err
 	}
-	CheckAndCreateAdmin(db)
+	CheckAndCreateAdmin(cfg,db)
 
 	if err := db.AutoMigrate(&domain.InventoryOffers{}); err != nil {
 		return db, err
@@ -77,11 +79,11 @@ func ConnectDatabase(cfg config.Config) (*gorm.DB, error) {
 	return db, dbErr
 }
 
-func CheckAndCreateAdmin(db *gorm.DB) {
+func CheckAndCreateAdmin(cfg config.Config, db *gorm.DB) {
 	var count int64
 	db.Model(&domain.Admin{}).Count(&count)
 	if count == 0 {
-		password := "uniclubadmin"
+		password :=cfg.ADMINPASSWORD
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 		if err != nil {
 			return
@@ -92,6 +94,11 @@ func CheckAndCreateAdmin(db *gorm.DB) {
 			Email:    "uniclub@gmail.com",
 			Password: string(hashedPassword),
 		}
+
 		db.Create(&admin)
 	}
+
+
 }
+
+

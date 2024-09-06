@@ -22,4 +22,7 @@ type AdminRepository interface {
 	SalesByDay(yearInt int, monthInt int, dayInt int) ([]models.OrderDetailsAdmin, error)
 	SalesByMonth(yearInt int, monthInt int) ([]models.OrderDetailsAdmin, error)
 	SalesByYear(yearInt int) ([]models.OrderDetailsAdmin, error)
+  GetAdminHashPassword(id int)(string,error)
+  UpdateAdminPass(id int, NewPass string)error
+  
 }

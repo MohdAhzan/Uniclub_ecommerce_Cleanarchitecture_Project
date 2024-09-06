@@ -7,13 +7,13 @@ package di
 import (
 	http "project/pkg/api"
 	"project/pkg/api/handler"
+	"project/pkg/api/middleware"
 	"project/pkg/config"
 	"project/pkg/db"
 	"project/pkg/helper"
 	"project/pkg/redis"
 	"project/pkg/repository"
 	"project/pkg/usecase"
-	// "project/pkg/redis"
 )
 
 func InitializeAPI(cfg config.Config) (*http.ServerHTTP, error) {
@@ -26,6 +26,9 @@ func InitializeAPI(cfg config.Config) (*http.ServerHTTP, error) {
 	if err != nil {
 		return nil, err
 	}
+  
+  middleware.CfgHelper(cfg)
+
 
 	helper := helper.NewHelper(cfg)
 

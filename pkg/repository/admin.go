@@ -380,3 +380,33 @@ func (ad *adminRepository) SalesByDay(yearInt int, monthInt int, dayInt int) ([]
 
 	return orderDetails, nil
 }
+
+
+
+
+func (ad *adminRepository) GetAdminHashPassword(id int)(string,error){
+    
+  var hashPass string
+  
+  if err:=ad.db.Raw("SELECT  password from admins where id = ?",id).Scan(&hashPass).Error;err!=nil{
+    return "",err
+  }
+
+    return hashPass,nil
+}
+
+
+
+func (ad *adminRepository)UpdateAdminPass(id int, NewPass string)error{
+
+	result := ad.db.Exec(`UPDATE admins SET password = ? where id = ?`, NewPass, id)
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected < 1 {
+		return errors.New("nothing updated")
+	}
+  
+  return nil
+
+}

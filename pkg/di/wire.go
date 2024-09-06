@@ -12,7 +12,7 @@ import (
 	"project/pkg/repository"
 	"project/pkg/usecase"
 
-	"github.com/google/wire"
+	wire "github.com/google/wire"
 )
 
 func InitializeAPI(cfg config.Config) (*http.ServerHTTP, error) {
