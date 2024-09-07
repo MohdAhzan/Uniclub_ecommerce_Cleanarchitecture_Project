@@ -364,7 +364,7 @@ func (ad *AdminHandler)ChangePassword (c *gin.Context){
   err:=ad.adminUseCase.ChangePassword(adminPassChange,id.(int))
   if err!=nil{
 
-    errRes:=response.ClientResponse(http.StatusBadRequest,"error BindingJson Invalid Format",nil,err.Error())
+    errRes:=response.ClientResponse(http.StatusBadRequest,"Error changing your password",nil,err.Error())
     c.JSON(http.StatusBadRequest,errRes)
     return
 

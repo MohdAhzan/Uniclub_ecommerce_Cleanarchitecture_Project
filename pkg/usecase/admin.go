@@ -336,7 +336,11 @@ func (ad *adminUseCase) PrintSalesReport(sales []models.OrderDetailsAdmin) (*gof
 
 
 func (ad *adminUseCase)ChangePassword(changePasswordDetails models.AdminPasswordChange,id int)error{
-  
+
+  if changePasswordDetails.NewPassword==changePasswordDetails.CurrentPassword{
+
+    return fmt.Errorf("New Password is same as old one.Try again!!!")
+  }
       
   hashedPass,err:=ad.adminRepository.GetAdminHashPassword(id)
   if err!=nil{
@@ -349,9 +353,7 @@ func (ad *adminUseCase)ChangePassword(changePasswordDetails models.AdminPassword
   fmt.Println(changePasswordDetails.CurrentPassword,"currentPass")
 
   if err!=nil{
-
-    return err
-    // return fmt.Errorf("Incorrect Password Try again!!!")
+    return fmt.Errorf("Incorrect Password Try again!!!")
 
   }
  
