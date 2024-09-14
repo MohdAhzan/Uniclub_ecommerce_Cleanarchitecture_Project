@@ -201,6 +201,6 @@ func (inv *InventaryHandler) SearchProducts(c *gin.Context) {
 		return
 	}
 
-	successRes := response.ClientResponse(400, "successfully searched the product", searchedPdts, nil)
-	c.JSON(400, successRes)
+	successRes := response.ClientResponse(200, "successfully searched the product", searchedPdts, nil)
+	c.JSON(200, successRes)
 }
