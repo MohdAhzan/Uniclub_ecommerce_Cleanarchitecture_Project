@@ -1,6 +1,6 @@
 module project
 
-go 1.21.4
+go 1.23.1
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.26.1
@@ -9,6 +9,7 @@ require (
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/google/wire v0.6.0
 	github.com/joho/godotenv v1.5.1
+	github.com/razorpay/razorpay-go v1.3.2
 	golang.org/x/crypto v0.22.0
 	gorm.io/driver/postgres v1.5.7
 	gorm.io/gorm v1.25.9
@@ -39,7 +40,6 @@ require (
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/razorpay/razorpay-go v1.3.2 // indirect
 	golang.org/x/sync v0.7.0 // indirect
 )
 
