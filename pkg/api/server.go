@@ -20,7 +20,7 @@ func NewServerHTTP(userHandler *handler.UserHandler, adminHandler *handler.Admin
 	// logger
 	engine.Use(gin.Logger())
 	//LOAD HTML PATH
-	engine.LoadHTMLGlob("../template/*.html")
+	engine.LoadHTMLGlob("./template/*.html")
 
 	routes.UserRoutes(engine.Group("/users"), userHandler, otpHandler, inventoryHandler, cartHandler, orderHandler, paymentHandler, wishlistHandler, couponHandler)
 	routes.AdminRoutes(engine.Group("/admin"), adminHandler, categoryHandler, inventoryHandler, offerHandler, couponHandler)
