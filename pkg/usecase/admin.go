@@ -65,7 +65,7 @@ func (ad *adminUseCase) LoginHandler(adminDetails models.AdminLogin) (domain.Tok
 func (ad *adminUseCase) GetUsers() ([]models.UserDetailsAtAdmin, error) {
   users, err := ad.adminRepository.GetUsers()
   if err != nil {
-    return []models.UserDetailsAtAdmin{}, err
+    return []models.UserDetailsAtAdmin{}, errors.New("Error fetching UserDetails")
   }
   return users, nil
 }
