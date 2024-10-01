@@ -220,6 +220,8 @@ func (u CartUseCase) GetCart(userID int) (models.CartResponse, error) {
 		if err != nil {
 			return models.CartResponse{}, err
 		}
+    
+
 		c.CategoryOffer = CategoryOffer
 		ProductDiscountRate, ProductOffer, err := u.offRepo.GetInventoryOfferDiscountPercentage(c.ProductID)
 		if err != nil {

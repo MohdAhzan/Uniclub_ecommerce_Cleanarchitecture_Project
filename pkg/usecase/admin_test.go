@@ -58,8 +58,8 @@ func TestGetUser (t *testing.T){
         testcase.stub(*mockadminRepo)
         response,err:=mockadminUsecase.GetUsers()
 
-        assert.Equal(t,testcase.expect,response)
-        assert.Equal(t,testcase.expectErr,err)
+        assert.Equal(t,testcase.expect,response,"got expected test result")
+        assert.Equal(t,testcase.expectErr,err,"got expected test error")
         
     }  
 
@@ -69,4 +69,3 @@ func TestGetUser (t *testing.T){
 // mockgen -source=./pkg/usecase/interface/admin.go -destination=./pkg/mocks/admin/mock_admin_usecase.go -package=mocks
 //
 // mockgen -source=./pkg/repository/interface/admin.go -destination=./pkg/mocks/admin/mock_admin_repository.go  -package=mocks
-
