@@ -84,13 +84,31 @@ func (u CartUseCase) AddtoCart(pid, userID, quantity int) (models.CartResponse, 
 	}
 	var cartProduct models.GetCart
 	cartProduct.ProductID = pid
-	cartProduct.ProductName, _ = u.CartRepo.GetProductNames(pid)
-	cartProduct.Image, _ = u.invRepo.GetProductImages(pid)
-	cartProduct.Category_id, _ = u.invRepo.GetCategoryID(pid)
-	cartProduct.Quantity, _ = u.CartRepo.FindCartQuantity(pid, cartID)
+  cartProduct.ProductName, err = u.CartRepo.GetProductNames(pid)
+  if err!=nil{
+    return models.CartResponse{},err
+  }
+
+	cartProduct.Image, err = u.invRepo.GetProductImages(pid)
+  if err!=nil{
+    return models.CartResponse{},err
+  }
+	cartProduct.Category_id, err = u.invRepo.GetCategoryID(pid)
+  if err!=nil{
+    return models.CartResponse{},err
+  }
+	cartProduct.Quantity, err = u.CartRepo.FindCartQuantity(pid, cartID)
+  if err!=nil{
+    return models.CartResponse{},err
+  }
 
 	cartProduct.StockAvailable = stock - cartProduct.Quantity
-	price, _ := u.invRepo.FindPrice(pid)
+	
+  price, err := u.invRepo.FindPrice(pid)
+  if err!=nil{
+    return models.CartResponse{},err
+  }
+
 
 	cartProduct.TotalPrice = price * float64(cartProduct.Quantity)
 	//check if any offers are there
@@ -119,6 +137,10 @@ func (u CartUseCase) AddtoCart(pid, userID, quantity int) (models.CartResponse, 
 
 	return cartResponse, nil
 }
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 func (u CartUseCase) GetCart(userID int) (models.CartResponse, error) {
 
