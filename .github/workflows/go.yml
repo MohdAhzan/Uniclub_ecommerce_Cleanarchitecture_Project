@@ -6,6 +6,8 @@
     on:
       push:
         branches: [ "main" ]
+      push:
+        branches: [ "test" ]
       pull_request:
         branches: [ "main" ]
     
