@@ -28,16 +28,16 @@ func (c *categoryRepository) GetCategories() ([]domain.Category, error) {
 
 }
 
-func (p *categoryRepository) AddCategory(c domain.Category) (domain.Category, error) {
+func (p *categoryRepository) AddCategory(c string) (domain.Category, error) {
 	var b string
 
-	err := p.DB.Raw("INSERT INTO categories(category) VALUES (?) RETURNING category", c.Category).Scan(&b).Error
+	err := p.DB.Raw("INSERT INTO categories(category) VALUES (?) RETURNING category", c).Scan(&b).Error
 	if err != nil {
 		return domain.Category{}, nil
 	}
 
 	var categoryResponse domain.Category
-	err = p.DB.Raw(`SELECT p.id,p.category FROM categories p WHERE p.category = ?`, b).Scan(&categoryResponse).Error
+	err = p.DB.Raw(`SELECT id,category FROM categories  WHERE category = ?`, b).Scan(&categoryResponse).Error
 	if err != nil {
 		return domain.Category{}, err
 	}

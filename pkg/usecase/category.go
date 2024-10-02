@@ -18,10 +18,10 @@ func NewCategoryUseCase(repo interfaces.CategoryRepository) services.CategoryUse
 	}
 }
 
-func (cat *categoryUseCase) AddCategory(category domain.Category) (domain.Category, error) {
-	check := fmt.Sprint(category.Category)
+func (cat *categoryUseCase) AddCategory(category string) (domain.Category, error) {
 
-	exist, err := cat.repository.CheckCategory(check)
+    
+	exist, err := cat.repository.CheckCategory(category)
 	if err != nil {
 		return domain.Category{}, err
 	}

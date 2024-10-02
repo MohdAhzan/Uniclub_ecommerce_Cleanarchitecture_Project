@@ -1,14 +1,14 @@
 package usecase_test
 
 import (
-  mocks "project/pkg/mocks/admin"
-  "project/pkg/utils/models"
-  "testing"
+	mocks "project/pkg/mocks/user"
+	"project/pkg/utils/models"
+	"testing"
 
-  "project/pkg/usecase"
+	"project/pkg/usecase"
 
-  "github.com/golang/mock/gomock"
-  "github.com/stretchr/testify/assert"
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
 )
 
 

@@ -2,9 +2,9 @@ package handler
 
 import (
 	"net/http"
-	"project/pkg/utils/domain"
 	services "project/pkg/usecase/interface"
 	response "project/pkg/utils/Response"
+	"project/pkg/utils/domain"
 	"project/pkg/utils/models"
 
 	"github.com/gin-gonic/gin"
@@ -30,7 +30,7 @@ func (cat *CategoryHandler) AddCategory(c *gin.Context) {
 		return
 	}
 
-	CategoryResponse, err := cat.CategoryUseCase.AddCategory(category)
+	CategoryResponse, err := cat.CategoryUseCase.AddCategory(category.Category)
 	if err != nil {
 		errorRes := response.ClientResponse(http.StatusBadRequest, "Could not add the Category", nil, err.Error())
 		c.JSON(http.StatusBadRequest, errorRes)
