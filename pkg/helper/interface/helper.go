@@ -10,7 +10,7 @@ import (
 
 type Helper interface {
 	PasswordHashing(string) (string, error)
-	GenerateTokenClients(user models.UserDetailsResponse) (string, error)
+	GenerateTokenClients(user models.UserDetailsResponse) (string,string, error)
 	GenerateTokenAdmin(admin models.AdminDetailsResponse) (string, error)
 	CompareHashAndPassword(hashedPassword string, password string) error
 

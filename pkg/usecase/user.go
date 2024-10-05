@@ -30,17 +30,18 @@ var ErrorHashingPassword = "Error In Hashing Password"
 func (u *userUseCase) UserSignup(user models.UserDetails, refCode string) (models.TokenUsers, error) {
 
 	fmt.Println("<<<Add Users>>>")
-	//check if user already exists
+	//Check if user already exists
 	userExist := u.userRepo.CheckUserAvailability(user.Email)
 	if userExist {
 		return models.TokenUsers{}, errors.New("user already exist, please Signin")
 	}
 
 	if user.Password != user.ConfirmPassword {
-		return models.TokenUsers{}, errors.New("password does not match")
+		return models.TokenUsers{}, 
+    errors.New("password does not match")
 	}
 
-	// password Hashing
+	// Password Hashing
 
 	hashedPassword, err := u.helper.PasswordHashing(user.Password)
 	if err != nil {
@@ -49,7 +50,7 @@ func (u *userUseCase) UserSignup(user models.UserDetails, refCode string) (model
 
 	user.Password = hashedPassword
 
-	//create an referral ID for user
+//Create An referral ID for user
 	referalID, err := u.helper.GenerateReferralCode()
 	if err != nil {
 		return models.TokenUsers{}, err
@@ -106,14 +107,15 @@ func (u *userUseCase) UserSignup(user models.UserDetails, refCode string) (model
 
 	// creating a jwt token for clients
 
-	tokenString, err := u.helper.GenerateTokenClients(userdata)
+	tokenString,refreshString, err := u.helper.GenerateTokenClients(userdata)
 	if err != nil {
 		return models.TokenUsers{}, errors.New("could not create token due to some internal error")
 	}
 
 	return models.TokenUsers{
 		Users: userdata,
-		Token: tokenString,
+    AccessToken :tokenString ,
+    RefreshToken :refreshString ,
 	}, nil
 }
 
@@ -154,14 +156,15 @@ func (u *userUseCase) UserLoginHandler(user models.UserLogin) (models.TokenUsers
 	userDetails.Phone = user_details.Phone
 	userDetails.ReferralID = user_details.ReferralID
 
-	tokenString, err := u.helper.GenerateTokenClients(userDetails)
+	tokenString,refreshString, err := u.helper.GenerateTokenClients(userDetails)
 	if err != nil {
 		return models.TokenUsers{}, errors.New("couldn't generate token for client ")
 	}
 
 	return models.TokenUsers{
 		Users: userDetails,
-		Token: tokenString,
+		AccessToken:tokenString,
+    RefreshToken: refreshString,
 	}, nil
 }
 

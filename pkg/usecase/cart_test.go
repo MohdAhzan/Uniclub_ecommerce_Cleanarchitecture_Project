@@ -1,7 +1,7 @@
 package usecase_test
 
 import (
-	mocks "project/pkg/mocks/user"
+	mocks "project/pkg/tests/mocks/user"
 	"project/pkg/utils/models"
 	"testing"
 
@@ -24,8 +24,7 @@ func TestAddtoCart(t *testing.T) {
 
 
 
-  mockData := []struct {
-    pid,pdtStock, userID, quantity,cartId,cartQuantity,category_id,updatedCartQuantity int
+  mockData := []struct { pid,pdtStock, userID, quantity,cartId,cartQuantity,category_id,updatedCartQuantity int
     ProductName,Image,CategoryOffer,ProductOffer string
     CategoryDiscountRate,ProductDiscountRate,price float64
   }{
@@ -78,9 +77,7 @@ func TestAddtoCart(t *testing.T) {
       stub: func(cartRepo *mocks.MockCartRepository, invRepo *mocks.MockInventoryRepository, offRepo *mocks.MockOfferRepository) {
         invRepo.EXPECT().CheckStock(mockData[1].pid).Return(mockData[1].pdtStock, nil).Times(1)
         cartRepo.EXPECT().GetCartID(mockData[1].userID).Return(mockData[1].cartId, nil).Times(1)
-        //created and simulated the new cartId creation
         mockData[1].cartId=2
-
         cartRepo.EXPECT().CreateNewCart(mockData[1].userID).Return(mockData[1].cartId,nil).Times(1)
         cartRepo.EXPECT().CheckIfItemIsAlreadyAdded(mockData[1].cartId,mockData[1].pid).Return(false, nil).Times(1)
         cartRepo.EXPECT().AddtoCartItems(mockData[1].cartId, mockData[1].pid, mockData[1].updatedCartQuantity).Return(nil).Times(1)

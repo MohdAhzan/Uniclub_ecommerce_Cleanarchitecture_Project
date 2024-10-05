@@ -79,7 +79,7 @@ func (h *helper) GenerateTokenAdmin(admin models.AdminDetailsResponse) (string, 
 	// 		IssuedAt:  jwt.NewNumericDate(time.Now()),
 	// 	},
 	// }
-
+	//
 	// refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, refreshTokenClaims)
 	// refreshTokenString, err := refreshToken.SignedString([]byte("adminrefreshToken988243rwcfsdsjfyf74cysf38"))
 	// if err != nil {
@@ -90,8 +90,18 @@ func (h *helper) GenerateTokenAdmin(admin models.AdminDetailsResponse) (string, 
 
 }
 
-func (h *helper) GenerateTokenClients(user models.UserDetailsResponse) (string, error) {
+func (h *helper) GenerateTokenClients(user models.UserDetailsResponse) (string,string, error) {
 	accessTokenClaims := &AuthCustomClaims{
+		Id:    user.Id,
+		Email: user.Email,
+		Role:  "client",
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24 * 1)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+		},
+	}
+
+	refreshTokenClaims := &AuthCustomClaims{
 		Id:    user.Id,
 		Email: user.Email,
 		Role:  "client",
@@ -101,29 +111,19 @@ func (h *helper) GenerateTokenClients(user models.UserDetailsResponse) (string, 
 		},
 	}
 
-	// refreshTokenClaims := &AuthCustomClaims{
-	// 	Id:    user.Id,
-	// 	Email: user.Email,
-	// 	Role:  "client",
-	// 	RegisteredClaims: jwt.RegisteredClaims{
-	// 		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24 * 30)),
-	// 		IssuedAt:  jwt.NewNumericDate(time.Now()),
-	// 	},
-	// }
-
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, accessTokenClaims)
 	accessTokenString, err := accessToken.SignedString([]byte("useraccesstokenasdioufou23854284jsdf9823jsdfh"))
 	if err != nil {
-		return "", err
+		return "","", err
 	}
 
-	// refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, refreshTokenClaims)
-	// refreshTokenString, err := refreshToken.SignedString([]byte("userrefreshtokenasdgfr23788h23cy86qnw3dr367d4ye2"))
-	// if err != nil {
-	// 	return "", "", err
-	// }
+	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, refreshTokenClaims)
+	refreshTokenString, err := refreshToken.SignedString([]byte("userrefreshtokenasdgfr23788h23cy86qnw3dr367d4ye2"))
+	if err != nil {
+		return "", "", err
+	}
 
-	return accessTokenString, nil
+	return accessTokenString,refreshTokenString ,nil
 
 }
 

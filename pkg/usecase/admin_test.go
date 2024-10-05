@@ -3,11 +3,10 @@ package usecase_test
 import (
 	"errors"
 	"fmt"
-	mocks "project/pkg/mocks/admin"
+	mocks "project/pkg/tests/mocks/admin"
 	"project/pkg/utils/domain"
 	"project/pkg/utils/models"
 	"testing"
-	"time"
 
 	"project/pkg/usecase"
 

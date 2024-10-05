@@ -59,7 +59,8 @@ func (otp *otpUseCase) VerifyOTP(code models.VerifyData) (models.TokenUsers, err
 		return models.TokenUsers{}, err
 	}
 
-	tokenString, err := otp.helper.GenerateTokenClients(userDetails)
+	tokenString,refreshtokenString, err := otp.helper.GenerateTokenClients(userDetails)
+
 	if err != nil {
 		return models.TokenUsers{}, err
 	}
@@ -73,7 +74,8 @@ func (otp *otpUseCase) VerifyOTP(code models.VerifyData) (models.TokenUsers, err
 
 	return models.TokenUsers{
 		Users: user,
-		Token: tokenString,
+		AccessToken: tokenString,
+		RefreshToken: refreshtokenString,
 	}, nil
 
 }

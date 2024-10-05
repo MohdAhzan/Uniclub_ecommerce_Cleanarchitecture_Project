@@ -112,12 +112,13 @@ func (mr *MockHelperMockRecorder) GenerateTokenAdmin(admin interface{}) *gomock.
 }
 
 // GenerateTokenClients mocks base method.
-func (m *MockHelper) GenerateTokenClients(user models.UserDetailsResponse) (string, error) {
+func (m *MockHelper) GenerateTokenClients(user models.UserDetailsResponse) (string, string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GenerateTokenClients", user)
 	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret1, _ := ret[1].(string)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
 }
 
 // GenerateTokenClients indicates an expected call of GenerateTokenClients.

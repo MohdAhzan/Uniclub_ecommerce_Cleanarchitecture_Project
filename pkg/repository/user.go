@@ -33,7 +33,8 @@ func (u *userDatabase) UserSignup(user models.UserDetails, referalID string) (mo
 	if err != nil {
 		return models.UserDetailsResponse{}, err
 	}
-	fmt.Println("USER DETAILS eNTEREDD")
+	fmt.Println("USER DETAILS eNTEREDD",userDetails)
+
 	return userDetails, nil
 }
 
@@ -167,14 +168,11 @@ func (u *userDatabase) DeleteAddress(addressID, userID int) error {
 }
 
 func (u *userDatabase) GetHashedPassword(id int) (string, error) {
-
 	var hashedPassword string
-
 	err := u.DB.Raw("select password from users where id = ?", id).Scan(&hashedPassword).Error
 	if err != nil {
 		return "", errors.New("failed to get hashedPass")
 	}
-
 	return hashedPassword, nil
 }
 
