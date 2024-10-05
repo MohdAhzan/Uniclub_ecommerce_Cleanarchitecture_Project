@@ -66,6 +66,7 @@ func TestChangePassword(t *testing.T){
       return
     }
 
+
     DB,err:=db.DB()
     if err!=nil{
       t.Error(err)
@@ -193,19 +194,52 @@ func truncateAllTables(db *gorm.DB) error {
   return nil
 }
 
+func truncateWallet(db *gorm.DB) error {
+  err := db.Exec("TRUNCATE TABLE wallets RESTART IDENTITY CASCADE").Error
+  if err != nil {
+    return err
+  }
+  return nil
+}
+
+
+
+// t.Log("jffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\njjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj\njjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj")
+
 
 func TestUserSignup(t *testing.T){
 
-
-
   h:=helper.NewHelper(cfg)
-
   db,dbErr:=testDBconnection(t,cfg)
   if dbErr!=nil{
-    // t.Log("jffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\njjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj\njjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj")
     t.Error("error connecting Database",dbErr)
     return 
   }
+  defer func() {
+    err:=truncateAllTables(db)
+    if err!=nil{
+      t.Error("error truncating the tables",err)
+      return
+    }
+    err=truncateWallet(db)
+    if err!=nil{
+      t.Error("error truncating the tables",err)
+      return
+    }
+
+
+    DB,err:=db.DB()
+    if err!=nil{
+      t.Error(err)
+      return
+    }
+    err= DB.Close()
+    if err!=nil{
+      t.Errorf("error closing testDB %v",err)
+      return
+    }
+    t.Log("Closed testDB")
+  }()
 
 
 
