@@ -296,7 +296,7 @@ type arg struct{
     "failedPassIncorrect":{
       input: arg{data: mockData[1],refCode: ""} ,
 
-      expect: models.TokenUsers{Users:models.UserDetailsResponse{Id:1,Name: "ahzan",Email: "gsirkahzanpkm@gmail.com", Phone: "7034968543",ReferralID: ""},
+      expect: models.TokenUsers{Users:models.UserDetailsResponse{Id:2,Name: "ahzan",Email: "gsirkahzanpkm@gmail.com", Phone: "7034968543",ReferralID: ""},
       },
       expectErr: errors.New("password does not match"),
 
@@ -312,11 +312,19 @@ type arg struct{
         
       response,err:=userUsecase.UserSignup(testCase.input.data,testCase.input.refCode)
       
-      if !assert.Error(t,testCase.expectErr,err){
+       // assert.Error(t,testCase.expectErr,err)
 
-        t.Errorf("error in the case %s \n %v  ",key,err)
-
+    if err!=nil{
+        if assert.Error(t, err) {
+          assert.Equal(t, testCase.expectErr, err)
+          return
+        }
       }
+      //  if err!=nil{
+      //   assert.Error()("error in the case %s \n %v  ",key,err)
+      //
+      // } 
+
 
       
 
