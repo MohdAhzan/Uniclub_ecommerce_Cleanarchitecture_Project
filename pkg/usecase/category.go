@@ -25,7 +25,6 @@ func (cat *categoryUseCase) AddCategory(category string) (domain.Category, error
 	if err != nil {
 		return domain.Category{}, err
 	}
-	fmt.Println(exist, "checkingggggggggggggg", category)
 	if exist {
 		return domain.Category{}, errors.New("category already exists")
 	}

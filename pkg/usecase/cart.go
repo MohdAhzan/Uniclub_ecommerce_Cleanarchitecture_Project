@@ -54,7 +54,6 @@ func (u CartUseCase) AddtoCart(pid, userID, quantity int) (models.CartResponse, 
 	if Err != nil {
 		return models.CartResponse{}, Err
 	}
-	fmt.Println("boolllll", exist)
 	if exist {
 		cartQuantity, err = u.CartRepo.FindCartQuantity(pid, cartID)
 		if err != nil {
@@ -65,7 +64,7 @@ func (u CartUseCase) AddtoCart(pid, userID, quantity int) (models.CartResponse, 
 
 	// creating cartItems for user
 	newQuantity := cartQuantity + quantity
-	fmt.Println("Updatedcart values", cartID, cartQuantity, quantity, newQuantity)
+
 	errMsg := fmt.Sprintf("Can't add %d products as stock is %d", newQuantity, stock)
 	if cartQuantity+quantity > stock {
 		return models.CartResponse{}, errors.New(errMsg)

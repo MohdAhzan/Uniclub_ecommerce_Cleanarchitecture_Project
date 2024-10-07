@@ -57,7 +57,6 @@ func TestChangePassword(t *testing.T){
 
   }
 
-
   db,dbErr:=testDBconnection(t)
   if dbErr!=nil{
     t.Errorf("error connecting the testDatabase \n %v",dbErr)
@@ -109,21 +108,11 @@ func TestChangePassword(t *testing.T){
     err= db.Exec(`INSERT into users (id,name,email,phone,password,blocked,referral_id) values(?,?,?,?,?,?,?)`,testUser.ID,testUser.Name,testUser.Email, testUser.Phone,testUser.Password,testUser.Blocked,testUser.ReferralID).Error
   }
 
-
-
-
-
-
-
-
   changePassModel:=[]models.ChangePassword{
     { CurrentPassword: "user123",NewPassword: "new123",ConfirmPassword: "new123"} ,
     { CurrentPassword: "incorrectPass",NewPassword: "foo",ConfirmPassword: "foo"} ,
     { CurrentPassword: "new123",NewPassword: "foo",ConfirmPassword: "bar"} ,
   }
-
-
-
 
   t.Run("success",func(t *testing.T) {
 
@@ -136,7 +125,6 @@ func TestChangePassword(t *testing.T){
 
   })
 
-
   t.Run("caseIncorrectPass",func(t *testing.T) {
 
 
@@ -144,9 +132,7 @@ func TestChangePassword(t *testing.T){
     if assert.Error(t,err){
 
       if assert.Equal(t,errors.New("incorrect PassWord !! Try Again"), err){
-        // t.Errorf("failed Incorrect Pass test expected %v got %v",errors.New("incorrect PassWord !! Try Again"),err)
 
-        t.Log("sdklfjds",err)
       }else{
         t.Error(err)
       }
@@ -170,8 +156,6 @@ func TestChangePassword(t *testing.T){
       }
     }
   })
-
-
 }
 
 
@@ -179,6 +163,7 @@ var envs = []string{ "TEST_DB_HOST","TEST_DB_NAME","TEST_DB_USER","TEST_DB_PASSW
 
 var i int = 0 
 
+//tesDBconnectoin func will loadup testdatabase for the whole integrated test
 func testDBconnection(t *testing.T)(*gorm.DB ,error){
 
 
@@ -188,7 +173,7 @@ func testDBconnection(t *testing.T)(*gorm.DB ,error){
     if err != nil {
       log.Fatalf("Failed to set working directory: %v", err)
     }
-  
+
     i++
   }else{
     err := os.Chdir(".")
@@ -203,9 +188,8 @@ func testDBconnection(t *testing.T)(*gorm.DB ,error){
 
   if err := viper.ReadInConfig(); err != nil {
     return &gorm.DB{},err
-}
+  }
 
-  fmt.Println("env in LOad Config",envs)
 
 
   for _, env := range envs {
@@ -223,8 +207,6 @@ func testDBconnection(t *testing.T)(*gorm.DB ,error){
     return &gorm.DB{}, err
   }
 
-
-  fmt.Printf("cfg;lsdafjldsjafldsaflkdslfldsjlfjdlsj: %v\n", cfg)
 
   dsn := fmt.Sprintf("host=%s user=%s dbname=%s port=%s password=%s", cfg.TEST_DBHost, cfg.TEST_DBUser, cfg.TEST_DBName, cfg.TEST_DBPort, cfg.TEST_DBPassword)
 
@@ -297,9 +279,9 @@ func TestUserSignup(t *testing.T){
   userRepo:=repository.NewUserRepository(db) 
   userUsecase:=usecase.NewUserUseCase(userRepo,config.Config{},h)
 
-type arg struct{
-   data models.UserDetails
-   refCode string
+  type arg struct{
+    data models.UserDetails
+    refCode string
   }
 
   mockData:=[]models.UserDetails{
@@ -318,7 +300,7 @@ type arg struct{
       ConfirmPassword :"barrr"},
 
   }
- 
+
   err:=db.AutoMigrate(&domain.Users{})
   if err!=nil{
     t.Errorf("error creating testUsers %v",err)
@@ -336,7 +318,7 @@ type arg struct{
     expect models.TokenUsers 
     expectErr error
   }{
- 
+
     "successfullSignup":{
       input: arg{data: mockData[0],refCode: ""} ,
 
@@ -352,20 +334,20 @@ type arg struct{
       expectErr: errors.New("password does not match"),
 
     },
-      
+
   }
-  
+
   for key,testCase:= range testCases {
 
-      
-      t.Run(key,func(t *testing.T) {
- 
-        
-      response,err:=userUsecase.UserSignup(testCase.input.data,testCase.input.refCode)
-      
-       // assert.Error(t,testCase.expectErr,err)
 
-    if err!=nil{
+    t.Run(key,func(t *testing.T) {
+
+
+      response,err:=userUsecase.UserSignup(testCase.input.data,testCase.input.refCode)
+
+      // assert.Error(t,testCase.expectErr,err)
+
+      if err!=nil{
         if assert.Error(t, err) {
           assert.Equal(t, testCase.expectErr, err)
           return
@@ -377,7 +359,7 @@ type arg struct{
       // } 
 
 
-      
+
 
       // assert.Equal(t,testCase.expect.AccessToken,response.AccessToken)
       // assert.Equal(t,testCase.expect.RefreshToken,response.RefreshToken)
@@ -385,10 +367,10 @@ type arg struct{
       assert.Equal(t,testCase.expect.Users.Email,response.Users.Email)
       assert.Equal(t,testCase.expect.Users.Phone,response.Users.Phone)
 
-        //since refcode can be random its testing to be two random values
+      //since refcode can be random its testing to be two random values
       if !assert.NotEqual(t,testCase.expect.Users.ReferralID,response.Users.ReferralID){
 
-          t.Errorf("%v",errors.New("expected two different referall codes but got same"))
+        t.Errorf("%v",errors.New("expected two different referall codes but got same"))
 
       }
 
@@ -398,20 +380,20 @@ type arg struct{
 
 
 
-  }
+}
 
 
-  // accessToken,refreshToken,err :=  mockhelper.GenerateTokenClients(mockData[1])
-  // if err!=nil{
-  //   t.Errorf(err.Error())
-  // }
-  //
-  // t.Run("TestONE",func(t *testing.T) {
-  //
-  //   t.Log(accessToken)
-  //   t.Log(refreshToken)
-  //
-  // })
-  //
+// accessToken,refreshToken,err :=  mockhelper.GenerateTokenClients(mockData[1])
+// if err!=nil{
+//   t.Errorf(err.Error())
+// }
+//
+// t.Run("TestONE",func(t *testing.T) {
+//
+//   t.Log(accessToken)
+//   t.Log(refreshToken)
+//
+// })
+//
 // }
 

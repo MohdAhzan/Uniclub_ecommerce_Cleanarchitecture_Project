@@ -2,7 +2,6 @@ package usecase_test
 
 import (
 	"errors"
-	"fmt"
 	mocks "project/pkg/tests/mocks/admin"
 	"project/pkg/utils/domain"
 	"project/pkg/utils/models"
@@ -90,11 +89,6 @@ func TestAddCategory(t *testing.T) {
     },
   }
 
-  // type Category struct {
-  // 	ID       uint   `json:"id" gorm:"unique;not null"`
-  // 	Category string `json:"category"`
-  // }
-  //
   testCases:=map[string]struct{
     arg string
     stub func(mocks.MockCategoryRepository)
@@ -105,8 +99,6 @@ func TestAddCategory(t *testing.T) {
     "successCase1":{
       arg:mockData[0].Category,
       stub : func(repo mocks.MockCategoryRepository){
-   
-         fmt.Println(mockData[0].Category) 
           
         repo.EXPECT().CheckCategory(mockData[0].Category).Return(false,nil).Times(1)
         repo.EXPECT().AddCategory(mockData[0].Category).Return(mockData[0] ,nil).Times(1)
@@ -144,7 +136,6 @@ func TestAddCategory(t *testing.T) {
       arg:mockData[0].Category,
       stub : func(repo mocks.MockCategoryRepository){
    
-         fmt.Println(mockData[0].Category) 
           
         repo.EXPECT().CheckCategory(mockData[0].Category).Return(true,errors.New("category already exists")).Times(1)
       },
@@ -169,8 +160,6 @@ func TestAddCategory(t *testing.T) {
       }
       
     }
-
-    t.Log(response)
       
       hm:=assert.Equal(t,testcase.expect,response)
       if !hm{

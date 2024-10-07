@@ -126,11 +126,10 @@ func TestAddtoCart(t *testing.T) {
           t.Errorf("expected error %v, got %v", testcase.expectErr, err)
         }
       }
-      t.Logf("TestCartresponse is %v",cartresponse)
-      assert.Equal(t,testcase.expect,cartresponse)
-      //    {
-      // 	t.Errorf("expected %v, got %v", tc.expect, result)
-      // }
+     if !assert.Equal(t,testcase.expect,cartresponse){
+
+        	t.Errorf("expected %v, got %v", testcase.expect, cartresponse)
+      }
     })
   }
 }

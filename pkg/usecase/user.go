@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"errors"
-	"fmt"
 	config "project/pkg/config"
 	helper_interface "project/pkg/helper/interface"
 	interfaces "project/pkg/repository/interface"
@@ -29,7 +28,6 @@ var ErrorHashingPassword = "Error In Hashing Password"
 
 func (u *userUseCase) UserSignup(user models.UserDetails, refCode string) (models.TokenUsers, error) {
 
-	fmt.Println("<<<Add Users>>>")
 	//Check if user already exists
 	userExist := u.userRepo.CheckUserAvailability(user.Email)
 	if userExist {
