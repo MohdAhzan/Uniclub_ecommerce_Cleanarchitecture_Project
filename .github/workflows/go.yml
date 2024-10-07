@@ -46,7 +46,7 @@ jobs:
           echo "TEST_DB_PASSWORD=${{ secrets.TEST_DB_PASSWORD }}" >> .env
           echo "TEST_DB_PORT=5432" >> .env
 
-       - name: Create Test Database
+      - name: Create Test Database
         run: |
           echo "Creating test database..."
           psql -h localhost -U "${{ secrets.TEST_DB_USER }}" -c "CREATE DATABASE testdb_uniclub_project;" || echo "Database might already exist"
