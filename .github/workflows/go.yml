@@ -49,7 +49,7 @@ jobs:
       - name: Create Test Database
         run: |
           echo "Creating test database..."
-          psql -h localhost -U "${{ secrets.TEST_DB_USER }}" -c "CREATE DATABASE testdb_uniclub_project;" || echo "Database might already exist"
+          PGPASSWORD="${{ secrets.TEST_DB_PASSWORD }}" psql -h localhost -U "${{ secrets.TEST_DB_USER }}" -c "CREATE DATABASE testdb_uniclub_project;" 
 
       - name: Build
         run: go build -o ./cmd/uniclub_project ./cmd
