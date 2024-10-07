@@ -3,6 +3,8 @@ package tests
 import (
 	"errors"
 	"fmt"
+	"log"
+	"os"
 	"project/pkg/config"
 	"project/pkg/helper"
 	"project/pkg/repository"
@@ -11,10 +13,22 @@ import (
 	"project/pkg/utils/models"
 	"testing"
 
+	"github.com/go-playground/validator/v10"
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
+
+var cfg Config
+
+type Config struct{
+  TEST_DBHost     string `mapstructure:"TEST_DB_HOST"`
+  TEST_DBName     string `mapstructure:"TEST_DB_NAME"`
+  TEST_DBUser      string `mapstructure:"TEST_DB_USER"`
+  TEST_DBPassword string `mapstructure:"TEST_DB_PASSWORD"` 
+  TEST_DBPort string `mapstructure:"TEST_DB_PORT"` 
+}
 
 type Users struct {
   ID         uint   `json:"id" gorm:"unique;not null"`
@@ -24,14 +38,6 @@ type Users struct {
   Phone      string `json:"phone"`
   Blocked    bool   `json:"blocked" gorm:"default:false"`
   ReferralID string `json:"referral_id" gorm:"unique"`
-}
-
-var cfg= config.Config{
-  DBHost: "localhost",
-  DBUser: "postgres",
-  DBName: "testdb_uniclub_project",
-  DBPassword: "ahzan",
-  DBPort: "5432", 
 }
 
 func TestChangePassword(t *testing.T){
@@ -52,7 +58,7 @@ func TestChangePassword(t *testing.T){
   }
 
 
-  db,dbErr:=testDBconnection(t,cfg)
+  db,dbErr:=testDBconnection(t)
   if dbErr!=nil{
     t.Errorf("error connecting the testDatabase \n %v",dbErr)
     return 
@@ -81,9 +87,9 @@ func TestChangePassword(t *testing.T){
   }()
 
 
-  h:=helper.NewHelper(cfg)
+  h:=helper.NewHelper(config.Config{})
   userRepo:=repository.NewUserRepository(db) 
-  userUsecase:=usecase.NewUserUseCase(userRepo,cfg,h)
+  userUsecase:=usecase.NewUserUseCase(userRepo,config.Config{},h)
 
   err:=db.AutoMigrate(&testUsers)
   if err!=nil{
@@ -169,18 +175,63 @@ func TestChangePassword(t *testing.T){
 }
 
 
+var envs = []string{ "TEST_DB_HOST","TEST_DB_NAME","TEST_DB_USER","TEST_DB_PASSWORD","TEST_DB_PORT"}
 
-func testDBconnection(t *testing.T,cfg config.Config)(*gorm.DB,error){
+var i int = 0 
 
-    t.Log("jffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\njjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj\n",cfg)
+func testDBconnection(t *testing.T)(*gorm.DB ,error){
 
-  dsn := fmt.Sprintf("host=%s user=%s dbname=%s port=%s password=%s", cfg.DBHost, cfg.DBUser, cfg.DBName, cfg.DBPort, cfg.DBPassword)
 
+  if i==0{
+
+    err := os.Chdir("../../../")
+    if err != nil {
+      log.Fatalf("Failed to set working directory: %v", err)
+    }
+  
+    i++
+  }else{
+    err := os.Chdir(".")
+    if err != nil {
+      log.Fatalf("Failed to set working directory: %v", err)
+    }
+  }
+
+
+  viper.AddConfigPath(".")
+  viper.SetConfigFile(".env")
+
+  if err := viper.ReadInConfig(); err != nil {
+    return &gorm.DB{},err
+}
+
+  fmt.Println("env in LOad Config",envs)
+
+
+  for _, env := range envs {
+    if err := viper.BindEnv(env); err != nil {
+      return &gorm.DB{}, err
+    }
+  }
+
+
+  if err := viper.Unmarshal(&cfg); err != nil {
+
+    return &gorm.DB{}, err
+  }
+  if err := validator.New().Struct(&cfg); err != nil {
+    return &gorm.DB{}, err
+  }
+
+
+  fmt.Printf("cfg;lsdafjldsjafldsaflkdslfldsjlfjdlsj: %v\n", cfg)
+
+  dsn := fmt.Sprintf("host=%s user=%s dbname=%s port=%s password=%s", cfg.TEST_DBHost, cfg.TEST_DBUser, cfg.TEST_DBName, cfg.TEST_DBPort, cfg.TEST_DBPassword)
 
   db, dbErr := gorm.Open(postgres.Open(dsn), &gorm.Config{SkipDefaultTransaction: true})
   if dbErr !=nil{
     t.Errorf("error connecting the testdb_uniclub_project %s",dbErr)
-    return nil,dbErr
+    return db,dbErr 
   }
 
   return db,nil
@@ -209,8 +260,8 @@ func truncateWallet(db *gorm.DB) error {
 
 func TestUserSignup(t *testing.T){
 
-  h:=helper.NewHelper(cfg)
-  db,dbErr:=testDBconnection(t,cfg)
+  db,dbErr:=testDBconnection(t)
+  h:=helper.NewHelper(config.Config{})
   if dbErr!=nil{
     t.Error("error connecting Database",dbErr)
     return 
@@ -244,7 +295,7 @@ func TestUserSignup(t *testing.T){
 
 
   userRepo:=repository.NewUserRepository(db) 
-  userUsecase:=usecase.NewUserUseCase(userRepo,cfg,h)
+  userUsecase:=usecase.NewUserUseCase(userRepo,config.Config{},h)
 
 type arg struct{
    data models.UserDetails

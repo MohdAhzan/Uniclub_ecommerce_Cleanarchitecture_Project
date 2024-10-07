@@ -26,9 +26,11 @@ func InitializeAPI(cfg config.Config) (*http.ServerHTTP, error) {
 	if err != nil {
 		return nil, err
 	}
+
   
   middleware.CfgHelper(cfg)
 
+    
 
 	helper := helper.NewHelper(cfg)
 

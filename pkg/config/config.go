@@ -1,11 +1,14 @@
 package config
 
 import (
-  "github.com/go-playground/validator/v10"
-  "github.com/spf13/viper"
+	"fmt"
+
+	"github.com/go-playground/validator/v10"
+	"github.com/spf13/viper"
 )
 
 var config Config
+
 
 type Config struct {
   DBHost     string `mapstructure:"DB_HOST"`
@@ -33,25 +36,39 @@ type Config struct {
 
   RAZORPAY_KEY_ID     string `mapstructure:"RAZORPAY_KEY_ID"`
   RAZORPAY_KEY_SECRET string `mapstructure:"RAZORPAY_KEY_SECRET"`
+
+  TEST_DBHost     string `mapstructure:"TEST_DB_HOST"`
+  TEST_DBName     string `mapstructure:"TEST_DB_NAME"`
+  TEST_DBUser      string `mapstructure:"TEST_DB_USER"`
+  TEST_DBPassword string `mapstructure:"TEST_DB_PASSWORD"` 
+  TEST_DBPort string `mapstructure:"TEST_DB_PORT"` 
 }
 
 var envs = []string{
   "DB_HOST", "DB_NAME", "DB_USER", "DB_PORT", "DB_PASSWORD", "DB_AUTHTOKEN", "DB_ACCOUNTSID", "DB_SERVICESID", "DB_ACCOUNTSID", "DB_AUTHTOKEN",
   "DB_SERVICESID", "AWS_REGION", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "SMTP_USERNAME", "SMTP_PASSWORD", "SMTP_HOST", "SMTP_PORT", "RAZORPAY_KEY_ID", "RAZORPAY_KEY_SECRET",
-  "ADMIN_SECRET","USER_SECRET"}
+  "ADMIN_SECRET","USER_SECRET", "TEST_DB_HOST","TEST_DB_NAME","TEST_DB_USER","TEST_DB_PASSWORD","TEST_DB_PORT"}
+
 
 func LoadConfig() (Config, error) {
 
-
   viper.AddConfigPath(".")
   viper.SetConfigFile(".env")
-  viper.ReadInConfig()
+
+  if err := viper.ReadInConfig(); err != nil {
+    return config, fmt.Errorf("error reading config file: %v", err)
+}
+
+
+    fmt.Println("env in LOad Config",envs)
 
   for _, env := range envs {
     if err := viper.BindEnv(env); err != nil {
       return config, err
     }
   }
+
+
   if err := viper.Unmarshal(&config); err != nil {
 
     return config, err
@@ -63,3 +80,5 @@ func LoadConfig() (Config, error) {
   return config, nil
 
 }
+
+
