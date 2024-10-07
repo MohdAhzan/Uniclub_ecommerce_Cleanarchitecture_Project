@@ -33,7 +33,6 @@ func (u *userDatabase) UserSignup(user models.UserDetails, referalID string) (mo
 	if err != nil {
 		return models.UserDetailsResponse{}, err
 	}
-	fmt.Println("USER DETAILS eNTEREDD",userDetails)
 
 	return userDetails, nil
 }
