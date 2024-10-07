@@ -30,4 +30,4 @@ jobs:
         # ./cmd/uniclub_project
 
       - name: Test
-        run: make testall
+        run: go test -v ./...
