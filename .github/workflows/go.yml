@@ -17,6 +17,22 @@ jobs:
       matrix:
         os: [ubuntu-latest,windows-latest,macOS-latest]
 
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: ${{ secrets.TEST_DB_USER }}
+          POSTGRES_USER: ${{ secrets.TEST_DB_USER }} 
+          POSTGRES_PASSWORD: ${{ secrets.TEST_DB_PASSWORD }} 
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+
     steps:
       - uses: actions/checkout@v4
 
@@ -35,7 +51,7 @@ jobs:
 
       - name: Build
         run: go build -o ./cmd/uniclub_project ./cmd
-        # ./cmd/uniclub_project
+        # ./cmd/uniclub_projec
 
       - name: Test
         run: go test -v ./...
