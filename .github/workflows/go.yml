@@ -67,20 +67,12 @@ jobs:
           SOURCE: "./cmd/uniclub_project" 
           SCRIPT_BEFORE: "echo 'Deploying application...'" 
           SCRIPT_AFTER: |
-            echo 'Deployment finished.'
-            cd /home/ubuntu/GOproject/Uniclub_ecommerce_Cleanarchitecture_Project
-            nohup ./cmd/uniclub_project &
-
-
-
-
-
-        # if pgrep -f "uniclub_project"; then
-            # echo "Application is already running."
-            # else
-            # echo "Starting application..."
-            # nohup ./cmd/uniclub_project > app.log 2>&1 &
-            # fi 
+            if pgrep -f "uniclub_project"; then
+            echo "Application is already running."
+            else
+            echo "Starting application..."
+            nohup ./cmd/uniclub_project > app.log 2>&1 &
+            fi 
 
 # echo 'Deployment finished.'
 # cd /home/ubuntu/GOproject/Uniclub_ecommerce_Cleanarchitecture_Project
