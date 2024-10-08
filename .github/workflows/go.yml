@@ -53,10 +53,12 @@ jobs:
 
       - name: Build
         run: go build -o ./cmd/uniclub_project ./cmd
-        # ./cmd/uniclub_projec
 
       - name: Test
         run: go test -v ./...
+
+      - name: Create .ssh Directory
+        run: mkdir -p ~/.ssh
 
       - name: Decode SSH Key
         run: |
