@@ -67,14 +67,14 @@ jobs:
           # Decode the SSH key from base64
           echo "${EC2_SSH_KEY}" | base64 --decode > ec2_key.pem
           chmod 600 ec2_key.pem
+    
+           # Copy the built binary to the EC2 instance
+          scp -i ec2_key.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $(pwd)/cmd/uniclub_project ${EC2_USER}@${EC2_HOST}:/home/${EC2_USER}/GOproject/Uniclub_ecommerce_Cleanarchitecture_Project/cmd/
 
-          # Copy the built binary to the EC2 instance
-          scp -i ec2_key.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ./cmd/uniclub_project ${EC2_USER}@${EC2_HOST}:/home/${EC2_USER}/
-
-          # SSH into the EC2 instance and restart the service or run the binary
+          # SSH into the EC2 instance and run the binary from the correct directory
           ssh -i ec2_key.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${EC2_USER}@${EC2_HOST} << 'EOF'
-          # Navigate to the directory where the binary is located
-          cd /home/${EC2_USER}/
+          # Navigate to the project directory
+          cd /home/ubuntu/GOproject/Uniclub_ecommerce_Cleanarchitecture_Project/cmd
           # Stop the current running process (if applicable)
           pkill uniclub_project || true
           # Run the new binary in the background
@@ -83,3 +83,4 @@ jobs:
 
           # Clean up the temporary SSH key file
           rm -f ec2_key.pem
+
