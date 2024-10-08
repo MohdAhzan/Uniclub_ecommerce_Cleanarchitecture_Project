@@ -57,14 +57,15 @@ jobs:
       - name: Test
         run: go test -v ./...
 
-      - name: Create .ssh Directory
-        run: mkdir -p ~/.ssh
+      - name: Deploy to AWS EC2 using SSH
+        uses: easingthemes/ssh-deploy@main
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }} 
+          REMOTE_HOST: "ec2-52-63-249-68.ap-southeast-2.compute.amazonaws.com"
+          REMOTE_USER: "ubuntu"
+          TARGET: "/home/ubuntu/GOproject/Uniclub_ecommerce_Cleanarchitecture_Project"
+          SOURCE: "./cmd/uniclub_project" 
+          SCRIPT_BEFORE: "echo 'Deploying application...'" 
+          SCRIPT_AFTER: "echo 'Deployment finished.'" 
 
-      - name: Deploy Application
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-        run: |  
-          ssh -i "$SSH_PRIVATE_KEY" ubuntu@ec2-52-63-249-68.ap-southeast-2.compute.amazonaws.com << 'EOF'
-          cd GOproject/Uniclub_ecommerce_Cleanarchitecture_Project
-          ./cmd/uniclub_project
-          EOF
+
