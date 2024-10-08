@@ -67,15 +67,14 @@ jobs:
           chmod 400 ~/.ssh/live.pem
           ssh-keyscan -H ec2-52-63-249-68.ap-southeast-2.compute.amazonaws.com >> ~/.ssh/known_hosts
 
+
       - name: Deploy Application
         run: |
-          cd ~/.ssh  << 'EOF'
-          chmod 400 ~/.ssh/live.pem
-          ssh -i "live.pem" ubuntu@ec2-52-63-249-68.ap-southeast-2.compute.amazonaws.com
+          cd ~/.ssh
+          ssh -i "live.pem" ubuntu@ec2-52-63-249-68.ap-southeast-2.compute.amazonaws.com << 'EOF'
           cd GOproject/Uniclub_ecommerce_Cleanarchitecture_Project
           ./cmd/uniclub_project
           EOF
-
 
       - name: Clean up
         run: rm ~/.ssh/live.pem
