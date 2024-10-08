@@ -58,11 +58,19 @@ jobs:
       - name: Test
         run: go test -v ./...
 
+      - name: Decode SSH Key
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" | base64 -d > private_key.pem
+          chmod 600 private_key.pem
+
+      - name: Add server to known_hosts
+        run: |
+          ssh-keyscan -H ec2-52-63-249-68.ap-southeast-2.compute.amazonaws.com >> ~/.ssh/known_hosts
+
       - name: Deploy to Server
         run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
-          chmod 600 private_key.pem
           ssh -i private_key.pem ubuntu@ec2-52-63-249-68.ap-southeast-2.compute.amazonaws.com "cd GOproject/Uniclub_ecommerce_Cleanarchitecture_Project && ./cmd/uniclub_project"
-          rm private_key.pem
 
+      - name: Clean up
+        run: rm private_key.pem
 
