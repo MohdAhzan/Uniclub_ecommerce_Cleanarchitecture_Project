@@ -60,18 +60,16 @@ jobs:
       - name: Create .ssh Directory
         run: mkdir -p ~/.ssh
 
-      - name: Decode SSH Key
+      - name: Setup SSH
         run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" | base64 -d > private_key.pem
-          chmod 600 private_key.pem
-
-      - name: Add server to known_hosts
-        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.PEM_KEY }}" | base64 -d > ~/.ssh/live.pem
+          chmod 600 ~/.ssh/live.pem
           ssh-keyscan -H ec2-52-63-249-68.ap-southeast-2.compute.amazonaws.com >> ~/.ssh/known_hosts
 
-      - name: Deploy to Server
+      - name: Deploy Application
         run: |
-          ssh -i private_key.pem ubuntu@ec2-52-63-249-68.ap-southeast-2.compute.amazonaws.com "cd GOproject/Uniclub_ecommerce_Cleanarchitecture_Project && ./cmd/uniclub_project"
+          ssh -i ~/.ssh/live.pem ubuntu@ec2-52-63-249-68.ap-southeast-2.compute.amazonaws.com "cd GOproject/Uniclub_ecommerce_Cleanarchitecture_Project && ./cmd/uniclub_project"
 
       - name: Clean up
         run: rm private_key.pem
