@@ -67,8 +67,4 @@ jobs:
           SOURCE: "./cmd/uniclub_project" 
           SCRIPT_BEFORE: "echo 'Deploying application...'" 
           SCRIPT_AFTER: "echo 'Deployment finished.'"
-          REMOTE_PORT: 22
-          ARGS: -rlgoDzvc -i
-          SSH_CMD_ARGS: -o StrictHostKeyChecking=no -vvv
-
 
