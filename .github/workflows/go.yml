@@ -64,7 +64,7 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.PEM_KEY }}" | base64 -d > ~/.ssh/live.pem
-          chmod 600 ~/.ssh/live.pem
+          chmod 400 ~/.ssh/live.pem
           ssh-keyscan -H ec2-52-63-249-68.ap-southeast-2.compute.amazonaws.com >> ~/.ssh/known_hosts
 
       - name: Deploy Application
