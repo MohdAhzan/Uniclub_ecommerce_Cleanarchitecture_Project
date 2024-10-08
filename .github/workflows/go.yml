@@ -66,5 +66,8 @@ jobs:
           TARGET: "/home/ubuntu/GOproject/Uniclub_ecommerce_Cleanarchitecture_Project"
           SOURCE: "./cmd/uniclub_project" 
           SCRIPT_BEFORE: "echo 'Deploying application...'" 
-          SCRIPT_AFTER: "echo 'Deployment finished.'"
+          SCRIPT_AFTER: |
+            echo 'Deployment finished.'
+            cd /home/ubuntu/GOproject/Uniclub_ecommerce_Cleanarchitecture_Project
+            nohup ./cmd/uniclub_project &
 
