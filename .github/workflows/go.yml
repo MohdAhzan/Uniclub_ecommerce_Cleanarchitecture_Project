@@ -60,22 +60,12 @@ jobs:
       - name: Create .ssh Directory
         run: mkdir -p ~/.ssh
 
-      - name: Setup SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/live.pem
-          chmod 400 ~/.ssh/live.pem
-          ssh-keyscan -H ec2-52-63-249-68.ap-southeast-2.compute.amazonaws.com >> ~/.ssh/known_hosts
-
-
       - name: Deploy Application
-        run: |
-          chmod 400 ~/.ssh/live.pem
-          ssh -i "~/.ssh/live.pem" ubuntu@ec2-52-63-249-68.ap-southeast-2.compute.amazonaws.com << 'EOF'
-          cd GOproject/Uniclub_ecommerce_Cleanarchitecture_Project
-          ./cmd/uniclub_project
-          EOF
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
 
-      - name: Clean up
-        run: rm ~/.ssh/live.pem
-
+          run: |  
+            ssh -i "$SSH_PRIVATE_KEY" ubuntu@ec2-52-63-249-68.ap-southeast-2.compute.amazonaws.com << 'EOF'
+            cd GOproject/Uniclub_ecommerce_Cleanarchitecture_Project
+            ./cmd/uniclub_project
+            EOF
