@@ -5,7 +5,10 @@ run:
 
 hello:
 	echo "hellloooo"
-
+build:
+	go build -o ./cmd/uniclub_project ./cmd
+buildrun:
+	go build -o ./cmd/uniclub_project ./cmd && ./cmd/uniclub_project
 testall:
 	go test -v ./...
 testadmin:
