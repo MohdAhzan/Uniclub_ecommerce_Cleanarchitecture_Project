@@ -3,11 +3,11 @@ package usecase
 import (
 	"errors"
 	"fmt"
-	"project/pkg/config"
-	helper_interface "project/pkg/helper/interface"
-	interfaces "project/pkg/repository/interface"
-	services "project/pkg/usecase/interface"
-	"project/pkg/utils/models"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/config"
+	helper_interface "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/helper/interface"
+	interfaces "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/repository/interface"
+	services "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/usecase/interface"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/models"
 
 	"github.com/jinzhu/copier"
 )
@@ -59,7 +59,7 @@ func (otp *otpUseCase) VerifyOTP(code models.VerifyData) (models.TokenUsers, err
 		return models.TokenUsers{}, err
 	}
 
-	tokenString,refreshtokenString, err := otp.helper.GenerateTokenClients(userDetails)
+	tokenString, refreshtokenString, err := otp.helper.GenerateTokenClients(userDetails)
 
 	if err != nil {
 		return models.TokenUsers{}, err
@@ -73,8 +73,8 @@ func (otp *otpUseCase) VerifyOTP(code models.VerifyData) (models.TokenUsers, err
 	}
 
 	return models.TokenUsers{
-		Users: user,
-		AccessToken: tokenString,
+		Users:        user,
+		AccessToken:  tokenString,
 		RefreshToken: refreshtokenString,
 	}, nil
 

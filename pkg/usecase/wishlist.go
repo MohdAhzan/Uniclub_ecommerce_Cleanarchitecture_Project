@@ -3,8 +3,8 @@ package usecase
 import (
 	"errors"
 	"fmt"
-	interfaces "project/pkg/repository/interface"
-	"project/pkg/utils/models"
+	interfaces "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/repository/interface"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/models"
 )
 
 type wishlistUsecase struct {

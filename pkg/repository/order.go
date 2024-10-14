@@ -3,8 +3,8 @@ package repository
 import (
 	"errors"
 	"fmt"
-	"project/pkg/utils/domain"
-	"project/pkg/utils/models"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/domain"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/models"
 	"time"
 
 	"gorm.io/gorm"

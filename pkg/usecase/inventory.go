@@ -4,10 +4,10 @@ import (
 	"errors"
 	"fmt"
 	"mime/multipart"
-	helper_interfaces "project/pkg/helper/interface"
-	interfaces "project/pkg/repository/interface"
+	helper_interfaces "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/helper/interface"
+	interfaces "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/repository/interface"
 
-	"project/pkg/utils/models"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/models"
 )
 
 type InventoryUseCase struct {

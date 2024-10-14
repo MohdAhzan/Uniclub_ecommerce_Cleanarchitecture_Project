@@ -2,8 +2,8 @@ package handler
 
 import (
 	"net/http"
-	interfaces "project/pkg/usecase/interface"
-	response "project/pkg/utils/Response"
+	interfaces "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/usecase/interface"
+	response "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/Response"
 	"strconv"
 
 	"github.com/gin-gonic/gin"

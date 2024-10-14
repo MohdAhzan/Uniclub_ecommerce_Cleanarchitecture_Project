@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"project/pkg/utils/domain"
-	"project/pkg/utils/models"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/domain"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/models"
 	"time"
 
 	"gorm.io/gorm"
@@ -101,7 +101,7 @@ func (c *couponRepository) CheckIfUserUsedCoupon(userID, couponID int) (bool, er
 		return true, err
 	}
 	if count > 0 {
-		return true,nil
+		return true, nil
 	}
 	return false, nil
 }

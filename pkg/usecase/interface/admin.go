@@ -1,8 +1,8 @@
 package interfaces
 
 import (
-	"project/pkg/utils/domain"
-	"project/pkg/utils/models"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/domain"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/models"
 
 	"github.com/jung-kurt/gofpdf"
 )
@@ -22,5 +22,5 @@ type AdminUseCase interface {
 	FilteredSalesReport(timePeriod string) (models.SalesReport, error)
 	PrintSalesReport(sales []models.OrderDetailsAdmin) (*gofpdf.Fpdf, error)
 	SalesByDate(dayInt int, monthInt int, yearInt int) ([]models.OrderDetailsAdmin, error)
-  ChangePassword(passChange models.AdminPasswordChange,id int)error
+	ChangePassword(passChange models.AdminPasswordChange, id int) error
 }

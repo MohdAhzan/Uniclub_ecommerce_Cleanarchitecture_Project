@@ -2,8 +2,8 @@ package http
 
 import (
 	"log"
-	handler "project/pkg/api/handler"
-	"project/pkg/routes"
+	handler "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/api/handler"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/routes"
 
 	"github.com/gin-gonic/gin"
 )

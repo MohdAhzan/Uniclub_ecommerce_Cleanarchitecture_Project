@@ -3,9 +3,9 @@ package usecase
 import (
 	"errors"
 	"fmt"
-	interfaces "project/pkg/repository/interface"
-	services "project/pkg/usecase/interface"
-	"project/pkg/utils/domain"
+	interfaces "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/repository/interface"
+	services "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/usecase/interface"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/domain"
 )
 
 type categoryUseCase struct {
@@ -20,7 +20,6 @@ func NewCategoryUseCase(repo interfaces.CategoryRepository) services.CategoryUse
 
 func (cat *categoryUseCase) AddCategory(category string) (domain.Category, error) {
 
-    
 	exist, err := cat.repository.CheckCategory(category)
 	if err != nil {
 		return domain.Category{}, err

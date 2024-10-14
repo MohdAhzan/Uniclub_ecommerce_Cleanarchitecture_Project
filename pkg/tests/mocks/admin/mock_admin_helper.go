@@ -6,7 +6,7 @@ package mocks
 
 import (
 	multipart "mime/multipart"
-	models "project/pkg/utils/models"
+	models "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/models"
 	reflect "reflect"
 	time "time"
 

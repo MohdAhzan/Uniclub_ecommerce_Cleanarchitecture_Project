@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"math/big"
 	"mime/multipart"
-	cfg "project/pkg/config"
-	"project/pkg/utils/models"
+	cfg "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/config"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/models"
 	"time"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
@@ -90,7 +90,7 @@ func (h *helper) GenerateTokenAdmin(admin models.AdminDetailsResponse) (string, 
 
 }
 
-func (h *helper) GenerateTokenClients(user models.UserDetailsResponse) (string,string, error) {
+func (h *helper) GenerateTokenClients(user models.UserDetailsResponse) (string, string, error) {
 	accessTokenClaims := &AuthCustomClaims{
 		Id:    user.Id,
 		Email: user.Email,
@@ -114,7 +114,7 @@ func (h *helper) GenerateTokenClients(user models.UserDetailsResponse) (string,s
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, accessTokenClaims)
 	accessTokenString, err := accessToken.SignedString([]byte("useraccesstokenasdioufou23854284jsdf9823jsdfh"))
 	if err != nil {
-		return "","", err
+		return "", "", err
 	}
 
 	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, refreshTokenClaims)
@@ -123,7 +123,7 @@ func (h *helper) GenerateTokenClients(user models.UserDetailsResponse) (string,s
 		return "", "", err
 	}
 
-	return accessTokenString,refreshTokenString ,nil
+	return accessTokenString, refreshTokenString, nil
 
 }
 

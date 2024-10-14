@@ -2,9 +2,9 @@ package usecase
 
 import (
 	"errors"
-	interfaces "project/pkg/repository/interface"
-	domain "project/pkg/utils/domain"
-	"project/pkg/utils/models"
+	interfaces "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/repository/interface"
+	domain "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/domain"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/models"
 	"time"
 )
 

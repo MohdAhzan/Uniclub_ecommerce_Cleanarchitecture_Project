@@ -3,7 +3,7 @@ package middleware
 import (
 	"fmt"
 	"net/http"
-	"project/pkg/config"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/config"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -12,14 +12,11 @@ import (
 
 var cfg config.Config
 
-func CfgHelper(conf config.Config){
+func CfgHelper(conf config.Config) {
 
-    cfg=conf
+	cfg = conf
 }
 
-
-
-  
 func UserAuthMiddleware(c *gin.Context) {
 
 	tokenString := c.GetHeader("Authorization")
@@ -29,10 +26,9 @@ func UserAuthMiddleware(c *gin.Context) {
 		return
 	}
 	tokenString = strings.TrimPrefix(tokenString, "Bearer ")
-    
 
-token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-      
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+
 		return []byte(cfg.USERSECRET), nil
 	})
 
@@ -50,9 +46,9 @@ token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error)
 	}
 	// var userID models.TokenUsersID
 	// uID := claims["id"].(float64)
-	
+
 	// userID.UserID=uint(uID)
-	 
+
 	fmt.Println("claims", claims)
 
 	role, ok := claims["role"].(string)

@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"project/pkg/api/handler"
-	"project/pkg/api/middleware"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/api/handler"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/api/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -11,7 +11,7 @@ func UserRoutes(engine *gin.RouterGroup,
 	userHandler *handler.UserHandler,
 	otpHandler *handler.OtpHandler, inventoryHandler *handler.InventaryHandler,
 	cartHandler *handler.CartHandler, orderHandler *handler.OrderHandler,
-	paymentHandler *handler.PaymentHandler, wishlistHandler *handler.WishlistHandler, couponHandler *handler.CouponHandler  ) {
+	paymentHandler *handler.PaymentHandler, wishlistHandler *handler.WishlistHandler, couponHandler *handler.CouponHandler) {
 
 	engine.POST("/signup", userHandler.UserSignUp)
 	engine.POST("/login", userHandler.UserLoginHandler)

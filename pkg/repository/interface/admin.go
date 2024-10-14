@@ -1,8 +1,8 @@
 package interfaces
 
 import (
-	"project/pkg/utils/domain"
-	"project/pkg/utils/models"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/domain"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/models"
 	"time"
 )
 
@@ -22,7 +22,6 @@ type AdminRepository interface {
 	SalesByDay(yearInt int, monthInt int, dayInt int) ([]models.OrderDetailsAdmin, error)
 	SalesByMonth(yearInt int, monthInt int) ([]models.OrderDetailsAdmin, error)
 	SalesByYear(yearInt int) ([]models.OrderDetailsAdmin, error)
-  GetAdminHashPassword(id int)(string,error)
-  UpdateAdminPass(id int, NewPass string)error
-  
+	GetAdminHashPassword(id int) (string, error)
+	UpdateAdminPass(id int, NewPass string) error
 }

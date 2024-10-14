@@ -1,6 +1,6 @@
 package interfaces
 
-import "project/pkg/utils/domain"
+import "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/domain"
 
 type CategoryRepository interface {
 	GetCategories() ([]domain.Category, error)

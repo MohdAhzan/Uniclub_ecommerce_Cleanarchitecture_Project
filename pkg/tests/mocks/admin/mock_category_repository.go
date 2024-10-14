@@ -5,7 +5,7 @@
 package mocks
 
 import (
-	domain "project/pkg/utils/domain"
+	domain "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/domain"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"

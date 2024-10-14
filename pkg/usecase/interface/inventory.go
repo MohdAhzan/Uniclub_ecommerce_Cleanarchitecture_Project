@@ -2,7 +2,7 @@ package interfaces
 
 import (
 	"mime/multipart"
-	"project/pkg/utils/models"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/models"
 )
 
 type InventoryUseCase interface {

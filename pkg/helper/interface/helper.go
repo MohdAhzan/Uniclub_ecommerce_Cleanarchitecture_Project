@@ -2,7 +2,7 @@ package interfaces
 
 import (
 	"mime/multipart"
-	"project/pkg/utils/models"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/models"
 	"time"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
@@ -10,7 +10,7 @@ import (
 
 type Helper interface {
 	PasswordHashing(string) (string, error)
-	GenerateTokenClients(user models.UserDetailsResponse) (string,string, error)
+	GenerateTokenClients(user models.UserDetailsResponse) (string, string, error)
 	GenerateTokenAdmin(admin models.AdminDetailsResponse) (string, error)
 	CompareHashAndPassword(hashedPassword string, password string) error
 

@@ -3,9 +3,9 @@ package repository
 import (
 	"errors"
 	"fmt"
-	interfaces "project/pkg/repository/interface"
-	"project/pkg/utils/domain"
-	"project/pkg/utils/models"
+	interfaces "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/repository/interface"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/domain"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/models"
 	"time"
 
 	"gorm.io/gorm"
@@ -381,23 +381,18 @@ func (ad *adminRepository) SalesByDay(yearInt int, monthInt int, dayInt int) ([]
 	return orderDetails, nil
 }
 
+func (ad *adminRepository) GetAdminHashPassword(id int) (string, error) {
 
+	var hashPass string
 
+	if err := ad.db.Raw("SELECT  password from admins where id = ?", id).Scan(&hashPass).Error; err != nil {
+		return "", err
+	}
 
-func (ad *adminRepository) GetAdminHashPassword(id int)(string,error){
-    
-  var hashPass string
-  
-  if err:=ad.db.Raw("SELECT  password from admins where id = ?",id).Scan(&hashPass).Error;err!=nil{
-    return "",err
-  }
-
-    return hashPass,nil
+	return hashPass, nil
 }
 
-
-
-func (ad *adminRepository)UpdateAdminPass(id int, NewPass string)error{
+func (ad *adminRepository) UpdateAdminPass(id int, NewPass string) error {
 
 	result := ad.db.Exec(`UPDATE admins SET password = ? where id = ?`, NewPass, id)
 	if result.Error != nil {
@@ -406,7 +401,7 @@ func (ad *adminRepository)UpdateAdminPass(id int, NewPass string)error{
 	if result.RowsAffected < 1 {
 		return errors.New("nothing updated")
 	}
-  
-  return nil
+
+	return nil
 
 }

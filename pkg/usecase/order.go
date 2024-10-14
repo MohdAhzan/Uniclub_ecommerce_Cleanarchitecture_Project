@@ -3,11 +3,11 @@ package usecase
 import (
 	"errors"
 	"fmt"
-	helper "project/pkg/helper/interface"
-	services "project/pkg/repository/interface"
-	interfaces "project/pkg/usecase/interface"
-	"project/pkg/utils/domain"
-	"project/pkg/utils/models"
+	helper "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/helper/interface"
+	services "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/repository/interface"
+	interfaces "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/usecase/interface"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/domain"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/models"
 )
 
 type OrderUseCase struct {

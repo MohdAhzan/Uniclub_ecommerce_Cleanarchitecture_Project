@@ -11,13 +11,12 @@ import (
 
 func AdminAuthMiddleware(c *gin.Context) {
 
-  
 	accessToken := c.Request.Header.Get("Authorization")
 
 	accessToken = strings.TrimPrefix(accessToken, "Bearer")
 
 	token, err := jwt.Parse(accessToken, func(token *jwt.Token) (interface{}, error) {
-    return []byte(cfg.ADMINSECRET), nil
+		return []byte(cfg.ADMINSECRET), nil
 	})
 
 	if err != nil {
@@ -29,16 +28,16 @@ func AdminAuthMiddleware(c *gin.Context) {
 		return
 	}
 
-claims,ok  :=token.Claims.(jwt.MapClaims)
-  if !ok{
-    c.JSON(http.StatusUnauthorized,gin.H{"error":"Invalid authorization"})
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid authorization"})
 		c.AbortWithStatus(http.StatusUnauthorized)
-    return
-  } 
- 
-  id,ok:=claims["id"].(float64)
-  fmt.Println("map claim printing to check",claims)
-  c.Set("id",int(id))
+		return
+	}
+
+	id, ok := claims["id"].(float64)
+	fmt.Println("map claim printing to check", claims)
+	c.Set("id", int(id))
 	c.Next()
 
 }

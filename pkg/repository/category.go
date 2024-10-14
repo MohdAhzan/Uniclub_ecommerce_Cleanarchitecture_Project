@@ -3,8 +3,8 @@ package repository
 import (
 	"errors"
 	"fmt"
-	interfaces "project/pkg/repository/interface"
-	"project/pkg/utils/domain"
+	interfaces "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/repository/interface"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/domain"
 	"strconv"
 
 	"gorm.io/gorm"

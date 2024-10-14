@@ -3,9 +3,9 @@ package handler
 import (
 	"fmt"
 	"net/http"
-	services "project/pkg/usecase/interface"
-	response "project/pkg/utils/Response"
-	"project/pkg/utils/models"
+	services "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/usecase/interface"
+	response "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/Response"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/models"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -35,7 +35,6 @@ func (Inv *InventaryHandler) AddInventory(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, errMsg)
 		return
 	}
-
 
 	CategoryID, err := strconv.Atoi(c.Request.FormValue("category_id"))
 
@@ -95,8 +94,6 @@ func (Inv *InventaryHandler) AddInventory(c *gin.Context) {
 
 func (Inv *InventaryHandler) GetProductsForAdmin(c *gin.Context) {
 
-
-
 	productDetails, err := Inv.InventoryUseCase.GetProductsForAdmin()
 
 	if err != nil {
@@ -153,8 +150,6 @@ func (Inv *InventaryHandler) DeleteInventory(c *gin.Context) {
 }
 
 func (inv *InventaryHandler) EditInventoryDetails(c *gin.Context) {
-
-	
 
 	productID := c.Query("id")
 

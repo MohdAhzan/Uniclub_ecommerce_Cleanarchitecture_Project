@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"project/pkg/config"
-	interfaces "project/pkg/repository/interface"
-	"project/pkg/utils/models"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/config"
+	interfaces "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/repository/interface"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/models"
 	"strconv"
 
 	"github.com/razorpay/razorpay-go"

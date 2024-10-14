@@ -5,7 +5,7 @@
 package mocks
 
 import (
-	models "project/pkg/utils/models"
+	models "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/models"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"

@@ -1,8 +1,8 @@
 package interfaces
 
 import (
-	"project/pkg/utils/domain"
-	"project/pkg/utils/models"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/domain"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/models"
 )
 
 type UserUseCase interface {

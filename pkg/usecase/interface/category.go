@@ -1,7 +1,7 @@
 package interfaces
 
 import (
-	"project/pkg/utils/domain"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/domain"
 )
 
 type CategoryUseCase interface {

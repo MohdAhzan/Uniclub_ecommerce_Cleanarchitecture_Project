@@ -3,7 +3,7 @@ package repository
 import (
 	"errors"
 	"fmt"
-	"project/pkg/utils/models"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/models"
 
 	"gorm.io/gorm"
 )

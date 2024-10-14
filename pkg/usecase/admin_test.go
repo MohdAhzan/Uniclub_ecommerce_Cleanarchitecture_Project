@@ -2,12 +2,12 @@ package usecase_test
 
 import (
 	"errors"
-	mocks "project/pkg/tests/mocks/admin"
-	"project/pkg/utils/domain"
-	"project/pkg/utils/models"
+	mocks "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/tests/mocks/admin"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/domain"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/models"
 	"testing"
 
-	"project/pkg/usecase"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/usecase"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -15,160 +15,152 @@ import (
 
 func TestGetUser(t *testing.T) {
 
-  mockctrl := gomock.NewController(t)
-  mockadminRepo := mocks.NewMockAdminRepository(mockctrl)
-  mockhelper := mocks.NewMockHelper(mockctrl)
-  mockorderRepo := mocks.NewMockOrderRepository(mockctrl)
-  mockuserRepo := mocks.NewMockUserRepository(mockctrl)
+	mockctrl := gomock.NewController(t)
+	mockadminRepo := mocks.NewMockAdminRepository(mockctrl)
+	mockhelper := mocks.NewMockHelper(mockctrl)
+	mockorderRepo := mocks.NewMockOrderRepository(mockctrl)
+	mockuserRepo := mocks.NewMockUserRepository(mockctrl)
 
-  mockadminUsecase := usecase.NewAdminUsecase(mockadminRepo, mockhelper, mockorderRepo, mockuserRepo)
+	mockadminUsecase := usecase.NewAdminUsecase(mockadminRepo, mockhelper, mockorderRepo, mockuserRepo)
 
-  // Define what the mock should return when GetUsers is called
-  t.Parallel() 
+	// Define what the mock should return when GetUsers is called
+	t.Parallel()
 
-  mockUsers := []models.UserDetailsAtAdmin{
-    {Id: 1, Name: "Demouser1", Email: "demouser1@gmail.com", Phone: "9878362828", Blocked: false},
-    {Id: 2, Name: "Demouser2", Email: "demouser2@gmail.com", Phone: "9999999999", Blocked: true},
-  }
+	mockUsers := []models.UserDetailsAtAdmin{
+		{Id: 1, Name: "Demouser1", Email: "demouser1@gmail.com", Phone: "9878362828", Blocked: false},
+		{Id: 2, Name: "Demouser2", Email: "demouser2@gmail.com", Phone: "9999999999", Blocked: true},
+	}
 
-  testCases := map[string]struct {
-    stub      func(mocks.MockAdminRepository)
-    expect    []models.UserDetailsAtAdmin
-    expectErr error
-  }{
-    "success": {
-      stub: func(repo mocks.MockAdminRepository) {
-        repo.EXPECT().GetUsers().Return(mockUsers, nil).Times(1)
-      },
-      expect:    mockUsers,
-      expectErr: nil,
-    },
+	testCases := map[string]struct {
+		stub      func(mocks.MockAdminRepository)
+		expect    []models.UserDetailsAtAdmin
+		expectErr error
+	}{
+		"success": {
+			stub: func(repo mocks.MockAdminRepository) {
+				repo.EXPECT().GetUsers().Return(mockUsers, nil).Times(1)
+			},
+			expect:    mockUsers,
+			expectErr: nil,
+		},
 
-    "failed": {
-      stub: func(repo mocks.MockAdminRepository) {
-        repo.EXPECT().GetUsers().Return([]models.UserDetailsAtAdmin{}, errors.New(" Error fetching UserDetails")).Times(1)
-      },
-      expect:    []models.UserDetailsAtAdmin{},
-      expectErr: errors.New("Error fetching UserDetails"),
-    },
-  }
+		"failed": {
+			stub: func(repo mocks.MockAdminRepository) {
+				repo.EXPECT().GetUsers().Return([]models.UserDetailsAtAdmin{}, errors.New(" Error fetching UserDetails")).Times(1)
+			},
+			expect:    []models.UserDetailsAtAdmin{},
+			expectErr: errors.New("Error fetching UserDetails"),
+		},
+	}
 
-  for _, testcase := range testCases {
+	for _, testcase := range testCases {
 
-    testcase.stub(*mockadminRepo)
-    response, err := mockadminUsecase.GetUsers()
+		testcase.stub(*mockadminRepo)
+		response, err := mockadminUsecase.GetUsers()
 
-    assert.Equal(t, testcase.expect, response, "got expected test result")
-    assert.Equal(t, testcase.expectErr, err, "got expected test error")
+		assert.Equal(t, testcase.expect, response, "got expected test result")
+		assert.Equal(t, testcase.expectErr, err, "got expected test error")
 
-  }
+	}
 
 }
 
-
-
-
 func TestAddCategory(t *testing.T) {
 
-  ctrl:=gomock.NewController(t)
+	ctrl := gomock.NewController(t)
 
-  catRepo:=mocks.NewMockCategoryRepository(ctrl)
-  catusecase:=usecase.NewCategoryUseCase(catRepo)
+	catRepo := mocks.NewMockCategoryRepository(ctrl)
+	catusecase := usecase.NewCategoryUseCase(catRepo)
 
-  mockData:=[]domain.Category{
-    {
-      ID: 1,
-      Category: "Tshirts",
-    },{
-      ID: 2,
-      Category: "Shirts",
+	mockData := []domain.Category{
+		{
+			ID:       1,
+			Category: "Tshirts",
+		}, {
+			ID:       2,
+			Category: "Shirts",
+		}, {
+			ID:       3,
+			Category: "Jackets",
+		},
+	}
 
-    },{
-      ID: 3,
-      Category: "Jackets",
-    },
-  }
+	testCases := map[string]struct {
+		arg       string
+		stub      func(mocks.MockCategoryRepository)
+		expect    domain.Category
+		expectErr error
+	}{
 
-  testCases:=map[string]struct{
-    arg string
-    stub func(mocks.MockCategoryRepository)
-    expect  domain.Category 
-    expectErr error
-  }{
+		"successCase1": {
+			arg: mockData[0].Category,
+			stub: func(repo mocks.MockCategoryRepository) {
 
-    "successCase1":{
-      arg:mockData[0].Category,
-      stub : func(repo mocks.MockCategoryRepository){
-          
-        repo.EXPECT().CheckCategory(mockData[0].Category).Return(false,nil).Times(1)
-        repo.EXPECT().AddCategory(mockData[0].Category).Return(mockData[0] ,nil).Times(1)
-      },
-      expect  :   mockData[0] ,
-      expectErr: nil,
-    },
+				repo.EXPECT().CheckCategory(mockData[0].Category).Return(false, nil).Times(1)
+				repo.EXPECT().AddCategory(mockData[0].Category).Return(mockData[0], nil).Times(1)
+			},
+			expect:    mockData[0],
+			expectErr: nil,
+		},
 
-    "successCase2":{
+		"successCase2": {
 
-      arg:mockData[1].Category,
+			arg: mockData[1].Category,
 
-      stub : func(repo mocks.MockCategoryRepository){
+			stub: func(repo mocks.MockCategoryRepository) {
 
-        repo.EXPECT().CheckCategory(mockData[1].Category).Return(false,nil).Times(1)
-        repo.EXPECT().AddCategory(mockData[1].Category).Return(mockData[1] ,nil).Times(1)
-      },
-      expect  :   mockData[1] ,
-      expectErr: nil,
-    },
+				repo.EXPECT().CheckCategory(mockData[1].Category).Return(false, nil).Times(1)
+				repo.EXPECT().AddCategory(mockData[1].Category).Return(mockData[1], nil).Times(1)
+			},
+			expect:    mockData[1],
+			expectErr: nil,
+		},
 
-    "successCase3":{
+		"successCase3": {
 
-      arg:mockData[2].Category,
-      stub : func(repo mocks.MockCategoryRepository){
+			arg: mockData[2].Category,
+			stub: func(repo mocks.MockCategoryRepository) {
 
-        repo.EXPECT().CheckCategory(mockData[2].Category).Return(false,nil).Times(1)
-        repo.EXPECT().AddCategory(mockData[2].Category).Return(mockData[2] ,nil).Times(1)
-      },
-      expect  :   mockData[2] ,
-      expectErr: nil,
-    },
-    "alreadyAddedcase4":{
+				repo.EXPECT().CheckCategory(mockData[2].Category).Return(false, nil).Times(1)
+				repo.EXPECT().AddCategory(mockData[2].Category).Return(mockData[2], nil).Times(1)
+			},
+			expect:    mockData[2],
+			expectErr: nil,
+		},
+		"alreadyAddedcase4": {
 
-      arg:mockData[0].Category,
-      stub : func(repo mocks.MockCategoryRepository){
-   
-          
-        repo.EXPECT().CheckCategory(mockData[0].Category).Return(true,errors.New("category already exists")).Times(1)
-      },
-      expectErr: errors.New("category already exists"),
-    },
-  }
+			arg: mockData[0].Category,
+			stub: func(repo mocks.MockCategoryRepository) {
 
-    t.Parallel()
+				repo.EXPECT().CheckCategory(mockData[0].Category).Return(true, errors.New("category already exists")).Times(1)
+			},
+			expectErr: errors.New("category already exists"),
+		},
+	}
 
-  for _,testcase := range testCases {
-  
+	t.Parallel()
 
-    testcase.stub(*catRepo)
-    response,err:=catusecase.AddCategory(testcase.arg)
-    if err!=nil{
-    
-      if assert.Error(t, err) {
-        assert.Equal(t, testcase.expectErr, err)
-      }else{
+	for _, testcase := range testCases {
 
-        t.Errorf("expected %v error but got %v error",testcase.expectErr,err)
-      }
-      
-    }
-      
-      hm:=assert.Equal(t,testcase.expect,response)
-      if !hm{
-        t.Errorf("exepected %v but Got %v",testcase.expect,response)
-      }
-  
-  } 
+		testcase.stub(*catRepo)
+		response, err := catusecase.AddCategory(testcase.arg)
+		if err != nil {
 
+			if assert.Error(t, err) {
+				assert.Equal(t, testcase.expectErr, err)
+			} else {
 
+				t.Errorf("expected %v error but got %v error", testcase.expectErr, err)
+			}
+
+		}
+
+		hm := assert.Equal(t, testcase.expect, response)
+		if !hm {
+			t.Errorf("exepected %v but Got %v", testcase.expect, response)
+		}
+
+	}
 
 }
 

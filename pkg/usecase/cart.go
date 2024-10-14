@@ -3,8 +3,8 @@ package usecase
 import (
 	"errors"
 	"fmt"
-	interfaces "project/pkg/repository/interface"
-	"project/pkg/utils/models"
+	interfaces "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/repository/interface"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/models"
 )
 
 type CartUseCase struct {
@@ -83,31 +83,30 @@ func (u CartUseCase) AddtoCart(pid, userID, quantity int) (models.CartResponse, 
 	}
 	var cartProduct models.GetCart
 	cartProduct.ProductID = pid
-  cartProduct.ProductName, err = u.CartRepo.GetProductNames(pid)
-  if err!=nil{
-    return models.CartResponse{},err
-  }
+	cartProduct.ProductName, err = u.CartRepo.GetProductNames(pid)
+	if err != nil {
+		return models.CartResponse{}, err
+	}
 
 	cartProduct.Image, err = u.invRepo.GetProductImages(pid)
-  if err!=nil{
-    return models.CartResponse{},err
-  }
+	if err != nil {
+		return models.CartResponse{}, err
+	}
 	cartProduct.Category_id, err = u.invRepo.GetCategoryID(pid)
-  if err!=nil{
-    return models.CartResponse{},err
-  }
+	if err != nil {
+		return models.CartResponse{}, err
+	}
 	cartProduct.Quantity, err = u.CartRepo.FindCartQuantity(pid, cartID)
-  if err!=nil{
-    return models.CartResponse{},err
-  }
+	if err != nil {
+		return models.CartResponse{}, err
+	}
 
 	cartProduct.StockAvailable = stock - cartProduct.Quantity
-	
-  price, err := u.invRepo.FindPrice(pid)
-  if err!=nil{
-    return models.CartResponse{},err
-  }
 
+	price, err := u.invRepo.FindPrice(pid)
+	if err != nil {
+		return models.CartResponse{}, err
+	}
 
 	cartProduct.TotalPrice = price * float64(cartProduct.Quantity)
 	//check if any offers are there
@@ -137,9 +136,7 @@ func (u CartUseCase) AddtoCart(pid, userID, quantity int) (models.CartResponse, 
 	return cartResponse, nil
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 func (u CartUseCase) GetCart(userID int) (models.CartResponse, error) {
 
@@ -241,7 +238,6 @@ func (u CartUseCase) GetCart(userID int) (models.CartResponse, error) {
 		if err != nil {
 			return models.CartResponse{}, err
 		}
-    
 
 		c.CategoryOffer = CategoryOffer
 		ProductDiscountRate, ProductOffer, err := u.offRepo.GetInventoryOfferDiscountPercentage(c.ProductID)

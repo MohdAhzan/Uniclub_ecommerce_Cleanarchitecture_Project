@@ -2,11 +2,11 @@ package usecase
 
 import (
 	"errors"
-	config "project/pkg/config"
-	helper_interface "project/pkg/helper/interface"
-	interfaces "project/pkg/repository/interface"
-	"project/pkg/utils/domain"
-	"project/pkg/utils/models"
+	config "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/config"
+	helper_interface "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/helper/interface"
+	interfaces "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/repository/interface"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/domain"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/models"
 )
 
 type userUseCase struct {
@@ -35,8 +35,8 @@ func (u *userUseCase) UserSignup(user models.UserDetails, refCode string) (model
 	}
 
 	if user.Password != user.ConfirmPassword {
-		return models.TokenUsers{}, 
-    errors.New("password does not match")
+		return models.TokenUsers{},
+			errors.New("password does not match")
 	}
 
 	// Password Hashing
@@ -48,7 +48,7 @@ func (u *userUseCase) UserSignup(user models.UserDetails, refCode string) (model
 
 	user.Password = hashedPassword
 
-//Create An referral ID for user
+	//Create An referral ID for user
 	referalID, err := u.helper.GenerateReferralCode()
 	if err != nil {
 		return models.TokenUsers{}, err
@@ -78,8 +78,8 @@ func (u *userUseCase) UserSignup(user models.UserDetails, refCode string) (model
 		if err != nil {
 			return models.TokenUsers{}, err
 		}
-		
-    exists := u.userRepo.CheckUserAvailability(refferedUser.Email)
+
+		exists := u.userRepo.CheckUserAvailability(refferedUser.Email)
 		if exists {
 			// credit 100rs to referred User
 			var model models.AddMoneytoWallet
@@ -105,15 +105,15 @@ func (u *userUseCase) UserSignup(user models.UserDetails, refCode string) (model
 
 	// creating a jwt token for clients
 
-	tokenString,refreshString, err := u.helper.GenerateTokenClients(userdata)
+	tokenString, refreshString, err := u.helper.GenerateTokenClients(userdata)
 	if err != nil {
 		return models.TokenUsers{}, errors.New("could not create token due to some internal error")
 	}
 
 	return models.TokenUsers{
-		Users: userdata,
-    AccessToken :tokenString ,
-    RefreshToken :refreshString ,
+		Users:        userdata,
+		AccessToken:  tokenString,
+		RefreshToken: refreshString,
 	}, nil
 }
 
@@ -154,15 +154,15 @@ func (u *userUseCase) UserLoginHandler(user models.UserLogin) (models.TokenUsers
 	userDetails.Phone = user_details.Phone
 	userDetails.ReferralID = user_details.ReferralID
 
-	tokenString,refreshString, err := u.helper.GenerateTokenClients(userDetails)
+	tokenString, refreshString, err := u.helper.GenerateTokenClients(userDetails)
 	if err != nil {
 		return models.TokenUsers{}, errors.New("couldn't generate token for client ")
 	}
 
 	return models.TokenUsers{
-		Users: userDetails,
-		AccessToken:tokenString,
-    RefreshToken: refreshString,
+		Users:        userDetails,
+		AccessToken:  tokenString,
+		RefreshToken: refreshString,
 	}, nil
 }
 

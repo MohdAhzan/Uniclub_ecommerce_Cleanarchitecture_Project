@@ -5,15 +5,15 @@
 package di
 
 import (
-	http "project/pkg/api"
-	"project/pkg/api/handler"
-	"project/pkg/api/middleware"
-	"project/pkg/config"
-	"project/pkg/db"
-	"project/pkg/helper"
-	"project/pkg/redis"
-	"project/pkg/repository"
-	"project/pkg/usecase"
+	http "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/api"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/api/handler"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/api/middleware"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/config"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/db"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/helper"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/redis"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/repository"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/usecase"
 )
 
 func InitializeAPI(cfg config.Config) (*http.ServerHTTP, error) {
@@ -27,10 +27,7 @@ func InitializeAPI(cfg config.Config) (*http.ServerHTTP, error) {
 		return nil, err
 	}
 
-  
-  middleware.CfgHelper(cfg)
-
-    
+	middleware.CfgHelper(cfg)
 
 	helper := helper.NewHelper(cfg)
 

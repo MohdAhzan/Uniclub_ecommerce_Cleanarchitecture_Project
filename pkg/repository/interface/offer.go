@@ -1,13 +1,13 @@
 package interfaces
 
 import (
-	"project/pkg/utils/domain"
-	"project/pkg/utils/models"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/domain"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/models"
 )
 
 type OfferRepository interface {
 	AddNewCategoryOffer(model models.AddCategoryOffer) error
-	GetCategoryOfferDiscountPercentage(CategoryID int) (float64,string, error)
+	GetCategoryOfferDiscountPercentage(CategoryID int) (float64, string, error)
 	CheckCategoryOfferExist(categoryID int) (int, error)
 	GetAllCategoryOffers() ([]domain.CategoryOffers, error)
 	EditCategoryOffer(newDiscount float64, cID int) error
@@ -20,5 +20,5 @@ type OfferRepository interface {
 	EditInventoryOffer(newDiscount float64, InventoryID int) error
 	CheckInventoryOfferStatus(inventoryID int) (bool, error)
 	ValidorInvalidInventoryOffers(status bool, InventoryID int) error
-	GetInventoryOfferDiscountPercentage(InventoryId int) (float64,string, error)
+	GetInventoryOfferDiscountPercentage(InventoryId int) (float64, string, error)
 }

@@ -1,8 +1,8 @@
 package interfaces
 
 import (
-	"project/pkg/utils/domain"
-	"project/pkg/utils/models"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/domain"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/models"
 )
 
 type CouponRepository interface {
@@ -13,5 +13,5 @@ type CouponRepository interface {
 	MakeCouponValid(couponID int) error
 	CheckCouponStatus(couponID int) (bool, error)
 	FindCouponDetails(couponID int) (domain.Coupons, error)
-	CheckIfUserUsedCoupon(userID,couponID int)(bool ,error)
+	CheckIfUserUsedCoupon(userID, couponID int) (bool, error)
 }

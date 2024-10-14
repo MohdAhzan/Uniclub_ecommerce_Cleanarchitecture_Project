@@ -2,8 +2,8 @@ package main
 
 import (
 	"log"
-	config "project/pkg/config"
-	di "project/pkg/di"
+	config "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/config"
+	di "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/di"
 
 	"github.com/joho/godotenv"
 )

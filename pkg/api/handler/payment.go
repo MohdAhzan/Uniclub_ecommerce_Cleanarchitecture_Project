@@ -3,8 +3,8 @@ package handler
 import (
 	"fmt"
 	"net/http"
-	services "project/pkg/usecase/interface"
-	response "project/pkg/utils/Response"
+	services "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/usecase/interface"
+	response "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/Response"
 	"strconv"
 
 	"github.com/gin-gonic/gin"

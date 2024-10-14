@@ -2,8 +2,8 @@ package db
 
 import (
 	"fmt"
-	"project/pkg/config"
-	"project/pkg/utils/domain"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/config"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/domain"
 
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/postgres"
@@ -15,10 +15,10 @@ func ConnectDatabase(cfg config.Config) (*gorm.DB, error) {
 	dsn := fmt.Sprintf("host=%s user=%s dbname=%s port=%s password=%s", cfg.DBHost, cfg.DBUser, cfg.DBName, cfg.DBPort, cfg.DBPassword)
 
 	db, dbErr := gorm.Open(postgres.Open(dsn), &gorm.Config{SkipDefaultTransaction: true})
-  
-  fmt.Println("admin secret\n",cfg.ADMINPASSWORD)
 
-	fmt.Println("error creating tables",cfg.ADMINSECRET)
+	fmt.Println("admin secret\n", cfg.ADMINPASSWORD)
+
+	fmt.Println("error creating tables", cfg.ADMINSECRET)
 
 	if err := db.AutoMigrate(&domain.Inventories{}); err != nil {
 
@@ -71,7 +71,7 @@ func ConnectDatabase(cfg config.Config) (*gorm.DB, error) {
 	if err := db.AutoMigrate(&domain.CategoryOffers{}); err != nil {
 		return db, err
 	}
-	CheckAndCreateAdmin(cfg,db)
+	CheckAndCreateAdmin(cfg, db)
 
 	if err := db.AutoMigrate(&domain.InventoryOffers{}); err != nil {
 		return db, err
@@ -83,7 +83,7 @@ func CheckAndCreateAdmin(cfg config.Config, db *gorm.DB) {
 	var count int64
 	db.Model(&domain.Admin{}).Count(&count)
 	if count == 0 {
-		password :=cfg.ADMINPASSWORD
+		password := cfg.ADMINPASSWORD
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 		if err != nil {
 			return
@@ -98,7 +98,4 @@ func CheckAndCreateAdmin(cfg config.Config, db *gorm.DB) {
 		db.Create(&admin)
 	}
 
-
 }
-
-

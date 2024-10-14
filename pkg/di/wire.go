@@ -5,12 +5,12 @@ package di
 
 import (
 	"fmt"
-	http "project/pkg/api"
-	"project/pkg/api/handler"
-	"project/pkg/config"
-	"project/pkg/db"
-	"project/pkg/repository"
-	"project/pkg/usecase"
+	http "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/api"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/api/handler"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/config"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/db"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/repository"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/usecase"
 
 	wire "github.com/google/wire"
 )

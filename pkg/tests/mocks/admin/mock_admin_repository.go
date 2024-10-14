@@ -5,8 +5,8 @@
 package mocks
 
 import (
-	domain "project/pkg/utils/domain"
-	models "project/pkg/utils/models"
+	domain "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/domain"
+	models "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/models"
 	reflect "reflect"
 	time "time"
 

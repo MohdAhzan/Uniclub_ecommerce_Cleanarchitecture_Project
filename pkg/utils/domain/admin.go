@@ -1,7 +1,7 @@
 package domain
 
 import (
-	"project/pkg/utils/models"
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/models"
 )
 
 type Admin struct {
@@ -15,5 +15,3 @@ type TokenAdmin struct {
 	Admin       models.AdminDetailsResponse
 	AccessToken string
 }
-
-

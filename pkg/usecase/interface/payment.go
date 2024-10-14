@@ -1,6 +1,6 @@
 package interfaces
 
-import "project/pkg/utils/models"
+import "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/models"
 
 type PaymentUseCase interface {
 	MakePaymentFromRazorPay(userID, orderID int) (models.OrderPaymentDetails, error)

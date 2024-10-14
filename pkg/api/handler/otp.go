@@ -2,9 +2,9 @@ package handler
 
 import (
 	"net/http"
-	services "project/pkg/usecase/interface"
-	response "project/pkg/utils/Response"
-	models "project/pkg/utils/models"
+	services "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/usecase/interface"
+	response "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/Response"
+	models "github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/models"
 
 	"github.com/gin-gonic/gin"
 )

@@ -1,4 +1,4 @@
-module project
+module github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project
 
 go 1.23.1
 
