@@ -22,7 +22,7 @@ func InitializeAPI(cfg config.Config) (*http.ServerHTTP, error) {
 		return nil, err
 	}
 
-	redisClient, err := redis.InitializeClient()
+	redisClient, err := redis.InitializeClient(cfg)
 	if err != nil {
 		return nil, err
 	}

@@ -4,16 +4,19 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/config"
 	"github.com/go-redis/redis/v8"
 )
 
 type Redis struct {
 }
 
-func InitializeClient() (*redis.Client, error) {
+func InitializeClient(cfg config.Config) (*redis.Client, error) {
 
+  redisAddr:=fmt.Sprintf("%s:%s",cfg.REDIS_HOST,cfg.REDIS_PORT)
+  fmt.Println("redisADDRESS IN ENV",redisAddr)
 	redisClient := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
+		Addr:    redisAddr,
 		Password: "",
 		DB:       0,
 	})
