@@ -21,10 +21,8 @@ services:
       - redis_data:/data
 
   uniclub_app:
-    build:
-      context: .
-      dockerfile: Dockerfile 
-    restart: always
+    image: ahzan00/uniclub_app:0.0.3
+    restart: on-failure
     ports:
       - "8000:8000"
     environment:

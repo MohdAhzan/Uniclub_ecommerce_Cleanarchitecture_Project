@@ -2,6 +2,7 @@ package db
 
 import (
 	"fmt"
+
 	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/config"
 	"github.com/MohdAhzan/Uniclub_ecommerce_Cleanarchitecture_Project/pkg/utils/domain"
 
@@ -15,10 +16,6 @@ func ConnectDatabase(cfg config.Config) (*gorm.DB, error) {
 	dsn := fmt.Sprintf("host=%s user=%s dbname=%s port=%s password=%s", cfg.DBHost, cfg.DBUser, cfg.DBName, cfg.DBPort, cfg.DBPassword)
 
 	db, dbErr := gorm.Open(postgres.Open(dsn), &gorm.Config{SkipDefaultTransaction: true})
-
-	fmt.Println("admin secret\n", cfg.ADMINPASSWORD)
-
-	fmt.Println("error creating tables", cfg.ADMINSECRET)
 
 	if err := db.AutoMigrate(&domain.Inventories{}); err != nil {
 
@@ -40,7 +37,6 @@ func ConnectDatabase(cfg config.Config) (*gorm.DB, error) {
 	if err := db.AutoMigrate(&domain.Cart{}); err != nil {
 		return db, err
 	}
-	fmt.Println("cart is created ")
 	if err := db.AutoMigrate(&domain.CartItems{}); err != nil {
 		return db, err
 	}
@@ -90,8 +86,8 @@ func CheckAndCreateAdmin(cfg config.Config, db *gorm.DB) {
 		}
 		admin := domain.Admin{
 			ID:       1,
-			Name:     "uniclub",
-			Email:    "uniclub@gmail.com",
+			Name:     cfg.ADMINNAME,
+			Email:    cfg.ADMINEMAIL,
 			Password: string(hashedPassword),
 		}
 

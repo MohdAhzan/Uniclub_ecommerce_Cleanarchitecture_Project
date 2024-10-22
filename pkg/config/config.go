@@ -17,6 +17,8 @@ type Config struct {
   DBPort     string `mapstructure:"DB_PORT"`
 
   ADMINPASSWORD string `mapstructure:"ADMIN_PASSWORD"`
+  ADMINEMAIL string `mapstructure:"ADMIN_EMAIL"`
+  ADMINNAME string `mapstructure:"ADMIN_NAME"`
   ADMINSECRET   string `mapstructure:"ADMIN_SECRET"`
   USERSECRET    string `mapstructure:"USER_SECRET"`
 
@@ -48,20 +50,18 @@ type Config struct {
 }
 
 var envs = []string{
-  "DB_HOST", "DB_NAME", "DB_USER", "DB_PORT", "DB_PASSWORD", "DB_AUTHTOKEN", "DB_ACCOUNTSID", "DB_SERVICESID", "DB_ACCOUNTSID", "DB_AUTHTOKEN",
-  "DB_SERVICESID", "AWS_REGION", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "SMTP_USERNAME", "SMTP_PASSWORD", "SMTP_HOST", "SMTP_PORT", "RAZORPAY_KEY_ID", "RAZORPAY_KEY_SECRET",
-  "ADMIN_SECRET", "USER_SECRET", "TEST_DB_HOST", "TEST_DB_NAME", "TEST_DB_USER", "TEST_DB_PASSWORD", "TEST_DB_PORT","REDIS_HOST","REDIS_PORT"}
+  "DB_HOST", "DB_NAME", "DB_USER", "DB_PORT", "DB_PASSWORD", "DB_AUTHTOKEN", "DB_ACCOUNTSID", "DB_SERVICESID", "DB_ACCOUNTSID", "DB_AUTHTOKEN","DB_SERVICESID", "AWS_REGION", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "SMTP_USERNAME", "SMTP_PASSWORD", "SMTP_HOST", "SMTP_PORT", "RAZORPAY_KEY_ID", "RAZORPAY_KEY_SECRET","ADMIN_SECRET", "USER_SECRET", "TEST_DB_HOST", "TEST_DB_NAME", "TEST_DB_USER", "TEST_DB_PASSWORD", "TEST_DB_PORT","REDIS_HOST","REDIS_PORT","ADMIN_PASSWORD","ADMIN_EMAIL","ADMIN_NAME"}
 
 func LoadConfig() (Config, error) {
 
   viper.AddConfigPath(".")
   viper.SetConfigFile(".env")
 
-  if err := viper.ReadInConfig(); err != nil {
+  if err := viper.ReadInConfig(); err != nil{
     return config, fmt.Errorf("error reading config file: %v", err)
   }
 
-  fmt.Println("env in LOad Config", envs)
+  fmt.Println("env in LOad Config")
 
   for _, env := range envs {
     if err := viper.BindEnv(env); err != nil {
