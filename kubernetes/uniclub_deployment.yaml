@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: uniclub-app
+  namespace: uniclub
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: uniclub-app
+  template:
+    metadata:
+      labels:
+        app: uniclub-app
+    spec:
+      containers:
+        - name: uniclub-app
+          image: ahzan00/uniclub_app:0.0.3
+          env:
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: uniclub-secret
+                  key: postgres-host 
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: uniclub-secret
+                  key: postgres-user 
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: uniclub-secret
+                  key: postgres-password 
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: uniclub-secret
+                  key: postgres-dbname
+            - name: REDIS_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: uniclub-secret
+                  key: redis-host
+            - name: REDIS_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: uniclub-secret
+                  key: redis-port
+          ports:
+            - containerPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: uniclub-app-service
+  namespace: uniclub
+spec:
+  selector:
+    app: uniclub-app
+  ports:
+    - protocol: TCP
+      port: 80          
+      targetPort: 8000 
+      nodePort: 30001    
+  # type: NodePort        
+  type: LoadBalancer   
+
